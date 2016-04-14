@@ -14,7 +14,9 @@ if ( typeof define === 'function' && define.amd ) {
 
 } else if ( 'undefined' !== typeof exports && 'undefined' !== typeof module ) {
 
-	module.exports = THREE;
+    module.exports = THREE;
+
+    alert("test");
 
 }
 

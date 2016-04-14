@@ -93,7 +93,6 @@ var init = function () {
         toAdd1 = new THREE.Mesh(geom1, mat);
         toAdd1.castShadow = true;
         toAdd2 = new THREE.Mesh(geom2, mat);
-        alert("test");
         toAdd1.position.set(300, 100, -i);
         toAdd2.position.set(250, 200, -i);
         /*
