@@ -16,8 +16,6 @@ if ( typeof define === 'function' && define.amd ) {
 
     module.exports = THREE;
 
-    alert("test");
-
 }
 
 //
