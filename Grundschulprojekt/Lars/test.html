@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
     <head>
         <meta charset=utf-8>
@@ -22,9 +22,9 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
             
-            var mesh = null;
+            mesh = null;
             var loader = new THREE.JSONLoader();
-            loader.load("untitled.json", function(geo, mat) {
+            loader.load("Lars/untitled.json", function(geo, mat) {
                 mat = new THREE.MeshLambertMaterial({color: 0x888888});
                 mesh = new THREE.Mesh(geo, mat);
                 scene.add(mesh);

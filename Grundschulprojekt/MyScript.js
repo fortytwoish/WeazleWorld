@@ -1,10 +1,13 @@
-﻿var camera, scene, renderer;
+﻿
+
+var camera, scene, renderer;
 var geometry, material, mesh;
 var x;
 
 
 var init = function () {
-
+    alert("test");
+    alert(x);
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setClearColor(0x000000, 0);
     renderer.setSize(window.innerWidth - 25, window.innerHeight - 20);
@@ -208,5 +211,5 @@ var animate = function () {
     }
 }
 
-init();
-animate();
+//init();
+//animate();

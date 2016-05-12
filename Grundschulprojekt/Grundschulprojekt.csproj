@@ -62,8 +62,15 @@
     <Content Include="Lars\jquery-2.2.3.min.js" />
     <Content Include="Lars\test.html" />
     <Content Include="Lars\three.min.js" />
+    <Content Include="Libraries\jquery-2.2.3.min.js" />
     <Content Include="Libraries\three.js" />
+    <Content Include="MyOtherScript.js" />
     <Content Include="MyScript.js" />
+    <Content Include="Prototypen\index.html" />
+    <Content Include="Prototypen\index.js" />
+    <Content Include="Prototypen\MainGame.js" />
+    <Content Include="Prototypen\Menu.html" />
+    <Content Include="Prototypen\MiniGame.js" />
     <Content Include="Resources\Grass.jpg" />
     <Content Include="Resources\Sky.jpg" />
     <Content Include="Resources\sky_night.png" />
