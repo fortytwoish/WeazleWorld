@@ -2,90 +2,36 @@
 <html>
 <head>
     <title>test</title>
-	<meta charset="utf-8" />
+    <meta charset="utf-8" />
     <script src="js/jquery-2.2.4.min.js"></script>
     <script src="js/three.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/foo.css"> 
 </head>
 <body>
-    <div id="mainGame" style="position:absolute">
+    <div id="mainGame" style="position:absolute; z-index: 98; width:880px; height:540px">
         <button id="menuButton">Menu</button>
-        <script>
+        <button id="minigameButton">Minigame</button>
 
-            paused = false;
+        <!--MainGame-->
+        <script src="js/MainScript.js"></script>
 
-			var camera, scene, renderer;
-			var geometry, material, mesh;
+        <div id="menu" class="centeredMenu"; style="width:50%; left:25%; background-color:burlywood; ">
+            <h1>I AM MENU LOOK AT ME</h1>
+            <button id="continueButton" style="margin:auto">Continue</button>
+            <script>
+                $(function () {
+                    $("#continueButton").click(function () {
+                        isInMenu = false;
+                        console.log("continue button clicked.");
+                        printMenuState();
+                        $("#menu").css("visibility", "hidden");
+                        $("#menuButton").css("visibility", "visible");
+                    });
+                });
+            </script>
+        </div>
 
-			rot = 0;
-
-			function init() {
-
-				renderer = new THREE.WebGLRenderer();
-				renderer.setSize( 1500, 800 );
-				document.body.appendChild( renderer.domElement );
-
-				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 10 );
-				camera.position.z = 0.45;
-
-				scene = new THREE.Scene();
-
-				geometry = new THREE.PlaneGeometry( 1, 1, 1, 1 );
-				material = new THREE.MeshBasicMaterial( { color: 0x44DD00 } );
-
-				mesh = new THREE.Mesh( geometry, material );
-				scene.add( mesh );
-			}
-
-			function animate() {
-			    if (!paused)
-			    {
-			        mesh.rotation.z = (rot += 0.005);
-			    }
-
-				requestAnimationFrame( animate );
-				renderer.render( scene, camera );
-
-			}
-
-			$(function ()
-			{
-			    $("#menuButton").click(function ()
-			    {
-			        paused = true;
-			        console.log("menu button clicked.");
-			        $("#menu").css("visibility", "visible");
-			        printMenuState("css");
-			        $("#menuButton").css("visibility", "hidden");
-			    });
-			});
-
-			init();
-			animate();
-
-			function printMenuState(s)
-			{
-			    menu = $("#menu");
-			    console.log("menu: " + menu + " dimensions: " + menu.css("left") + ", " + menu.css("top") + ", " + menu.width() + " X " + menu.height() + " visibility: " + menu.css("visibility") + " " + s);
-			}
-
-        </script>
-    </div>
-    <div id="menu" style="height:500px; width:500px; position:absolute; float:left; left:250px; top:100px; background-color:burlywood; visibility:hidden; z-index: 99">
-        <h1>I AM MENU LOOK AT ME</h1>
-        <button id="continueButton" style="margin:auto">Continue</button>
-        <script>
-			$(function ()
-			{
-			    $("#continueButton").click(function ()
-			    {
-			        paused = false;
-			        console.log("continue button clicked.");
-			        printMenuState();
-			        $("#menu").css("visibility", "hidden");
-			        $("#menuButton").css("visibility", "visible");
-			    });
-			});
-        </script>
+        <div id="minigame" class="centeredMenu minigame"></div>
     </div>
 </body>
 </html>
