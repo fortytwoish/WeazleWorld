@@ -50,7 +50,7 @@ $(function () {
         if (isInMenu)
             return;
         isInMenu = true;
-        minigameID = prompt("Which minigame? (1-2)");
+        minigameID = prompt("Which minigame? (1-3)");
         console.log("minigame button clicked.");
         $("#minigame").css("visibility", "visible");
         printMenuState("css");

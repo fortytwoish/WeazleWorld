@@ -59,15 +59,26 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="css\foo.css" />
+    <Content Include="html\minigame3.html" />
     <Content Include="html\minigame1.html" />
     <Content Include="html\minigame2.html" />
     <Content Include="Index.html" />
     <Content Include="js\jquery-2.2.4.min.js" />
     <Content Include="js\MainScript.js" />
     <Content Include="js\three.min.js" />
+    <Content Include="img\treeGame\tree1.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Web.config" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -1,0 +1,31 @@
+﻿
+<h1>I AM THE TREE GAME</h1>
+<button id="exitMinigameButton" style="margin:auto">Exit</button>
+<button id="startGameButton" style="margin:auto">START</button>
+
+<script>
+        $(function () {
+            $("#exitMinigameButton").click(function () {
+                isInMenu = false;
+                console.log("exitMinigame button clicked.");
+                parent.printMenuState();
+                $("#minigame").css("visibility", "hidden");
+                $("#minigameButton").css("visibility", "visible");
+            });
+
+            $( "#startGameButton" ).click(function() {
+              if ( $( ".trees" ).is( ":hidden" ) ) {
+                    for (i = 0; i < 10; i++) {
+                        text += "<img class="trees" id="tree" src="../img/treeGame/tree1.png" alt="" position="absolute" width="100" height="100" style="visibility:hidden">"
+                    }
+                    $("#treeContainer").html(text);
+                  } else {
+              
+                  }
+            });
+        });
+</script>
+
+    <div id="treeContainer" position="relative" top="300" left="500">
+       
+    </div>
