@@ -66,6 +66,7 @@
     <Content Include="Index.html" />
     <Content Include="js\jquery-2.2.4.min.js" />
     <Content Include="js\MainScript.js" />
+    <Content Include="js\MapGeneration.js" />
     <Content Include="js\three.min.js" />
     <Content Include="img\treeGame\tree1.png" />
   </ItemGroup>

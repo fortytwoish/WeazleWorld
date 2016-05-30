@@ -8,68 +8,69 @@
 
 <div id="treeBin"> </div>
 <script>
-        $(function () {
-            $("#exitMinigameButton").click(function () {
-                isInMenu = false;
-                console.log("exitMinigame button clicked.");
-                parent.printMenuState();
-                $("#minigame").css("visibility", "hidden");
-                $("#minigameButton").css("visibility", "visible");
-            });
-            var rand = 0; 
-            var top = 150;
-            var left = 150;
-            var zInd = 2;
-            var clickCount = 0;
-
-
-            $("#startGameButton").click(function () {
-                clickCount++;
-
-                $("#textArea").html("<input type='text' id='countedText'>");
-
-                if (clickCount % 2 == "1") {
-
-                   rand = Math.floor((Math.random() * 120) + 1);
-                
-                   for (var i = 0; i < rand; i++) {
-                        var randPic = Math.floor((Math.random() * 2) + 1);
-                        zInd++;
-                        var id = "tree" + zInd;
-                        $("#treeBin").append('<div class="treeLap">' +
-                            '<img src="../img/treeGame/tree' + randPic + '.png" id='+id+ '" height="50" width="50"></div>');
-                        var t = $("#tree" + zInd);
-                        t.css("z-index", zInd)
-
-                        $(".treeLap").css("display", "inline");
-                        console.log("Z-INDEX: " + zInd);
-                        t.animate({ 'top': '150px' }, 200);
-                    }
-
-                    }
-                else {
-                    $("#treeBin").empty();
-                }
-            });
-
-            $("#CountedButton").click(function () {
-                var count = $("#CountedText").val();
-                console.log("RANDOM: " + rand);
-                if (count == rand) {
-                    
-                    console.log("GEWONNEN");
-                    console.log("COUNT: " +count);
-                    console.log("RANDOM: " + rand);
-                }
-                else {
-                    console.log("LOOOSER");
-                    console.log("COUNT: " + count);
-                    console.log("RANDOM: " + rand);
-                }
-            })
+    $(function () {
+        $("#exitMinigameButton").click(function () {
+            isInMenu = false;
+            console.log("exitMinigame button clicked.");
+            parent.printMenuState();
+            $("#minigame").css("visibility", "hidden");
+            $("#minigameButton").css("visibility", "visible");
         });
+        var rand = 0;
+        var top = 150;
+        var left = 150;
+        var zInd = 2;
+        var clickCount = 0;
+
+        $("#startGameButton").click(function () {
+            clickCount++;
+
+            $("#textArea").html("<input type='text' id='countedText'>");
+
+            if (clickCount % 2 == "1") {
+
+                rand = Math.floor((Math.random() * 120) + 1);
+
+                for (var i = 0; i < rand; i++) {
+                    var randPic = Math.floor((Math.random() * 2) + 1);
+                    zInd++;
+                    var id = "tree" + zInd;
+                    $("#treeBin").append('<div class="treeLap">' +
+                        '<img src="../img/treeGame/tree' + randPic + '.png" id=' + id + '" height="50" width="50"></div>');
+                    var t = $("#tree" + zInd);
+                    t.css("z-index", zInd)
+
+                    $(".treeLap").css("display", "inline");
+                    console.log("Z-INDEX: " + zInd);
+                    t.animate({ 'top': '150px' }, 200);
+                }
+
+            }
+            else {
+                $("#treeBin").empty();
+            }
+        });
+
+        $("#CountedButton").click(function () {
+            var count = $("#CountedText").val();
+            console.log("RANDOM: " + rand);
+            if (count == rand) {
+
+                console.log("GEWONNEN");
+                console.log("COUNT: " + count);
+                console.log("RANDOM: " + rand);
+            }
+            else {
+                console.log("LOOOSER");
+                console.log("COUNT: " + count);
+                console.log("RANDOM: " + rand);
+            }
+        })
+    });
 </script>
 
 <!--In der Position überlappend...-->
-<!--<img src="../img/treeGame/tree2.png" id="tree2" height="50" width="50" position="relative" style="z-index: 29; top: 150px;" class="">-->
-<!--<img src="../img/treeGame/tree1.png" id="tree1" height="50" width="50" position="relative" style="z-index: 2; position: relative; top: 41.125px; left: 142px;">-->
+<div style="position:absolute; top:150px; left:0; background-color: red;" id="test">
+    <img src="../img/treeGame/tree2.png" id="tree2" height="50" width="50" position="relative" style="z-index: 29; top: 150px;" class="" />
+    <img src="../img/treeGame/tree1.png" id="tree1" height="50" width="50" position="relative" style="z-index: 2; position: relative; top: 41.125px; left: 142px;" />
+</div>
