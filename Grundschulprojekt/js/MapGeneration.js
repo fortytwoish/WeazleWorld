@@ -30,8 +30,8 @@ function GenerateIsland(size, waterLevel) {
         field[bottomRight.x][bottomRight.y] = 2;
 
     //force water in middle
-    var middle = mid(topLeft, topRight, bottomLeft, bottomRight);
-    field[middle.x][middle.y] = -100;
+    middle = mid(topLeft, topRight, bottomLeft, bottomRight);
+    field[middle.x][middle.y] = -dim / 2;
 
     if (debugOutput_everyField) debug_displayOnConsole();
     for (var i = 0; i < size; i++) {
@@ -51,10 +51,10 @@ function GenerateIsland(size, waterLevel) {
         for (var j = 0; j < dim; j++)
         {
             //Create artificial ground
-            //if (Math.abs(middle.x - i) <= 5 && Math.abs(middle.y - j) <= 5)
-            //    geometry.vertices[count++].z = waterLevel - 0.08;
-            //else
-                geometry.vertices[count++].z = field[i][j] / (size * 50);
+            if (Math.abs(middle.x - i) <= 10 && Math.abs(middle.y - j) <= 10)
+                geometry.vertices[count++].z = waterLevel - 0.06;
+            else
+                geometry.vertices[count++].z = field[i][j] / (size * 75);
         }
             
     return geometry;

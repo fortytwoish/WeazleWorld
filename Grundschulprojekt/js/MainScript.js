@@ -30,6 +30,10 @@ function init() {
     mesh.rotation.x = -45;
     waterMesh.rotation.x = -45;
 
+    testMesh = new THREE.Mesh(new THREE.CubeGeometry(0.02, 0.02, 0.02, 0.02), new THREE.MeshBasicMaterial({ color: 0xFF0000, wireframe: false }));
+    testMesh.position.set(0, 0, -0.04);
+    mesh.add(testMesh);
+
     scene.add(mesh);
     //mesh.add(new THREE.Mesh(new THREE.CubeGeometry(0.01, 0.01, 0.01, 0.01), new THREE.MeshBasicMaterial()));
     scene.add(waterMesh);
@@ -53,10 +57,10 @@ function animate() {
     //if (!isInMenu) {
         mesh.rotation.z = Date.now() / 2500;
         //camera.rotation.x = Math.sin(Date.now() / 1000) / 10;
-        waterMesh.position.z = Math.sin(Date.now() / 500) / 75;
+        waterMesh.position.z = waterLevel + Math.sin(Date.now() / 500) / 75;
         //waterMesh.rotation.z = rot;
     //}
-        camera.fov = (360 * (Math.sin(Date.now()/1000) / 10) + 50);
+        camera.fov = (40 * Math.sin(Date.now()/5000) + 50);
         camera.updateProjectionMatrix();
 
     requestAnimationFrame(animate);
@@ -97,15 +101,17 @@ $(function () {
     $("#zoomPlus").click(function () {
         //if (isInMenu)
         //    return;
-        camera.fov *= 0.95;
-        camera.updateProjectionMatrix();
+        //camera.fov *= 0.95;
+        //camera.updateProjectionMatrix();
+        waterLevel += 0.1;
     });
 
     $("#zoomMinus").click(function () {
         //if (isInMenu)
         //    return;
-        camera.fov *= 1.05;
-        camera.updateProjectionMatrix();
+        //camera.fov *= 1.05;
+        //camera.updateProjectionMatrix();
+        waterLevel -= 0.1;
 
     });
 
@@ -148,7 +154,7 @@ function onDocumentMouseDown(event) {
     mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
-    objects = [ mesh, waterMesh ];
+    objects = [ mesh, waterMesh, testMesh ];
     var intersects = raycaster.intersectObjects(objects);
 
     if (intersects.length > 0) {
