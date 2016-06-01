@@ -1,10 +1,9 @@
-﻿
-<h1 align="center" style="color:white">I AM THE TREE GAME</h1>
+﻿<h1 align="center" style="color:white">I AM THE TREE GAME</h1>
 
 <button id="exitMinigameButton" style="margin:auto">Exit</button>
 <button id="startGameButton" style="margin:auto">START</button>
 <button id="CountedButton" style="margin:auto">COUNTED</button>
-<input type="text" id="countedTrees" tabindex="1"/>
+<input type="text" id="countedTrees" tabindex="1" />
 <div id="treeBin" style="position:fixed; left:230px; width: 600px; height: 380px; background-color:#a35e09"></div>
 <script>
     $(function () {
@@ -30,30 +29,31 @@
 
             clickCount++;
 
-            //rand = Math.floor(Math.random() * 40) + 15
+            rand = Math.floor(Math.random() * 7) + 1;
+
+            var square = rand * rand;
 
             //maxArea
-            rand = 85;
+            //rand = 2;
 
             $("#textArea").html("<input type='text' id='countedText'>");
             shape = $("#countedTrees").val();
             console.log(shape);
+
+            var list = new Array();
             if (clickCount % 2 == "1") {
                 if (shape == "triangle") {
 
                     var randPic = Math.floor((Math.random() * 3) + 1);
-                    
+
                     var id = "tree" + zInd;
                     positioning += 30;
 
-                    for (var i = 0; i<5; i++)
-                    {
-                        for (var k=0; k<5-i; k++)
-                        {
+                    for (var i = 0; i < 5; i++) {
+                        for (var k = 0; k < 5 - i; k++) {
                             $("#treeBin").append('<img src="../img/treeGame/transparent.png" id="' + id + '" class="tree" height="50" width="50">');
                         }
-                        for (var j=0; j<i*2+1; j++)
-                        {
+                        for (var j = 0; j < i * 2 + 1; j++) {
                             var randPic = Math.floor((Math.random() * 3) + 1);
                             $("#treeBin").append('<img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree" height="50" width="50">');
                             var newLine = 230;
@@ -67,34 +67,36 @@
                 }
                 else if (shape == "") {
 
-                    for (var i = 0; i < rand; i++) {
-
+                    for (var i = 0; i < square; i++) {
                         var randPic = Math.floor((Math.random() * 3) + 1);
                         var id = "tree" + zInd;
-                        
-                        positioning += 60;
-                        $("#treeBin").append('<img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree" height="50" width="50">');
-                        var p = $("#"+id).position();
-                        if (positioning >= 750) {
-                            positioning = 230;
-                            top += 80;
-                        }
-                        if (top >= 500) {
-                            top = 120;
-
-                        }
-
-                        var leftN = p.left + positioning;
-
-                        //
-                        if(!first)
-                            $("#" + id).offset({ top: top, left: leftN });
-                        else{
-                            $("#" + id).offset({ top: 120, left: 230 });
-                            first = false;
-                        }
-                        $("#" + id).css("position", "absolute");
+                        zInd++;
+                        list[i] = '<img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree" height="50" width="50">';
                     }
+
+                    var counter = 0;
+                    $.each(list, function (index, value) {
+                        console.log("randomVal: "+ rand)
+                        
+                        if (counter == rand) {
+                            console.log("printing " + (12 - rand) + " transparents!" + " with counter " + counter);
+                            for (var i = 0; i < (12 -  rand) ; i++) {
+                                $("#treeBin").append('<img src="../img/treeGame/transparent.png" id="' + id + '" class="tree" height="50" width="50">');
+                            }
+                            counter = 0;
+                        }
+                        $("#treeBin").append(value);
+                        counter++;
+                    });
+
+                    //works with height....
+                    //$(".tree").each(function (index, value) {
+                    //    console.log("animating .tree");
+                    //    $(this).animate({
+                    //        "top": "+=2000"
+                    //    });
+                    //});
+                   
                 }
             }
             else {
@@ -105,7 +107,7 @@
             }
             /*$("#treeBin").append('<div class="treeLap">' +
                        '<img src="../img/treeGame/tree' + randPic + '.png" id=' + id + '" height="50" width="50" top="' + zInd + '"></div>');*/
-      });
+        });
 
         $("#CountedButton").click(function () {
             var count = $("#countedTrees").val();
@@ -124,10 +126,9 @@
     });
 
     function randBetween(low, high) {
-        var result = ((Math.random() * (high - low)) + low);
+        var result = ((Math.random() * (high - low)) + low).parseInt();
         //if (debugOutput_PointArithmetic) console.log("[randBetween] Random number between " + low + " and " + high + ": " + result);
         return result;
     }
 
 </script>
-
