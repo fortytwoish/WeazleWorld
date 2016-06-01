@@ -55,12 +55,12 @@ function init() {
 
 function animate() {
     //if (!isInMenu) {
-        mesh.rotation.z = Date.now() / 2500;
+        //mesh.rotation.z = Date.now() / 2500;
         //camera.rotation.x = Math.sin(Date.now() / 1000) / 10;
         waterMesh.position.z = waterLevel + Math.sin(Date.now() / 500) / 75;
         //waterMesh.rotation.z = rot;
     //}
-        camera.fov = (40 * Math.sin(Date.now()/5000) + 50);
+        //camera.fov = (40 * Math.sin(Date.now()/5000) + 50);
         camera.updateProjectionMatrix();
 
     requestAnimationFrame(animate);
