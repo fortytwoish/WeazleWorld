@@ -57,7 +57,7 @@
                             var randPic = Math.floor((Math.random() * 3) + 1);
                             $("#treeBin").append('<img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree" height="50" width="50">');
                             var newLine = 230;
-                            $("#" + id).offset({ top: newLine, left: leftN });
+                           // $("#" + id).offset({ top: newLine, left: leftN });
                             $("#" + id).css("position", "absolute");
                         }
                         for (var k = 0; k < 6 - i; k++) {
@@ -65,7 +65,7 @@
                         }
                     }
                 }
-                else if (shape == "") {
+                else{
 
                     for (var i = 0; i < square; i++) {
                         var randPic = Math.floor((Math.random() * 3) + 1);
@@ -112,12 +112,13 @@
         $("#CountedButton").click(function () {
             var count = $("#countedTrees").val();
             console.log("RANDOM: " + rand);
-            if (count == rand) {
+            if (count == rand*rand) {
                 alert("GEWONNEN");
                 console.log("COUNT: " + count);
                 console.log("RANDOM: " + rand);
             }
             else {
+                alert("VERLOREN");
                 console.log("LOOOSER");
                 console.log("COUNT: " + count);
                 console.log("RANDOM: " + rand);
