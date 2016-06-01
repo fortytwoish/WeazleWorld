@@ -3,7 +3,7 @@ const ZOOM_BUTTON_INCREMENT_PERCENT = 20 / 100;
 const ZOOM_DEFAULT_VALUE = 75;
 const ROTATION_BUTTON_INCREMENT_DEGREES = 30;
 const WATERLEVEL = 0;
-const WINDOW_RESOLUTION = [880, 540];
+const RENDER_RESOLUTION = [880, 540];
 const WINDOW_CLEAR_COLOR = 0x0066BB;
 const TERRAIN_RESOLUTION = 8;
 
@@ -18,7 +18,8 @@ var geometry, material, mesh;
 function init() {
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(WINDOW_RESOLUTION[0], WINDOW_RESOLUTION[1]);
+    renderer.setSize(RENDER_RESOLUTION[0], RENDER_RESOLUTION[1]);
+    $("#mainGame").css({ width: RENDER_RESOLUTION[0] + "px", height: RENDER_RESOLUTION[1] + "px" });
     renderer.setClearColor(WINDOW_CLEAR_COLOR);
 
     //TODO REPLACE WITH JQUERY CALL
