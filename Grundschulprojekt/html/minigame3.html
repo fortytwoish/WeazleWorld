@@ -1,11 +1,11 @@
 ﻿
-<h1>I AM THE TREE GAME</h1>
+<h1 align="center" style="color:white">I AM THE TREE GAME</h1>
 
 <button id="exitMinigameButton" style="margin:auto">Exit</button>
 <button id="startGameButton" style="margin:auto">START</button>
 <button id="CountedButton" style="margin:auto">COUNTED</button>
-<input type="text" id="countedTrees" />
-<div id="treeBin" style="position:fixed; left:230px; width: 600px; height: 400px; background-color:lightblue"></div>
+<input type="text" id="countedTrees" tabindex="1"/>
+<div id="treeBin" style="position:fixed; left:230px; width: 600px; height: 380px; background-color:#a35e09"></div>
 <script>
     $(function () {
         $("#exitMinigameButton").click(function () {
@@ -24,42 +24,77 @@
         var positioning = 230;
         var top = 120;
         var first = true;
-
+        var shape = "triangle";
 
         $("#startGameButton").click(function () {
 
             clickCount++;
 
-            rand = Math.floor(Math.random() * 40) + 1  
+            //rand = Math.floor(Math.random() * 40) + 15
+
+            //maxArea
+            rand = 85;
+
             $("#textArea").html("<input type='text' id='countedText'>");
-            
+            shape = $("#countedTrees").val();
+            console.log(shape);
             if (clickCount % 2 == "1") {
-                for (var i = 0; i < rand; i++) {
+                if (shape == "triangle") {
 
                     var randPic = Math.floor((Math.random() * 3) + 1);
+                    
                     var id = "tree" + zInd;
+                    positioning += 30;
 
-                    zInd++;
-                    positioning += 60;
-                    $("#treeBin").append('<img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree" height="100" width="100">');
-                    var p = $("#"+id).position();
-                    if (positioning >= 750) {
-                        positioning = 230;
-                        top += 80;
+                    for (var i = 0; i<5; i++)
+                    {
+                        for (var k=0; k<5-i; k++)
+                        {
+                            $("#treeBin").append('<img src="../img/treeGame/transparent.png" id="' + id + '" class="tree" height="50" width="50">');
+                        }
+                        for (var j=0; j<i*2+1; j++)
+                        {
+                            var randPic = Math.floor((Math.random() * 3) + 1);
+                            $("#treeBin").append('<img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree" height="50" width="50">');
+                            var newLine = 230;
+                            $("#" + id).offset({ top: newLine, left: leftN });
+                            $("#" + id).css("position", "absolute");
+                        }
+                        for (var k = 0; k < 6 - i; k++) {
+                            $("#treeBin").append('<img src="../img/treeGame/transparent.png" id="' + id + '" class="tree" height="50" width="50">');
+                        }
                     }
-                    if (top >= 500) {
-                        top = 120;
+                }
+                else if (shape == "") {
 
+                    for (var i = 0; i < rand; i++) {
+
+                        var randPic = Math.floor((Math.random() * 3) + 1);
+                        var id = "tree" + zInd;
+                        
+                        positioning += 60;
+                        $("#treeBin").append('<img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree" height="50" width="50">');
+                        var p = $("#"+id).position();
+                        if (positioning >= 750) {
+                            positioning = 230;
+                            top += 80;
+                        }
+                        if (top >= 500) {
+                            top = 120;
+
+                        }
+
+                        var leftN = p.left + positioning;
+
+                        //
+                        if(!first)
+                            $("#" + id).offset({ top: top, left: leftN });
+                        else{
+                            $("#" + id).offset({ top: 120, left: 230 });
+                            first = false;
+                        }
+                        $("#" + id).css("position", "absolute");
                     }
-                    var leftN = p.left + positioning;
-                    if(!first)
-                        $("#" + id).offset({ top: top, left: leftN });
-                    else{
-                        $("#" + id).offset({ top: 120, left: 250 });
-                        first = false;
-                    }
-                    $("#" + id).css("position", "absolute");
-                    console.log($("#" + id).offset().left + " set to" + leftN + "with positioning " + positioning);
                 }
             }
             else {

@@ -62,6 +62,7 @@
     <Content Include="html\minigame3.html" />
     <Content Include="html\minigame1.html" />
     <Content Include="html\minigame2.html" />
+    <Content Include="img\treeGame\transparent.png" />
     <Content Include="img\treeGame\tree2.png" />
     <Content Include="img\treeGame\tree3.png" />
     <Content Include="img\treeGame\woods.jpg" />
