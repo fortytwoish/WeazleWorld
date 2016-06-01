@@ -1,0 +1,38 @@
+﻿*{
+    margin:0;
+}
+
+.centeredMenu
+{
+    height: 100%;
+    position: absolute;
+    top: 0;
+    opacity: 0.75;
+    z-index: 99;
+    background-color: gray;
+}
+
+.minigame
+{
+    width: 100%;
+    visibility: hidden;
+    z-index: 98;
+}
+
+#navigationButtonArea
+{
+    position:absolute;
+    right:20px;
+    top:20px;
+}
+
+#navigationButtonArea button
+{
+    height: 30px;
+    width: 30px;
+}
+
+.navAreaSpacer
+{
+    height: 30px;
+}
