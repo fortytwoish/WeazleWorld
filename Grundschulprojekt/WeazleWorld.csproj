@@ -58,6 +58,8 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="audio\click.mp3" />
+    <Content Include="audio\theme.mp3" />
     <Content Include="css\foo.css" />
     <Content Include="css\minigame.css" />
     <Content Include="html\minigame3.html" />
