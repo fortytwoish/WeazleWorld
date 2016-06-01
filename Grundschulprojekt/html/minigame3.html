@@ -32,19 +32,19 @@
                 rand = Math.floor((Math.random() * 120) + 1);
 
                 for (var i = 0; i < rand; i++) {
-                    var randPic = Math.floor((Math.random() * 2) + 1);
+                    var randPic = Math.floor((Math.random() * 3) + 1);
                     zInd++;
                     var id = "tree" + zInd;
                     $("#treeBin").append('<div class="treeLap">' +
                         '<img src="../img/treeGame/tree' + randPic + '.png" id=' + id + '" height="50" width="50"></div>');
                     var t = $("#tree" + zInd);
                     t.css("z-index", zInd)
+                    t.css("position", "absolute");
 
                     $(".treeLap").css("display", "inline");
-                    console.log("Z-INDEX: " + zInd);
+                    //console.log("Z-INDEX: " + zInd);
                     t.animate({ 'top': '150px' }, 200);
                 }
-
             }
             else {
                 $("#treeBin").empty();
@@ -69,8 +69,9 @@
     });
 </script>
 
-<!--In der Position überlappend...-->
+<!--In der Position überlappend...
 <div style="position:absolute; top:150px; left:0; background-color: red;" id="test">
     <img src="../img/treeGame/tree2.png" id="tree2" height="50" width="50" position="relative" style="z-index: 29; top: 150px;" class="" />
     <img src="../img/treeGame/tree1.png" id="tree1" height="50" width="50" position="relative" style="z-index: 2; position: relative; top: 41.125px; left: 142px;" />
 </div>
+-->
