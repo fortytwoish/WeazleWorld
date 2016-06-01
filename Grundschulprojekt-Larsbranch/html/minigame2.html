@@ -1,0 +1,15 @@
+﻿<h1>I AM MINIGAME 2 LOOK AT ME</h1>
+<button id="exitMinigameButton" style="margin:auto">Exit</button>
+<script>
+        $(function () {
+            $("#exitMinigameButton").click(function () {
+                console.log("paused before: " + isInMenu);
+                isInMenu = false;
+                console.log("paused after: " + isInMenu);
+                console.log("exitMinigame button clicked.");
+                parent.printMenuState();
+                $("#minigame").css("visibility", "hidden");
+                $("#minigameButton").css("visibility", "visible");
+            });
+        });
+</script>

@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Weazle World</title>
+    <meta charset="utf-8" />
+    <script src="js/jquery-2.2.4.min.js"></script>
+    <script src="js/three.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/foo.css"> 
+</head>
+<body>
+    <div id="mainGame" style="position:absolute; z-index: 98; width:880px; height:540px">
+        
+        <button id="menuButton">Menu</button>
+        <button id="minigameButton">Minigame</button>
+        <button id="zoomPlus" >+</button>
+        <button id="zoomMinus">-</button>
+
+        <!--MainGame-->
+        <script src="js/MapGeneration.js"></script>
+        <script src="js/MainScript.js"></script>
+
+        <!--Menu centered horizontally at half width-->
+        <div id="menu" class="centeredMenu"; style="width:50%; left:25%;">
+            <h1>MENU</h1>
+            <button id="continueButton" style="margin:auto">Continue</button>
+        </div>
+
+        <!--Placeholder div for minigame content-->
+        <div id="minigame" position="relative" class="centeredMenu minigame"></div>
+    </div>
+</body>
+</html>

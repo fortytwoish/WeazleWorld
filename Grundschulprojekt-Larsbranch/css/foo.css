@@ -1,0 +1,15 @@
+﻿.centeredMenu
+{
+    height: 100%;
+    position: absolute;
+    top: 0;
+    opacity: 0.75;
+    z-index: 99;
+}
+
+.minigame
+{
+    width: 100%;
+    visibility: hidden;
+    z-index: 98;
+}
