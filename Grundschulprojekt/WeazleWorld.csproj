@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="css\foo.css" />
+    <Content Include="css\minigame.css" />
     <Content Include="html\minigame3.html" />
     <Content Include="html\minigame1.html" />
     <Content Include="html\minigame2.html" />

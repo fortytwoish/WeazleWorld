@@ -9,10 +9,10 @@ var waterLevel = 0;
 function init() {
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(880, 540);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x0066BB);
     //renderer.setPixelRatio(device.pixelRatio);
-    document.body.appendChild(renderer.domElement);
+    $("#main-game").append(renderer.domElement);
 
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10);
     //camera = new THREE.OrthographicCamera(window.innerWidth / -scale, window.innerWidth / scale, window.innerHeight / scale, window.innerHeight / -scale, -1, 1000);
