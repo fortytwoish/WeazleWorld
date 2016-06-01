@@ -4,6 +4,7 @@
 <button id="exitMinigameButton" style="margin:auto">Exit</button>
 <button id="startGameButton" style="margin:auto">START</button>
 <button id="CountedButton" style="margin:auto">COUNTED</button>
+<input type="text" id="countedTrees" />
 <div id="treeBin" style="position:fixed; left:230px; width: 600px; height: 400px; background-color:lightblue"></div>
 <script>
     $(function () {
@@ -20,15 +21,16 @@
         var rand = 0;
         var clickCount = 0;
         var zInd = 0;
-        var positioning = 250;
+        var positioning = 230;
         var top = 120;
         var first = true;
+
 
         $("#startGameButton").click(function () {
 
             clickCount++;
 
-            var rand = Math.floor(Math.random() * 40) + 1  
+            rand = Math.floor(Math.random() * 40) + 1  
             $("#textArea").html("<input type='text' id='countedText'>");
             
             if (clickCount % 2 == "1") {
@@ -71,10 +73,10 @@
       });
 
         $("#CountedButton").click(function () {
-            var count = $("#CountedText").val();
+            var count = $("#countedTrees").val();
             console.log("RANDOM: " + rand);
             if (count == rand) {
-                console.log("GEWONNEN");
+                alert("GEWONNEN");
                 console.log("COUNT: " + count);
                 console.log("RANDOM: " + rand);
             }
