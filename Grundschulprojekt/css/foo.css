@@ -1,19 +1,10 @@
-﻿*{
-    margin:0;
-}
-
-.centeredMenu
+﻿#minigame
 {
-    height: 100%;
     position: absolute;
+    width: 80%;
+    height: 80%;
     top: 0;
-    opacity: 0.75;
-    background-color: gray;
-}
-
-.minigame
-{
-    width: 100%;
+    left: 0;
     visibility: hidden;
 }
 

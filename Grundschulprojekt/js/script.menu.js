@@ -1,12 +1,14 @@
+
 /*
 *   CONST
 */
 
-var appendTo = "#menu";
-var debug = true;
-var click = new Audio("audio/click.mp3");
-var left = (($(document).width() / 2) - ($(appendTo).width() / 2));
-var top = ($(document).height() / 2) - ($(appendTo).height() / 2);
+const size = [300, 400];
+const appendTo = "#menu";
+const debug = true;
+const click = new Audio("audio/click.mp3");
+const posX = ((window.innerWidth / 2) - (size[0] / 2));
+const posY = ((window.innerHeight / 2) - (size[1] / 2));
 
 /*
 *   ITEM
@@ -24,7 +26,6 @@ var item = function(key, value)
 
 var mainMenu = new Array();
 mainMenu.push(new item("Start", "button"));
-mainMenu.push(new item("MinigameTest", "button"));
 mainMenu.push(new item("Optionen", "button"));
 
 var options = new Array();
@@ -36,6 +37,11 @@ options.push(new item("Hauptmenü", "button"));
 /*
 *   FUNCTIONS
 */
+
+function initMenu()
+{
+    drawMenu(mainMenu);
+}
 
 var drawMenu = function(menuArr)
 {
@@ -71,20 +77,27 @@ var drawMenu = function(menuArr)
     }
 }
 
+/*
+*   BUTTON FUNCTIONS
+*/
+
 var action = function(button)
 {
     switch(button)
     {
+        case "Start":
+            isInMenu = false;
+            printMenuState();
+            $("#menu").css("visibility", "hidden");
+            $("#menuButton").css("visibility", "visible");
+            debug ? console.log("action(" + button + ") was performed.") : false;
+            break;
         case "Optionen":
             drawMenu(options);
             debug ? console.log("action(" + button + ") was performed.") : false;
             break;
         case "Hauptmenü":
             drawMenu(mainMenu);
-            debug ? console.log("action(" + button + ") was performed.") : false;
-            break;
-        case "MinigameTest":
-            changeGameState(3);
             debug ? console.log("action(" + button + ") was performed.") : false;
             break;
         default:
@@ -99,5 +112,12 @@ var action = function(button)
 
 $(function(){
     drawMenu(mainMenu);
-    $(appendTo).css({"left": left, "top": top});
+    $(appendTo).css(
+        {
+            "width": size[0],
+            "height": size[1],
+            "left": posX,
+            "top": posY
+        }
+    );
 });
