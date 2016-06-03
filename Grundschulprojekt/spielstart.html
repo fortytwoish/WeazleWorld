@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="utf-8">
+   <!-- <meta name="viewport" content="width=device-width"> -->
+   <title>b.i.b. International College - Lernspiele für die Grundschule</title>
+   <style type="text/css">
+    html, body {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+    
+		body{
+			margin: 0;
+			/*background-image: url(wiese.gif), linear-gradient(#81caf0 70%, #7bbd52 35%);
+      background-position: center center;
+      background-repeat: repeat-x;*/
+      background-color: #81caf0; 
+		}
+    
+    #rahmen {
+      background-image: url(img/rahmen.gif);
+      position: absolute;
+			top: 50%;
+			left: 50%;
+      margin-left: -640px;
+      margin-top: -400px;
+      width: 1280px;
+      height: 800px; 
+    }
+		
+		iframe {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			height: 520px;
+			width: 880px;
+			margin-top: -228px; 
+			margin-left: -408px;  /* Haelfte von Breite plus padding */
+			overflow:hidden;
+			border: none;
+		}
+    
+    @media (max-width: 1024px) {
+      body {
+			background-image: url(img/rahmen_klein.gif);
+			background-repeat: no-repeat;
+      background-position: bottom right;
+			background-attachment: fixed;
+      }
+    
+			#rahmen {
+				background-image: none;
+        margin: 0;
+        bottom: 0px;
+        right: 0px;
+        top: auto;
+        left: auto;
+			}
+      
+      iframe {
+        margin: 0;
+        bottom: 20px;
+        right: 20px;
+        top: auto;
+        left: auto;
+      }
+    }
+  </style>
+</head>
+                                                             
+<body>  
+  <div id="rahmen">
+      <iframe src="Index.html" scrolling="no"></iframe> 
+  </div>
+</body>
+</html>

@@ -67,12 +67,17 @@
     <Content Include="html\minigame3.html" />
     <Content Include="html\minigame1.html" />
     <Content Include="html\minigame2.html" />
+    <Content Include="img\head.png" />
+    <Content Include="img\logo.png" />
+    <Content Include="img\rahmen.gif" />
+    <Content Include="img\rahmen_klein.gif" />
     <Content Include="img\treeGame\transparent.png" />
     <Content Include="img\treeGame\tree2.png" />
     <Content Include="img\treeGame\tree3.png" />
     <Content Include="img\treeGame\woods.jpg" />
     <Content Include="Index.html" />
-    <Content Include="inFrame.html" />
+    <Content Include="js\fw\jquery.min.js" />
+    <Content Include="js\fw\three.min.js" />
     <Content Include="js\MainScript.js" />
     <Content Include="js\MapGeneration.js" />
     <Content Include="img\treeGame\tree1.png" />
@@ -85,6 +90,7 @@
     <Content Include="js\script.splashScreen.js" />
     <Content Include="Resources\jquery-2.2.4.min.js" />
     <Content Include="Resources\three.min.js" />
+    <Content Include="spielstart.html" />
     <Content Include="Web.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
