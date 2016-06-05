@@ -1,4 +1,4 @@
-@keyframes test{
+@keyframes text{
     0%{
        opacity: 0;
     }
@@ -10,16 +10,18 @@
     }
 }
 #splashScreen h1 {
-    -moz-animation-name: test;
-    -o-animation-name: test;
-    -webkit-animation-name: test;
-    animation-name: test;
-    -moz-animation-iteration-count: infinite;
-    -o-animation-iteration-count: infinite;
-    -webkit-animation-iteration-count: infinite;
+    animation-name: text;
     animation-iteration-count: infinite;
-    -moz-animation-duration: 1s;
-    -o-animation-duration: 1s;
-    -webkit-animation-duration: 1s;
     animation-duration: 1s;
+    text-align: center;
+    font-size: 2.5em;
+}
+#splashScreen{
+    position: absolute;
+    width: 400px;
+    height: 500px;
+}
+#splashScreen img{
+    width: 100%;
+    height: auto;
 }

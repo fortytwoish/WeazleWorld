@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <script type="text/javascript" src="Resources/jquery-2.2.4.min.js"></script>
     <script type="text/javascript" src="Resources/three.min.js"></script>
+    <script type="text/javascript" src="js/script.splashScreen.js"></script>
     <script type="text/javascript" src="js/script.menu.js"></script>
     <link rel="icon" type="image/png" href="img/head.png">
     <link type="text/css" rel="stylesheet" href="css/reset.css">
@@ -58,16 +59,16 @@
         <!--Placeholder div for minigame content-->
         <div id="minigame" position="relative" class="centeredMenu minigame blockRaycast" height="100%" width="100%"></div>
 
+        <!--Menu centered horizontally at half width-->
+        <div id="menu">
+            <h1>MENU</h1>
+            <button id="continueButton" style="margin:auto">Continue</button>
+        </div>
+
     </div>
 
     <!-- SplashScreen placeholder -->
     <div id="splashScreen"></div>
-
-    <!--Menu centered horizontally at half width-->
-    <div id="menu" class="centeredMenu blockRaycast">
-        <h1>MENU</h1>
-        <button id="continueButton" style="margin:auto">Continue</button>
-    </div>
 
 </body>
 </html>

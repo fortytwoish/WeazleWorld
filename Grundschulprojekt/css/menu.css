@@ -1,8 +1,10 @@
-#menu{
+#menu {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     position: absolute;
     background-color: rgba(171,171,171,0.95);
-    z-index: 30;
+    vertical-align: middle;
+    padding: 20px;
+    box-sizing: border-box;
 }
 #menu input{
     display: block;
@@ -10,14 +12,19 @@
     width: 70%;
     border: none;
     font-size: 20pt;
-    border-radius: 5px;
-    margin: 15px auto;
+    margin: 20px auto;
     color: #FFF;
+    padding: 5px;
 }
-#menu h1 {
+#menu h1{
     display: block;
     text-align: center;
     margin: 10px auto;
     font-size: 20pt;
     color: #FFF;
+}
+.menuAnimate{
+    position: relative;
+    opacity: 0;
+    bottom: 10px;
 }

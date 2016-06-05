@@ -48,11 +48,11 @@ var drawMenu = function(menuArr)
     $(appendTo + " *").remove();
     for(i = 0; i < menuArr.length; i++)
     {
-        
+
         if(menuArr[i].value == "range")
         {
-			$(appendTo).append('<h1>' + menuArr[i].key + '</h1>');
-			$(appendTo).append('<input type="' + menuArr[i].value + '" value="' + menuArr[i].key + '">');
+            $(appendTo).append('<h1 class="menuAnimate">' + menuArr[i].key + '</h1>');
+            $(appendTo).append('<input class="menuAnimate" type="' + menuArr[i].value + '" value="' + menuArr[i].key + '">');
             debug ? console.log("Menu added '" + menuArr[i].key + "' slider.") : false;
             $("[value=" + menuArr[i].key + "]").on("change", function(e){
                 var entryName = $(this).attr("value");
@@ -64,7 +64,7 @@ var drawMenu = function(menuArr)
         }
         else
         {
-			$(appendTo).append('<input type="' + menuArr[i].value + '" value="' + menuArr[i].key + '">');
+            $(appendTo).append('<input class="menuAnimate" type="' + menuArr[i].value + '" value="' + menuArr[i].key + '">');
             debug ? console.log("Menu added '" + menuArr[i].key + "' entry.") : false;
             $("[value=" + menuArr[i].key + "]").on("click", function(e){
                 var entryName = $(this).attr("value");
@@ -75,6 +75,12 @@ var drawMenu = function(menuArr)
             debug ? console.log("Eventhandler added to '" + menuArr[i].key + "' entry.") : false;
         }
     }
+    $(appendTo + " *").animate(
+    {
+        "opacity": "1",
+        "bottom": "0"
+    },
+    500);
 }
 
 /*
@@ -111,7 +117,6 @@ var action = function(button)
 */
 
 $(function(){
-    drawMenu(mainMenu);
     $(appendTo).css(
         {
             "width": size[0],
