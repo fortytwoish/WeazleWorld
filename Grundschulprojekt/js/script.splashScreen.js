@@ -13,20 +13,20 @@ $(function () {
 
     $(appendToo).css({"left": posX, "top": posY});
 
-    $("body").on("click", function(e){
-        $("body").off("click");
-        $("body").off("keyup");
-        $(appendToo + " *").remove();
+    $(appendToo).on("click", function (e) {
+        $(appendToo).off("click");
+        $(appendToo).off("keyup");
+        $(appendToo).css("display", "none");
         $(mainGame).css("display", "");
         initMenu();
     });
-    $("body").on("keyup", function(e){
-        $("body").off("click");
-        $("body").off("keyup");
-        $(appendToo + " *").remove();
+    $(appendToo).on("keyup", function (e) {
+        $(appendToo).off("click");
+        $(appendToo).off("keyup");
+        $(appendToo).css("display", "none");
         $(mainGame).css("display", "");
         initMenu();
     });
 
-    $("body") - focus();
+    $(appendToo).focus();
 });

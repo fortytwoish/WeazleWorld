@@ -116,7 +116,7 @@ var action = function(button)
 *   INIT
 */
 
-$(function(){
+$(function () {
     $(appendTo).css(
         {
             "width": size[0],
