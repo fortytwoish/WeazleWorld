@@ -1,18 +1,34 @@
-﻿<h1 align="center" style="color:white">I AM THE TREE GAME</h1>
+﻿<h1 align="center" style="background-color:#00ff21; color:#000000">WELCOME TO THE TREEGAME, PLS select START and COUNT THOSE FUCKIN TREES</h1>
 
-
-<div id="buttonArea" style="margin-top:10px">
-    <button id="exitMinigameButton" style="margin:3px">Exit</button>
-    <button id="startGameButton" style="margin:3px">START</button>
-    <button id="CountedButton" style="margin:3px">COUNTED</button>
-    <input type="text" id="countedTrees" tabindex="1" style="margin:3px" />
-</div>
+<nav id="buttonArea" style="margin-top:10px;">
+    <button id="startGameButton" style="margin:0 55px; display:inline-block;width:200px; height:30px; ">START</button>
+    <button id="exitMinigameButton" style="margin:0 55px;display:inline-block; float:right; width:200px; height:30px;">Exit</button>
+</nav>
 
 <div id="treeBin" style="position:absolute; left:300px; width: 380px; height: 380px; 
-background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-left:5%; border-radius: 15px 50px 5px 30px; opacity:0.8"></div>
+background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-left:5%; border-radius: 15px 50px 5px 30px; opacity:0.8; "></div>
 
+<div id="counterDiv" style="width:250px; margin:2% 30px 30px 30px; border-radius: 15px 50px 5px 30px; opacity:0.8; background-color:#bf8338;">
+    <input type="number" id="1treeCountBox" style="width:50px; opacity:0.8;  margin:4% 20px 20px 20px; text-align:center; vertical-align:text-bottom">
+    <img src="../img/treeGame/tree1.png" style="height: 100px; width:100px" />
+
+    <input type="number" id="2treeCountBox" style="width:50px; opacity:0.8;  margin:4% 20px 20px 20px; text-align:center; vertical-align:text-bottom">
+    <img src="../img/treeGame/tree2.png" style="height: 100px; width:100px" />
+
+    <input type="number" id="3treeCountBox" style="width:50px; opacity:0.8;  margin:4% 20px 20px 20px; text-align:center; vertical-align:text-bottom">
+    <img src="../img/treeGame/tree3.png" style="height: 100px; width:100px" />
+</div>
+
+<button id="CountedButton" style="margin:10px 55px; width:200px; height:30px; display:inline-block;">COUNTED</button>
+
+<style>
+     input[type=number]::-webkit-inner-spin-button {
+        opacity: 1;
+    }    
+</style>
 
 <script>
+
     var imageUrl = "../img/treeGame/woods.jpg";
     $("#minigame").css('background-image', 'url(' + imageUrl + ')');
     var rand = 0;
@@ -24,10 +40,7 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
     var shape = "triangle";
 
     $("#startGameButton").click(function () {
-
-
-
-
+        
         clickCount++;
 
         rand = Math.floor(Math.random() * 5) + 3;
@@ -87,7 +100,7 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
                     counter++;
                 });
 
-                var randOffset = Math.floor((Math.random() * 10) + 1);
+                var randOffset = Math.floor((Math.random() * 20) + 1);
 
                 // works with height....
                 $(".tree").each(function (index, value) {
@@ -99,9 +112,9 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
 
                 $(".tree").click(function () {
                     degree = 100;
-                    alert("ANIMATING!!!!! ID: " + $(this).prop("id") + " VALUE IS " +  'transform: rotate(' + degree + 'deg)');
-
-                    $(this).rotate(degree, $(this).prop("id"));
+                    //alert("ANIMATING!!!!! ID: " + $(this).prop("id") + " VALUE IS " +  'transform: rotate(' + degree + 'deg)');
+                    // alert($(this).prop("id"));
+                    rotate(degree, $(this));
                 });
 
             }
@@ -111,32 +124,23 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
             top = 120;
             positioning = 250;
             first = true;
-
-
         }
-        /*$("#treeBin").append('<div class="treeLap">' +
-                    '<img src="../img/treeGame/tree' + randPic + '.png" id=' + id + '" height="50" width="50" top="' + zInd + '"></div>');*/
-
-
-
-
-
-
-
 
         $("#CountedButton").click(function () {
-            var count = $("#countedTrees").val();
-            console.log("RANDOM: " + rand);
-            if (count == rand * rand) {
-                alert("GEWONNEN");
-                console.log("COUNT: " + count);
-                console.log("RANDOM: " + rand);
+            
+            var t1 = $("img[src='../img/treeGame/tree1.png']").length - 1;
+            var t2 = $("img[src='../img/treeGame/tree2.png']").length - 1;
+            var t3 = $("img[src='../img/treeGame/tree3.png']").length - 1;
+            console.log($("#1treeCountBox").val());
+             
+
+            if ($("#3treeCountBox").val() == t3 && $("#2treeCountBox").val() == t2 && $("#1treeCountBox").val() == t1)
+            {         
+                alert("GEWONNEN.. JANZ DOLL du spast... nix bessers zu tun?!");
             }
             else {
-                alert("VERLOREN");
-                console.log("LOOOSER");
-                console.log("COUNT: " + count);
-                console.log("RANDOM: " + rand);
+                alert("VERLOREN.. SPAST... es wäre: Tree1 " + t1 + " Tree2 " + t2 + " Tree3 " + t3);
+                console.log("LOOOSER");      
             }
         });
     });
@@ -156,10 +160,14 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
         return result;
     };
 
-    function rotate(degree,tree) {
-        $(tree).animate({
-            'transform': 'rotate(' + degree + 'deg)'
-        }, 5000);
+    function rotate(degree, tree) {
+        //alert("#" + tree);
+        //$("#" + tree).css("position", "absolute");
+        tree.animate({
+           'height':'8s0px',
+           'transform': 'rotate(100deg)',
+           'zoom': '1'
+        }, 5000)
     };
 
 
