@@ -8,8 +8,8 @@ $(function () {
     $(appendToo).append('<img src="' + logo + '" alt="Das Logo">');
     $(appendToo).append('<h1>Press Key or Mouse</h1>');
 
-    var posX = ((window.innerWidth / 2) - ($(appendToo).width() / 2));
-    var posY = ((window.innerHeight / 2) - ($(appendToo).height() / 2));
+    var posX = (($(appendTo).parent().width() / 2) - ($(appendToo).width() / 2));
+    var posY = (($(appendTo).parent().height() / 2) - ($(appendToo).height() / 2));
 
     $(appendToo).css({"left": posX, "top": posY});
 

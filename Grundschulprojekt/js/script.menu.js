@@ -3,12 +3,10 @@
 *   CONST
 */
 
-const size = [300, 400];
-const appendTo = "#menu";
-const debug = true;
-const click = new Audio("audio/click.mp3");
-const posX = ((window.innerWidth / 2) - (size[0] / 2));
-const posY = ((window.innerHeight / 2) - (size[1] / 2));
+var size = [300, 400];
+var appendTo = "#menu";
+var debug = true;
+var click = new Audio("audio/click.mp3");
 
 /*
 *   ITEM
@@ -117,6 +115,8 @@ var action = function(button)
 */
 
 $(function () {
+    var posX = (($(appendTo).parent().width() / 2) - (size[0] / 2));
+    var posY = (($(appendTo).parent().height() / 2) - (size[1] / 2));
     $(appendTo).css(
         {
             "width": size[0],
