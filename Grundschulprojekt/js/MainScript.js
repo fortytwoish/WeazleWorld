@@ -15,6 +15,8 @@ preventRaycastOnce = false;
 var camera, scene, renderer;
 var geometry, material, mesh;
 
+var cam_rotation; // in radial
+
 function init() {
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -22,12 +24,23 @@ function init() {
     $("#mainGame").css({ width: RENDER_RESOLUTION[0] + "px", height: RENDER_RESOLUTION[1] + "px" });
     renderer.setClearColor(WINDOW_CLEAR_COLOR);
 
+
     //TODO REPLACE WITH JQUERY CALL
     document.body.appendChild(renderer.domElement);
+
+    //camera rotation
+    camera.position.y = 1;
+    camera.position.x = 0;
+    cam_rotation = 0;
+
 
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10);
     //camera = new THREE.OrthographicCamera(window.innerWidth / -scale, window.innerWidth / scale, window.innerHeight / scale, window.innerHeight / -scale, -1, 1000);
     camera.position.z = 1;
+
+    camera.position.y = 1;
+    camera.position.x = 0;
+    cam_rotation = 0;
 
     scene = new THREE.Scene();
     geometry = GenerateIsland(TERRAIN_RESOLUTION, WATERLEVEL);
@@ -35,11 +48,11 @@ function init() {
     waterGeom = new THREE.PlaneGeometry(32, 16, 1, 1);
     waterMat = new THREE.MeshBasicMaterial({ color: 0x0055AA, transparent: true, opacity: 0.5 });
     mesh = new THREE.Mesh(geometry, material);
-    mesh.position.y = 0.1;
+
     waterMesh = new THREE.Mesh(waterGeom, waterMat);
     waterMesh.position.z = WATERLEVEL;
-    mesh.rotation.x = -45;
-    waterMesh.rotation.x = -45;
+
+    updateCameraRotation();
 
     scene.add(mesh);
     //mesh.add(new THREE.Mesh(new THREE.CubeGeometry(0.01, 0.01, 0.01, 0.01), new THREE.MeshBasicMaterial()));
@@ -87,21 +100,13 @@ $(function () {
     });
 
     $("#moveL").click(function () {
-        $({ dummyVal: mesh.rotation.z }).animate({ dummyVal: mesh.rotation.z + degreeToRad(ROTATION_BUTTON_INCREMENT_DEGREES) }, {
-            duration: 500,
-            step: function (now) {
-                mesh.rotation.z = now;
-            }
-        });
+              cam_rotation = cam_rotation + 2 * Math.PI/(360/ROTATION_BUTTON_INCREMENT_DEGREES);
+              updateCameraRotation();
     });
 
     $("#moveR").click(function () {
-        $({ dummyVal: mesh.rotation.z }).animate({ dummyVal: mesh.rotation.z - degreeToRad(ROTATION_BUTTON_INCREMENT_DEGREES) }, {
-            duration: 500,
-            step: function (now) {
-                mesh.rotation.z = now;
-            }
-        });
+              cam_rotation = cam_rotation - 2 * Math.PI/(360/ROTATION_BUTTON_INCREMENT_DEGREES);
+              updateCameraRotation();
     });
 
     $("#moveDn").click(function () {
@@ -192,21 +197,8 @@ function onDocumentMouseDown(event) {
 
         intersects[0].object.material.color.setHex(Math.random() * 0xffffff);
 
-        //var particle = new THREE.Sprite(particleMaterial);
-        //particle.position.copy(intersects[0].point);
-        //particle.scale.x = particle.scale.y = 16;
-        //scene.add(particle);
-
     }
 
-    /*
-    // Parse all the faces
-    for ( var i in intersects ) {
-
-        intersects[ i ].face.material[ 0 ].color.setHex( Math.random() * 0xffffff | 0x80000000 );
-
-    }
-    */
 }
 
 //Helper functions
@@ -219,6 +211,16 @@ function degreeToRad(degree)
 function printMenuState(s) {
     menu = $("#menu");
     console.log("menu: " + menu + " dimensions: " + menu.css("left") + ", " + menu.css("top") + ", " + menu.width() + " X " + menu.height() + " visibility: " + menu.css("visibility") + " " + s);
+}
+
+function updateCameraRotation() {
+    camera.position.x = Math.sin(cam_rotation);
+    camera.position.y = Math.cos(cam_rotation);
+    camera.lookAt(mesh.position); // or camera.lookAt(0, 0, 0);
+
+    rotation = (cam_rotation % (2 * Math.PI)) / (Math.PI); // this results in a decimal between 0 and 2 -> 2 Pi is full circle
+    camera.rotation.z = (1 - rotation) * Math.PI;
+    camera.updateProjectionMatrix();
 }
 
 //Initialise background map
