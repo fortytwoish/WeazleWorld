@@ -1,0 +1,13 @@
+﻿<h1>minigame1</h1>
+<button id="exitMinigameButton" style="margin:auto">Exit</button>
+<script>
+        $(function () {
+            $("#exitMinigameButton").click(function () {
+                isInMenu = false;
+                console.log("exitMinigame button clicked.");
+                parent.printMenuState();
+                $("#minigame").css("visibility", "hidden");
+                $("#minigameButton").css("visibility", "visible");
+            });
+        });
+</script>
