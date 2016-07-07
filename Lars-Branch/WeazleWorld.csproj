@@ -76,8 +76,6 @@
     <Content Include="img\treeGame\tree3.png" />
     <Content Include="img\treeGame\woods.jpg" />
     <Content Include="Index.html" />
-    <Content Include="js\fw\jquery.min.js" />
-    <Content Include="js\fw\three.min.js" />
     <Content Include="js\MainScript.js" />
     <Content Include="js\MapGeneration.js" />
     <Content Include="img\treeGame\tree1.png" />

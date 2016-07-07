@@ -1,78 +1,81 @@
-﻿<h1>I AM MINIGAME 2 LOOK AT ME</h1>
-<button id="exitMinigameButton" style="margin:auto">Exit</button>
-
-<style>
-	#minigame{
-		background-color: #ffffff;
+﻿<style>
+	#minigame2{
+		text-align: center;
+	}
+	#minigame2 #source{
+		background-color: blue;
+		height: 100px;
+		width: 100px;
+		display: block;
+		position: absolute;
+		top: 0;
+		right: 0;
+	}
+	#minigame2 table{
+		display: inline-block;
+		border-collapse: collapse;
+	}
+	#minigame2 td{
+		background-color: aquamarine;
+		height: 140px;
+		width: 140px;
+		display: inline-block;
+	}
+	#minigame2 #target{
+		background-color: antiquewhite;
+		height: 100px;
+		width: 100px;
+		display: block;
+		position: absolute;
+		bottom: 0;
+		left: 0;
 	}
 </style>
-
-<script src="../Resources/Box2d.min.js">
-
-	world = new b2World(new b2Vec2(0, 10), true);
-
-	var fixDef = new b2FixtureDef;
-	fixDef.density = 1.0;
-	fixDef.friction = 0.5;
-	fixDef.restitution = 0.2;
-
-	var bodyDef = new b2BodyDef;
-	bodyDef.type = b2Body.b2_staticBody;
-
-	// positions the center of the object (not upper left!)
-	bodyDef.position.x = CANVAS_WIDTH / 2 / SCALE;
-	bodyDef.position.y = CANVAS_HEIGHT / SCALE;
-
-	fixDef.shape = new b2PolygonShape;
-
-	// half width, half height.
-	fixDef.shape.SetAsBox((600 / SCALE) / 2, (10 / SCALE) / 2);
-
-	bodyDef.type = b2Body.b2_dynamicBody;
-	for (var i = 0; i < 10; ++i) {
-		if (Math.random() > 0.5) {
-			fixDef.shape = new b2PolygonShape;
-			fixDef.shape.SetAsBox(
-				  Math.random() + 0.1 //half width
-			   , Math.random() + 0.1 //half height
-			);
-		} else {
-			fixDef.shape = new b2CircleShape(
-				Math.random() + 0.1 //radius
-			);
-		}
-		bodyDef.position.x = Math.random() * 25;
-		bodyDef.position.y = Math.random() * 10;
-		world.CreateBody(bodyDef).CreateFixture(fixDef);
-	}
-
-	//setup debug draw
-	var debugDraw = new b2DebugDraw();
-	debugDraw.SetSprite(document.getElementById("c").getContext("2d"));
-	debugDraw.SetDrawScale(SCALE);
-	debugDraw.SetFillAlpha(0.3);
-	debugDraw.SetLineThickness(1.0);
-	debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-	world.SetDebugDraw(debugDraw);
-
-</script>
-
-<p>
-	<a href="http://blog.sethladd.com/2011/09/box2d-javascript-example-walkthrough.html">Read matching blog post for explanation</a>
-</p>
-<div class="g-plusone" data-size="small" data-annotation="inline"></div>
-
+<script type="text/javascript" src="../Resources/jquery-2.2.4.min.js"></script>
 <script>
-        $(function () {
-            $("#exitMinigameButton").click(function () {
-                console.log("paused before: " + isInMenu);
-                isInMenu = false;
-                console.log("paused after: " + isInMenu);
-                console.log("exitMinigame button clicked.");
-                parent.printMenuState();
-                $("#minigame").css("visibility", "hidden");
-                $("#minigameButton").css("visibility", "visible");
-            });
-        });
-        $(this).css("backgroundColor", "red");
+	$(function () {
+
+
+		var rotation = 0;
+
+		jQuery.fn.rotate = function (degrees) {
+			$(this).css({ 'transform': 'rotate(' + degrees + 'deg)' });
+			return $(this);
+		};
+
+		$('td').click(function () {
+			rotation += 45;
+			$(this).rotate(rotation);
+		});
+
+
+		//$("td").on("click", function () {
+		//	console.log("click");
+		//	$(this).css({
+		//		"transform": "rotate(" + 45 + "deg)"
+		//	});
+		//});
+
+	})
 </script>
+<div id="minigame2">
+	<div id="source"></div>
+	<table>
+		<tr>
+			<td>1</td>
+			<td>2</td>
+			<td>3</td>
+		</tr>
+		<tr>
+			<td>4</td>
+			<td>5</td>
+			<td>6</td>
+		</tr>
+		<tr>
+			<td>7</td>
+			<td>8</td>
+			<td>9</td>
+		</tr>
+	</table>
+	<div id="target"></div>
+</div>
