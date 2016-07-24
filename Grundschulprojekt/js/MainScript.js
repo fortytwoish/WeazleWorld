@@ -1,172 +1,229 @@
-﻿//Constants
-const ZOOM_BUTTON_INCREMENT_PERCENT = 20 / 100;
-const ZOOM_DEFAULT_VALUE = 75;
-const ROTATION_BUTTON_INCREMENT_DEGREES = 30;
-const WATERLEVEL = 0;
-const RENDER_RESOLUTION = [880, 540];
-const WINDOW_CLEAR_COLOR = 0x0066BB;
-const TERRAIN_RESOLUTION = 8;
-
-//Global variables
-isInMenu = true;
+﻿//  GLOBALS
+isInMenu           = true;
 preventRaycastOnce = false;
 
-//Local variables
-var camera, scene, renderer;
-var geometry, material, mesh;
+//  CONSTANTS
+const PAUSE_IN_MENU      = true;
+const WATERLEVEL         = -0.02;
+const WINDOW_CLEAR_COLOR = 0x0066BB;
+const TERRAIN_RESOLUTION = 8;
+const TERRAIN_OFFSET     = 30000;
+const SUN_POSITION       = new THREE.Vector3( 1024, 1024, 1024 );
+const RAFT_DIMENSIONS    = new THREE.Vector3( 10, 10, 0.5 );
 
-var cam_rotation; // in radial
-
-function init() {
-
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(RENDER_RESOLUTION[0], RENDER_RESOLUTION[1]);
-    $("#mainGame").css({ width: RENDER_RESOLUTION[0] + "px", height: RENDER_RESOLUTION[1] + "px" });
-    renderer.setClearColor(WINDOW_CLEAR_COLOR);
-
-
-    //TODO REPLACE WITH JQUERY CALL
-    document.body.appendChild(renderer.domElement);
-
-    //camera rotation
-    camera.position.y = 1;
-    camera.position.x = 0;
-    cam_rotation = 0;
+//  LOCALS
+var camera,
+    scene,
+    renderer,
+    islandMesh,
+    waterMesh,
+    raftMesh,
+    test_weazle;
 
 
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10);
-    //camera = new THREE.OrthographicCamera(window.innerWidth / -scale, window.innerWidth / scale, window.innerHeight / scale, window.innerHeight / -scale, -1, 1000);
-    camera.position.z = 1;
-
-    camera.position.y = 1;
-    camera.position.x = 0;
-    cam_rotation = 0;
-
-    scene = new THREE.Scene();
-    geometry = GenerateIsland(TERRAIN_RESOLUTION, WATERLEVEL);
-    material = new THREE.MeshBasicMaterial({ color: 0xAAAAAA, wireframe: true });
-    waterGeom = new THREE.PlaneGeometry(32, 16, 1, 1);
-    waterMat = new THREE.MeshBasicMaterial({ color: 0x0055AA, transparent: true, opacity: 0.5 });
-    mesh = new THREE.Mesh(geometry, material);
-
-    waterMesh = new THREE.Mesh(waterGeom, waterMat);
-    waterMesh.position.z = WATERLEVEL;
-
-    updateCameraRotation();
-
-    scene.add(mesh);
-    //mesh.add(new THREE.Mesh(new THREE.CubeGeometry(0.01, 0.01, 0.01, 0.01), new THREE.MeshBasicMaterial()));
-    scene.add(waterMesh);
-
-    //TODO REPLACE WITH JQUERY CALLS
-    document.addEventListener('mousedown', onDocumentMouseDown, false);
-    document.addEventListener('touchstart', onDocumentTouchStart, false);
+function main()
+{
+    init();
+    animate();
 }
 
-function animate() {
-    //if (!isInMenu) {
-        //mesh.rotation.z = Date.now() / 20000;
-        //camera.rotation.x = Math.sin(Date.now() / 1000) / 10;
-        waterMesh.position.z = WATERLEVEL + Math.sin(Date.now() / 500) / 75;
-        //waterMesh.rotation.z = rot;
-    //}
-        camera.updateProjectionMatrix();
+function init()
+{
+    //  SCENE
+    scene            = new THREE.Scene();
+    scene.fog        = new THREE.FogExp2( 0xcccccc, 0.002 );
+    scene.rotation.x = degreeToRad( 270 );
 
+    //  RENDERER
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setClearColor( WINDOW_CLEAR_COLOR );
+
+    var container = document.getElementById("mainGame");
+    container.appendChild( renderer.domElement );
+
+    //  CAMERA
+    camera            = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2048);
+    camera.position.x = 0;
+    camera.position.y = 10;
+    camera.position.z = 35;
+    camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );
+
+    //      CAMERA CONTROLS
+    controls                = new THREE.OrbitControls( camera, renderer.domElement );
+
+    controls.minDistance    = 10;
+    controls.maxDistance    = 100;
+
+    controls.minPolarAngle  = degreeToRad( 15 ); //  | (0)   |/  (~15)    |_ (90) 
+    controls.maxPolarAngle  = degreeToRad( 70 );
+
+    controls.enableDamping  = false; //TODO: Enable this for touchscreens
+
+    controls.enablePan      = false;
+
+    controls.rotateSpeed    = 1;
+    controls.zoomSpeed      = 2;
+    //SET THESE TO AUTOMATICALLY ROTATE, FOR EXAMPLE WHEN VIEWING STATUE
+    //controls.autoRotate = true;
+    //controls.autoRotateSpeed = 0.1;
+
+    //      ISLAND
+    var islandGeom  = GenerateIsland(TERRAIN_RESOLUTION, WATERLEVEL);
+    
+    /* texture test */
+    //var islandMat   = new THREE.MeshPhongMaterial( { color: 0xDDDDDD } );//GenerateIslandMaterial( islandGeom, SUN_POSITION );
+    var texture = THREE.ImageUtils.loadTexture( 'img/sand.jpg' );
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set( 10, 10 );
+
+    var islandMat   = new THREE.MeshPhongMaterial( { map: texture } );
+    islandMesh      = new THREE.Mesh( islandGeom, islandMat );
+
+    //      WATER
+    var waterGeom   = new THREE.PlaneGeometry( 1024, 1024, 1, 1 );
+    var waterMat    = new THREE.MeshPhongMaterial( { color: 0x0088DD, transparent: true, opacity: 0.9, specular: 0xFFFFFF, shininess: 5 } );
+    waterMesh       = new THREE.Mesh( waterGeom, waterMat );
+    waterMesh.position.z = WATERLEVEL;
+
+    //      WEAZLE RAFT
+    var raftGeom        = new THREE.CubeGeometry( RAFT_DIMENSIONS.x, RAFT_DIMENSIONS.y, RAFT_DIMENSIONS.z );
+    var raftTexture     = THREE.ImageUtils.loadTexture( 'img/wood_box.jpg' );
+    raftTexture.wrapS   = texture.wrapT = THREE.RepeatWrapping;
+    raftTexture.repeat.set( 1, 1 );
+    var raftMat         = new THREE.MeshPhongMaterial( { map: raftTexture } );
+    raftMesh            = new THREE.Mesh( raftGeom, raftMat );
+    
+    //      TEST_WEAZLE
+    var test_weazle_geom = new THREE.CubeGeometry( 0.1, 0.1, 0.5 );
+    var test_weazle_mat  = new THREE.MeshBasicMaterial( { color: 0x0000FF } );
+    test_weazle          = new THREE.Mesh( test_weazle_geom, test_weazle_mat );
+    test_weazle.position.z = RAFT_DIMENSIONS.z / 2 + 0.25;
+    var head = new THREE.Mesh( new THREE.SphereGeometry( 0.125, 8, 8 ), new THREE.MeshBasicMaterial( { color: 0x0000FF } ) );
+    head.position.z = 0.3;
+    test_weazle.add( head );
+
+    //      SUN MESH
+    var sunGeom     = new THREE.SphereGeometry( 128, 32, 32 );
+    var sunMat      = new THREE.MeshBasicMaterial( { color: 0xFFFCBB } );
+    sunMat.fog      = false;
+    var sunMesh     = new THREE.Mesh( sunGeom, sunMat );
+
+    sunMesh.position.x = SUN_POSITION.x;
+    sunMesh.position.y = SUN_POSITION.y;
+    sunMesh.position.z = SUN_POSITION.z / 2;
+
+    //      SUN LIGHT
+    var directionalLight = new THREE.DirectionalLight( 0xffffff, 1.5 );
+    directionalLight.position.set( SUN_POSITION.x, SUN_POSITION.y, SUN_POSITION.z );
+
+    //  PLACE INTO SCENE
+    waterMesh.add( raftMesh );
+    raftMesh .add( test_weazle )
+    scene    .add( islandMesh );
+    scene    .add( waterMesh );
+    scene    .add( sunMesh );
+
+    scene    .add( directionalLight );
+
+    //  EVENT BINDING
+    document.addEventListener( 'mousedown' , onDocumentMouseDown , false );
+    document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+    window  .addEventListener( 'resize'    , onWindowResize      , false );
+
+    onWindowResize();
+}
+
+function animate()
+{
+    if (!isInMenu)
+    {
+
+        /*  UPDATE SCENE HERE */
+        if ( Math.random() <= 0.01 )
+        {
+            test_weazle.position.x = ( Math.random() * RAFT_DIMENSIONS.x ) - RAFT_DIMENSIONS.x / 2;
+            test_weazle.position.y = ( Math.random() * RAFT_DIMENSIONS.y ) - RAFT_DIMENSIONS.y / 2;
+        }
+
+        waterMesh.position.z = WATERLEVEL + Math.sin(Date.now() / 1500) / 2.5;
+        camera.updateProjectionMatrix();
+    }
+
+    //  continue render loop
+    controls.update(); // required if controls.enableDamping = true, or if controls.autoRotate = true
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
 }
 
-//Button click handlers
-$(function () {
+//  EVENT HANDLERS
+$( function ()
+{
     
-    $(".blockRaycast").mousedown(function () {
+    $(".blockRaycast").mousedown(function ()
+    {
         preventRaycastOnce = true;
-    });
+    } );
 
 
-    /*Main game buttons*/
-    $("#menuButton").click(function () {
-        if (isInMenu)
+    $( "#menuButton" ).click( function ()
+    {
+        if ( isInMenu )
+        {
             return;
+        }
         isInMenu = true;
-        console.log("menu button clicked.");
-        $("#menu").css("visibility", "visible");
-        printMenuState("css");
-        $("#menuButton").css("visibility", "hidden");
-    });
 
-    $("#moveUp").click(function () {
-        
-    });
-
-    $("#moveL").click(function () {
-              cam_rotation = cam_rotation + 2 * Math.PI/(360/ROTATION_BUTTON_INCREMENT_DEGREES);
-              updateCameraRotation();
-    });
-
-    $("#moveR").click(function () {
-              cam_rotation = cam_rotation - 2 * Math.PI/(360/ROTATION_BUTTON_INCREMENT_DEGREES);
-              updateCameraRotation();
-    });
-
-    $("#moveDn").click(function () {
-
-    });
-
-    $("#zoomPlus").click(function () {
-        $({ dummyVal: camera.fov }).animate({ dummyVal: camera.fov * (1 - ZOOM_BUTTON_INCREMENT_PERCENT) }, {
-            duration: 500,
-            step: function (now) {
-                camera.fov = now;
-                camera.updateProjectionMatrix();
-            }
-        });
-    });
-
-    $("#zoomMinus").click(function () {
-        $({ dummyVal: camera.fov }).animate({ dummyVal: camera.fov * (1 + ZOOM_BUTTON_INCREMENT_PERCENT) }, {
-            duration: 500,
-            step: function (now) {
-                camera.fov = now;
-                camera.updateProjectionMatrix();
-            }
-        });
-    });
+        $( "#menu" ).css( "visibility", "visible" );
+        $( "#menuButton" ).css( "visibility", "hidden" );
+    } );
 
     //Test, to be replaced by clicks on the island's objects
-    $("#minigameButton").click(function () {
-        if (isInMenu)
+    $( "#minigameButton" ).click( function ()
+    {
+        if ( isInMenu )
+        {
             return;
+        }
         isInMenu = true;
-        minigameID = prompt("Which minigame? (1-3)");
-        console.log("minigame button clicked.");
-        $("#minigame").css("visibility", "visible");
-        printMenuState("css");
-        console.log("Reading: " + "html/minigame" + minigameID + ".html");
-        $.get("html/minigame" + minigameID + ".html", function (data) {
-            console.log("Contents: " + data);
-            $("#minigame").html(data);
-        });
 
-    });
+        minigameID = prompt( "Which minigame? (1-3)" );
+        console.log( "minigame button clicked." );
+        $( "#minigame" ).css( "visibility", "visible" );
+        console.log( "Reading: " + "html/minigame" + minigameID + ".html" );
+        $.get( "html/minigame" + minigameID + ".html", function ( data )
+        {
+            console.log( "Contents: " + data );
+            $( "#minigame" ).html( data );
+        } );
 
-    
+    } );    
 
     //Menu Buttons - to be moved into menu.html
-    $("#continueButton").click(function () {
+    $( "#continueButton" ).click( function ()
+    {
         isInMenu = false;
-        console.log("continue button clicked.");
-        printMenuState();
-        $("#menu").css("visibility", "hidden");
-        $("#menuButton").css("visibility", "visible");
-    });
+
+        $( "#menu" )      .css( "visibility", "hidden" );
+        $( "#menuButton" ).css( "visibility", "visible" );
+    } );
 });
 
-//Map click handling
-raycaster = new THREE.Raycaster();
-mouse = new THREE.Vector2();
+function onWindowResize()
+{
 
-function onDocumentTouchStart(event) {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
+}
+
+raycaster = new THREE.Raycaster();
+mouse     = new THREE.Vector2();
+
+//  Translate touch to mouseclick
+function onDocumentTouchStart( event )
+{
 
     event.preventDefault();
 
@@ -176,8 +233,9 @@ function onDocumentTouchStart(event) {
 
 }
 
-function onDocumentMouseDown(event) {
-
+function onDocumentMouseDown( event )
+{
+  
     if (preventRaycastOnce)
     {
         preventRaycastOnce = false;
@@ -186,14 +244,15 @@ function onDocumentMouseDown(event) {
 
     event.preventDefault();
 
-    mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.x =  (event.clientX / renderer.domElement.clientWidth)  * 2 - 1;
     mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
-    objects = [ mesh, waterMesh ];
+    objects = [ raftMesh ];
     var intersects = raycaster.intersectObjects(objects);
 
-    if (intersects.length > 0) {
+    if ( intersects.length > 0 )
+    {
 
         intersects[0].object.material.color.setHex(Math.random() * 0xffffff);
 
@@ -201,29 +260,4 @@ function onDocumentMouseDown(event) {
 
 }
 
-//Helper functions
-function degreeToRad(degree)
-{
-    return degree * Math.PI / 180;
-}
-
-/*Debug*/
-function printMenuState(s) {
-    menu = $("#menu");
-    console.log("menu: " + menu + " dimensions: " + menu.css("left") + ", " + menu.css("top") + ", " + menu.width() + " X " + menu.height() + " visibility: " + menu.css("visibility") + " " + s);
-}
-
-function updateCameraRotation() {
-    camera.position.x = Math.sin(cam_rotation);
-    camera.position.y = Math.cos(cam_rotation);
-    camera.lookAt(mesh.position); // or camera.lookAt(0, 0, 0);
-
-    rotation = (cam_rotation % (2 * Math.PI)) / (Math.PI); // this results in a decimal between 0 and 2 -> 2 Pi is full circle
-    camera.rotation.z = (1 - rotation) * Math.PI;
-    camera.updateProjectionMatrix();
-}
-
-//Initialise background map
-init();
-//Start animation loop
-animate();
+main();

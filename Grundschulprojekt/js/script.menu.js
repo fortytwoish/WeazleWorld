@@ -91,7 +91,7 @@ var action = function(button)
     {
         case "Start":
             isInMenu = false;
-            printMenuState();
+            //printMenuState();
             $("#menu").css("visibility", "hidden");
             $("#menuButton").css("visibility", "visible");
             debug ? console.log("action(" + button + ") was performed.") : false;
