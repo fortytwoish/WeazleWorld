@@ -93,6 +93,7 @@
   <ItemGroup>
     <Content Include="js\script.menu.js" />
     <Content Include="js\script.splashScreen.js" />
+    <Content Include="Resources\stats.min.js" />
     <Content Include="Resources\jquery-2.2.4.min.js" />
     <Content Include="Resources\three.min.js" />
     <Content Include="spielstart.html" />

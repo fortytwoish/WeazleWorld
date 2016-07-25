@@ -4,12 +4,12 @@ preventRaycastOnce = false;
 
 //  CONSTANTS
 const PAUSE_IN_MENU      = true;
-const WATERLEVEL         = -0.02;
+const WATERLEVEL         = 0;
 const WINDOW_CLEAR_COLOR = 0x0066BB;
-const TERRAIN_RESOLUTION = 8;
-const TERRAIN_OFFSET     = 30000;
+const TERRAIN_RESOLUTION = 11;
+const TERRAIN_OFFSET     = 400000;
 const SUN_POSITION       = new THREE.Vector3( 1024, 1024, 1024 );
-const RAFT_DIMENSIONS    = new THREE.Vector3( 10, 10, 0.5 );
+const RAFT_DIMENSIONS    = new THREE.Vector3( 20, 20, 0.5 );
 
 //  LOCALS
 var camera,
@@ -31,31 +31,27 @@ function init()
 {
     //  SCENE
     scene            = new THREE.Scene();
-    scene.fog        = new THREE.FogExp2( 0xcccccc, 0.002 );
-    scene.rotation.x = degreeToRad( 270 );
+    scene.fog        = new THREE.FogExp2( 0xeecccc, 0.0005 );
 
     //  RENDERER
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor( WINDOW_CLEAR_COLOR );
 
-    var container = document.getElementById("mainGame");
-    container.appendChild( renderer.domElement );
-
     //  CAMERA
-    camera            = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2048);
+    camera            = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 4096);
     camera.position.x = 0;
     camera.position.y = 10;
     camera.position.z = 35;
-    camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );
+    camera.lookAt( new THREE.Vector3( 0, 50, 0 ) );
 
     //      CAMERA CONTROLS
     controls                = new THREE.OrbitControls( camera, renderer.domElement );
 
     controls.minDistance    = 10;
-    controls.maxDistance    = 100;
+    controls.maxDistance    = 600;
 
-    controls.minPolarAngle  = degreeToRad( 15 ); //  | (0)   |/  (~15)    |_ (90) 
-    controls.maxPolarAngle  = degreeToRad( 70 );
+    controls.minPolarAngle  = degreeToRad( 10 ); //  | (0)   |/  (~15)    |_ (90) 
+    controls.maxPolarAngle  = degreeToRad( 75 );
 
     controls.enableDamping  = false; //TODO: Enable this for touchscreens
 
@@ -80,10 +76,11 @@ function init()
     islandMesh      = new THREE.Mesh( islandGeom, islandMat );
 
     //      WATER
-    var waterGeom   = new THREE.PlaneGeometry( 1024, 1024, 1, 1 );
+    var waterGeom   = new THREE.PlaneGeometry( 4096, 4096, 1, 1 );
     var waterMat    = new THREE.MeshPhongMaterial( { color: 0x0088DD, transparent: true, opacity: 0.9, specular: 0xFFFFFF, shininess: 5 } );
     waterMesh       = new THREE.Mesh( waterGeom, waterMat );
     waterMesh.position.z = WATERLEVEL;
+    waterMesh.rotation.x = degreeToRad( -90 );
 
     //      WEAZLE RAFT
     var raftGeom        = new THREE.CubeGeometry( RAFT_DIMENSIONS.x, RAFT_DIMENSIONS.y, RAFT_DIMENSIONS.z );
@@ -130,11 +127,18 @@ function init()
     document.addEventListener( 'touchstart', onDocumentTouchStart, false );
     window  .addEventListener( 'resize'    , onWindowResize      , false );
 
+    var container   = document.getElementById( "mainGame" );
+    container.appendChild( renderer.domElement );
+
+    stats       = new Stats();
+    document.body.appendChild( stats.dom );
+
     onWindowResize();
 }
 
 function animate()
 {
+    stats.begin();
     if (!isInMenu)
     {
 
@@ -145,12 +149,15 @@ function animate()
             test_weazle.position.y = ( Math.random() * RAFT_DIMENSIONS.y ) - RAFT_DIMENSIONS.y / 2;
         }
 
-        waterMesh.position.z = WATERLEVEL + Math.sin(Date.now() / 1500) / 2.5;
+                                                                //speed //height
+        waterMesh.position.y = WATERLEVEL + Math.sin(Date.now() / 1500) / 1;
         camera.updateProjectionMatrix();
+        //stats.update();
     }
 
     //  continue render loop
     controls.update(); // required if controls.enableDamping = true, or if controls.autoRotate = true
+    stats.end();
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
 }
