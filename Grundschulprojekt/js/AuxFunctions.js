@@ -18,6 +18,11 @@ function Point( x, y )
     this.y = y;
 }
 
+function distanceSquared( pointA, pointB )
+{
+    return Math.pow( pointA.x - pointB.x, 2 ) + Math.pow( pointA.y - pointB.y, 2 );
+}
+
 function midBetween( pointA, pointB )
 {
     return new Point(( ( pointA.x + pointB.x ) / 2 ), ( ( pointA.y + pointB.y ) / 2 ) );
@@ -75,4 +80,10 @@ function angleBetweenVectors3D( vector3D_A, vector3D_B )
 function vec3DToString( vec3D )
 {
     return vec3D.x + " / " + vec3D.y + " / " + vec3D.z;
+}
+
+/*  OTHER   */
+function pointToString( point )
+{
+    return "[ " + point.x + " , " + point.y + " ]";
 }

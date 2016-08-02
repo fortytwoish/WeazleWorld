@@ -13,20 +13,23 @@ $(function () {
 
     $(appendToo).css({"left": posX, "top": posY});
 
-    $(appendToo).on("click", function (e) {
-        $(appendToo).off("click");
+    $( appendToo ).on( "click touchstart", function ( e )
+    {
+        $( appendToo ).off( "click" );
+        $( appendToo ).off( "touchstart" );
         $(appendToo).off("keyup");
         $(appendToo).css("display", "none");
         $(mainGame).css("display", "");
         initMenu();
     });
     $(appendToo).on("keyup", function (e) {
-        $(appendToo).off("click");
+        $( appendToo ).off( "click" );
+        $( appendToo ).off( "touchstart" );
         $(appendToo).off("keyup");
         $(appendToo).css("display", "none");
         $(mainGame).css("display", "");
         initMenu();
-    });
+    } );
 
     $(appendToo).focus();
 });

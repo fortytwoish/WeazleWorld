@@ -19,10 +19,30 @@
     field[bottomLeft.x][bottomLeft.y]   = 2;
     field[bottomRight.x][bottomRight.y] = 2;
 
-    //  force water in middle
     middle = midpoint( topLeft, topRight, bottomLeft, bottomRight );
-    field[middle.x][middle.y] = -TERRAIN_OFFSET / 32;
 
+    console.log( "Map dimensions: " + (dim - 1) + "² (2^" + size + ")" );
+    console.log( pointToString(topLeft) + " -- \t" + pointToString(topRight) );
+    console.log( " | \t"      + pointToString(middle) + " \t| " );
+    console.log( pointToString(bottomLeft) + " -- \t" + pointToString(bottomRight) );
+
+
+    //  Set height values of play area before heightmap generation so it fits into the map nicely
+    var padding = 15;   //The circle's extra radius
+
+    for ( i = -( VILLAGE_DIMENSIONS.x / 2 ) - padding; i <= ( VILLAGE_DIMENSIONS.x / 2 ) + padding; i++ )
+    {
+        for ( j = -( VILLAGE_DIMENSIONS.y / 2 ) - padding; j <= ( VILLAGE_DIMENSIONS.y / 2 ) + padding; j++ )
+        {
+            if ( Math.pow( Math.abs( i ) + Math.abs( j ), 2 ) < Math.pow( VILLAGE_DIMENSIONS.x + padding, 2 ) )
+            {
+                field[( middle.x + i )][( middle.y + j )] = VILLAGE_DIMENSIONS.z + Math.random() / 4;
+            }
+        }
+    }
+
+    //  force water in middle (will generate
+    field[middle.x][middle.y] = -25;
 
     /******************************************************/
     /*  GENERATE HEIGHTMAP USING DIAMOND SQUARE ALGORITHM */
@@ -34,9 +54,43 @@
         diamondStep( i, topLeft, topRight, bottomLeft, bottomRight );
     }
 
+    for ( i = 25; i > 0; i-- )
+    {
+        smoothBeaches( i / 5 );
+    }
 
-    //  Create geometry from generated heightmap
-    var geometry = new THREE.PlaneBufferGeometry( dim, dim, dim - 1, dim - 1 );
+    /******************************************************/
+    /*  CREATE A PLATEAU IN THE MIDDLE OF THE PLAY AREA   */
+    /******************************************************/
+    //  Force-set height values again, to ensure that a play area exists
+    for ( i = -( VILLAGE_DIMENSIONS.x / 2 ) - padding; i <= ( VILLAGE_DIMENSIONS.x / 2 ) + padding; i++ )
+    {
+        for ( j = -( VILLAGE_DIMENSIONS.y / 2 ) - padding; j <= ( VILLAGE_DIMENSIONS.y / 2 ) + padding; j++ )
+        {
+            if ( Math.pow( Math.abs( i ) + Math.abs( j ), 2 ) < Math.pow( VILLAGE_DIMENSIONS.x + padding, 2 ) )
+            {
+                field[( middle.x + i )][( middle.y + j )] = VILLAGE_DIMENSIONS.z + Math.random() / 4;
+            }
+        }
+    }
+    //  Smooth the play area
+    for ( i = 0; i < 1; i++ )
+    {
+        smooth( 16, 1 );
+    }
+    for ( i = 0; i < 10; i++ )
+    {
+        smooth( 4, 1 );
+    }
+    for ( i = 0; i < 10; i++ )
+    {
+        smooth( 1, 1 );
+    }
+
+    /******************************************************/
+    /*  CREATE GEOMETRY FROM THE HEIGHTMAP                */
+    /******************************************************/
+    var geometry = new THREE.PlaneBufferGeometry( dim - 1, dim - 1, dim - 1, dim - 1 );
     //  default orientation is off - roll by 90°
     geometry.rotateX( -degreeToRad(90) );
 
@@ -45,13 +99,63 @@
     {
         for ( var j = 0; j < dim; j++ )
         {
-            geometry.attributes.position.array[count] = field[i][j] / ( size * 75 );
+            geometry.attributes.position.array[count] = field[i][j];
             count += 3; //Go to next vertex's y-property (skip z and x)
         }
     }
 
     return geometry;
 
+}
+
+function smoothBeaches( height )
+{
+    for ( var i = 2; i < dim - 2; i++ )
+    {
+        for ( var j = 2; j < dim - 2; j++ )
+        {
+            if ( field[i][j] <= height && field[i][j] >= -20 )
+            {
+                var pnt = new Point( i, j );
+
+                field[ i ][ j ] =
+                (
+                   field[( i )    ][( j - 1 )] +
+                   field[( i )    ][( j + 1 )] +
+                   field[( i - 1 )][( j )    ] +
+                   field[( i - 1 )][( j - 1 )] +
+                   field[( i - 1 )][( j + 1 )] +
+                   field[( i + 1 )][( j  )   ] +
+                   field[( i + 1 )][( j - 1 )] +
+                   field[( i + 1 )][( j + 1 )]
+                )
+                / 8 + Math.random() / 2;
+            }
+        }
+    }
+}
+
+function smooth( smoothingArea, reach )
+{
+    //  Smooth out the plateau's edges
+    for ( i = -( VILLAGE_DIMENSIONS.x / 2 ) * smoothingArea ; i <= ( VILLAGE_DIMENSIONS.x / 2 ) * smoothingArea ; i++ )
+    {
+        for ( j = -( VILLAGE_DIMENSIONS.y / 2 ) * smoothingArea ; j <= ( VILLAGE_DIMENSIONS.y / 2 ) * smoothingArea ; j++ )
+        {
+            field[( middle.x + i )][( middle.y + j)] = (
+                field[( middle.x + i         )][( middle.y + j - reach )] +
+                field[( middle.x + i         )][( middle.y + j + reach )] +
+                field[( middle.x + i - reach )][( middle.y + j         )] +
+                field[( middle.x + i - reach )][( middle.y + j - reach )] +
+                field[( middle.x + i - reach )][( middle.y + j + reach )] +
+                field[( middle.x + i + reach )][( middle.y + j         )] +
+                field[( middle.x + i + reach )][( middle.y + j - reach )] +
+                field[( middle.x + i + reach )][( middle.y + j + reach )]
+                ) / 8 + randBetween(-0.2, 0.2);
+
+
+        }
+    }
 }
 
 function squareStep(    depth,
@@ -168,29 +272,113 @@ function diamondStep(   depth,
     }
 }
 
-function GenerateIslandMaterial( geometry, sunPosition )
+function GenerateShadowMapTexture( geometry, sunPosition )
 {
-    geometry.computeFaceNormals();
+    geometry.computeVertexNormals();
 
-    var angle = 0.0;
+    var normalVector     = new THREE.Vector3(),
+        up               = new THREE.Vector3( 0, 1, 0 );
+        normalComponents = geometry.attributes.normal.array,
+        width            = dim,
+        height           = dim;
 
-    var curr;
+    //  The shadow map texture will be drawn on an HTML canvas' drawing context.
+    //  For that, we need to access the context's imageData array of color values. ( [RGBA RGBA RGBA R...] )
+    canvas            = document.createElement( 'canvas' );
+    canvas.width      = width;
+    canvas.height     = height;
 
-    var materials = [];
+    context           = canvas.getContext( '2d' );
+    //  Clear the context first by filling it with black
+    context.fillStyle = '#000';
+    context.fillRect( 0, 0, width, height );
 
-    for ( var i = 0; i < geometry.faces.length; i++ )
+    image             = context.getImageData( 0, 0, canvas.width, canvas.height );
+    imageData         = image.data;
+
+    for ( var i = 0, j = 0; j < imageData.length; i += 4, j += 3 )
     {
-        geometry.faces[i].materialIndex = i;
+        //  Extract the current vertex's normal vector from the normal components array ( [XYZ XYZ XYZ XY...] )
+        normalVector.x = normalComponents[j];
+        normalVector.y = normalComponents[j + 1];
+        normalVector.z = normalComponents[j + 2];
 
-        curr            = angleBetweenVectors3D( geometry.faces[i].normal, sunPosition );
-        calculatedColor = new THREE.Color( curr * 120, curr * 60, curr * 30 );
-        console.log( calculatedColor );
-        materials[i]    = new THREE.MeshBasicMaterial( { color: calculatedColor } );
+        normalVector.normalize();
+
+        //  Angle as a value between 0 and 1
+        angle    = angleBetweenVectors3D( normalVector, sunPosition ) / Math.PI * 2;
+
+        //  Shade scaled to the value domain of a color value [0, 255]
+        shade    = angle * 255;
+
+        //  High angle to sun = low shade (mountainside), low angle = high shade (flat land).
+        //  Therefore, invert the shade value.
+        shadeInv = 255 - shade;
+        shadeInv /= 2;
+
+        var upAngle = angleBetweenVectors3D( normalVector, up ) / Math.PI * 2;
+
+        //  Subtract a fixed value and a relative value (based on depth) when the vertex is under water
+        //  Since this is a shadow map, set x, y and z values equally
+        if ( geometry.attributes.position.array[j + 1] > WATERLEVEL - 10)
+        {
+            if ( geometry.attributes.position.array[j + 1] <= 2 && geometry.attributes.position.array[j + 1] >= -10 && upAngle <= 0.5 )
+            {
+                shadeInv /= 2.5;
+                imageData[i]     = (shadeInv * (geometry.attributes.position.array[j + 1] + 10)).clamp8Bit();
+                imageData[i + 1] = (shadeInv * (geometry.attributes.position.array[j + 1] + 10) * 0.85).clamp8Bit();
+                imageData[i + 2] = (shadeInv * 8).clamp8Bit();
+            }
+            else if ( upAngle <= 0.4 && geometry.attributes.position.array[j + 1] <= 200 )
+            {
+                imageData[i]     = shadeInv.clamp8Bit();
+                imageData[i + 1] = (shadeInv * ( 2 - upAngle )).clamp8Bit();
+                imageData[i + 2] = shadeInv.clamp8Bit();
+            }
+            else
+            {
+                imageData[i]     = (shadeInv - Math.random() * 20).clamp8Bit();
+                imageData[i + 1] = (shadeInv - Math.random() * 20).clamp8Bit();
+                imageData[i + 2] = (shadeInv - Math.random() * 20).clamp8Bit();
+            }
+
+        }
+        else
+        {
+            shadeInv -= 10;
+
+            imageData[i]     =
+            imageData[i + 1] = 
+            imageData[i + 2] = (Math.max(0, shadeInv + geometry.attributes.position.array[j + 1])).clamp8Bit();
+        }
+
     }
 
-    var material = new THREE.MeshFaceMaterial( materials );
-    return material;
+    //  Smooth out color transitions
+    //for ( x = 0; x < 10; x++ )
+    //{
+    //    for ( var i = 4; i < imageData.length - 4; i += 4 )
+    //    {
+    //        imageData[i] = ( imageData[i - 4] + imageData[i + 4] ) / 2;
+    //        imageData[i + 1] = ( imageData[i - 3] + imageData[i + 5] ) / 2;
+    //        imageData[i + 2] = ( imageData[i - 2] + imageData[i + 6] ) / 2;
+    //    }
+    //}
+    
+
+    context.putImageData( image, 0, 0 );
+
+    var texture   = new THREE.CanvasTexture( canvas );
+    texture.wrapS = THREE.ClampToEdgeWrapping;
+    texture.wrapT = THREE.ClampToEdgeWrapping;
+
+    return texture;
 }
+
+Number.prototype.clamp8Bit = function ( )
+{
+    return Math.min( Math.max( this, 0 ), 255 );
+};
 
 function debug_displayOnConsole()
 {

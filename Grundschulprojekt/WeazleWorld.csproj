@@ -91,6 +91,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="js\QualityLevels.js" />
     <Content Include="js\script.menu.js" />
     <Content Include="js\script.splashScreen.js" />
     <Content Include="Resources\stats.min.js" />

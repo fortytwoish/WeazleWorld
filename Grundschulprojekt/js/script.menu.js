@@ -64,12 +64,13 @@ var drawMenu = function(menuArr)
         {
             $(appendTo).append('<input class="menuAnimate" type="' + menuArr[i].value + '" value="' + menuArr[i].key + '">');
             debug ? console.log("Menu added '" + menuArr[i].key + "' entry.") : false;
-            $("[value=" + menuArr[i].key + "]").on("click", function(e){
+            $( "[value=" + menuArr[i].key + "]" ).on( "click touchstart", function ( e )
+            {
                 var entryName = $(this).attr("value");
                 action(entryName);
                 click.play();
-                debug ? console.log("You clicked on '" + entryName + "'") : false;
-            });
+                debug ? console.log( "You clicked on '" + entryName + "'" ) : false;
+            } );
             debug ? console.log("Eventhandler added to '" + menuArr[i].key + "' entry.") : false;
         }
     }
