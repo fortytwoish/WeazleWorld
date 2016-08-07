@@ -48,7 +48,7 @@ function init()
     controls                 = new THREE.OrbitControls( camera, renderer.domElement );
 
     controls.minDistance     = 30;
-    controls.maxDistance     = 2000;
+    controls.maxDistance     = Math.pow(2, TERRAIN_RESOLUTION - 1);
 
     controls.minPolarAngle   = degreeToRad( 0 );     //  | (0)   |/  (~15)    |_ (90) 
     controls.maxPolarAngle   = degreeToRad( 80 );
@@ -60,8 +60,8 @@ function init()
     controls.rotateSpeed     = 1;
     controls.zoomSpeed       = 1;
     //SET THESE TO AUTOMATICALLY ROTATE, FOR EXAMPLE WHEN VIEWING STATUE
-    controls.autoRotate      = true;
-    controls.autoRotateSpeed = 1;
+    //controls.autoRotate      = true;
+    //controls.autoRotateSpeed = 1;
 
     //      ISLAND
     var islandGeom       = GenerateIsland(TERRAIN_RESOLUTION, WATERLEVEL);
@@ -131,7 +131,8 @@ function init()
 function animate()
 {
     //  Prevent camera collision
-    var terrainAtCameraPos = field[Math.round( middle.x + camera.position.z )][Math.round( middle.y + camera.position.x )]
+    var terrainAtCameraPos = field[Math.round( middle.x + camera.position.z )][Math.round( middle.y + camera.position.x )];
+
     if ( camera.position.y <= terrainAtCameraPos + 10 )
     {
         camera.position.y = terrainAtCameraPos + 10;
