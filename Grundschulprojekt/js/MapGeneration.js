@@ -1,4 +1,24 @@
-﻿function GenerateIsland( size, waterLevel )
+﻿//  Shadow clamp values (prevents full white and full black)
+const CLAMP_ROCK  = [30, 250];
+const CLAMP_GRASS = [30, 250];
+const CLAMP_WATER = [0, 255];
+const TEXTUREBRIGHTNESS = 0.5;
+
+
+//  "Biome" borders (upper limits)
+const BEACH_HEIGHT = 3.25;
+const BEACH_SLOPE  = 0.5;
+const GRASS_HEIGHT = 150;
+const GRASS_SLOPE  = 0.65;
+const TREE_HEIGHT  = 100;
+const TREE_SLOPE   = 0.45;
+
+//  Chance of a fitting vertex being changed to a tree, in percent
+const TREE_DENSITY    = 15;
+const TREE_HEIGHT_MIN = 2;
+const TREE_HEIGHT_MAX = 4;
+
+function GenerateIsland( size, waterLevel )
 {
     dim = Math.pow( 2, size ) + 1;
     offset = TERRAIN_OFFSET;
@@ -10,21 +30,21 @@
         field[i] = new Array( dim );
     }
 
-    var topLeft                         = new Point( 0, 0 );
-    var topRight                        = new Point( dim - 1, 0 );
-    var bottomLeft                      = new Point( 0, dim - 1 );
-    var bottomRight                     = new Point( dim - 1, dim - 1 );
-    field[topLeft.x][topLeft.y]         = 2;
-    field[topRight.x][topRight.y]       = 2;
-    field[bottomLeft.x][bottomLeft.y]   = 2;
+    var topLeft = new Point( 0, 0 );
+    var topRight = new Point( dim - 1, 0 );
+    var bottomLeft = new Point( 0, dim - 1 );
+    var bottomRight = new Point( dim - 1, dim - 1 );
+    field[topLeft.x][topLeft.y] = 2;
+    field[topRight.x][topRight.y] = 2;
+    field[bottomLeft.x][bottomLeft.y] = 2;
     field[bottomRight.x][bottomRight.y] = 2;
 
     middle = midpoint( topLeft, topRight, bottomLeft, bottomRight );
 
-    console.log( "Map dimensions: " + (dim - 1) + "² (2^" + size + ")" );
-    console.log( pointToString(topLeft) + " -- \t" + pointToString(topRight) );
-    console.log( " | \t"      + pointToString(middle) + " \t| " );
-    console.log( pointToString(bottomLeft) + " -- \t" + pointToString(bottomRight) );
+    console.log( "Map dimensions: " + ( dim - 1 ) + "² (2^" + size + ")" );
+    console.log( pointToString( topLeft ) + " -- \t" + pointToString( topRight ) );
+    console.log( " | \t" + pointToString( middle ) + " \t| " );
+    console.log( pointToString( bottomLeft ) + " -- \t" + pointToString( bottomRight ) );
 
 
     //  Set height values of play area before heightmap generation so it fits into the map nicely
@@ -47,6 +67,7 @@
     /******************************************************/
     /*  GENERATE HEIGHTMAP USING DIAMOND SQUARE ALGORITHM */
     /******************************************************/
+    var start = new Date().getTime();
     for ( var i = 0; i < size; i++ )
     {
         squareStep( i, topLeft, topRight, bottomLeft, bottomRight );
@@ -54,10 +75,25 @@
         diamondStep( i, topLeft, topRight, bottomLeft, bottomRight );
     }
 
-    for ( i = 25; i > 0; i-- )
+    log( start, new Date().getTime(), "Diamond Square" );
+    start = new Date().getTime();
+
+    //  Smooth beaches
+    for ( i = 20; i > 0; i-- )
     {
         smoothBeaches( i / 5 );
     }
+
+    log( start, new Date().getTime(), "Smooth beaches" );
+    start = new Date().getTime();
+
+    //  Smooth underwater
+    //for ( i = 10; i > 1; i-- )
+    //{
+    //    smoothUnderwater( waterLevel - 2, i + 1 );
+    //}
+
+    log( start, new Date().getTime(), "Smooth water" );
 
     /******************************************************/
     /*  CREATE A PLATEAU IN THE MIDDLE OF THE PLAY AREA   */
@@ -73,6 +109,9 @@
             }
         }
     }
+
+    start = new Date().getTime();
+
     //  Smooth the play area
     for ( i = 0; i < 1; i++ )
     {
@@ -87,12 +126,14 @@
         smooth( 1, 1 );
     }
 
+    start = new Date().getTime();
+
     /******************************************************/
     /*  CREATE GEOMETRY FROM THE HEIGHTMAP                */
     /******************************************************/
     var geometry = new THREE.PlaneBufferGeometry( dim - 1, dim - 1, dim - 1, dim - 1 );
     //  default orientation is off - roll by 90°
-    geometry.rotateX( -degreeToRad(90) );
+    geometry.rotateX( -degreeToRad( 90 ) );
 
     var count = 1;
     for ( var i = 0; i < dim; i++ )
@@ -103,6 +144,8 @@
             count += 3; //Go to next vertex's y-property (skip z and x)
         }
     }
+
+    log( start, new Date().getTime(), "Create Geometry" );
 
     return geometry;
 
@@ -118,18 +161,41 @@ function smoothBeaches( height )
             {
                 var pnt = new Point( i, j );
 
-                field[ i ][ j ] =
+                field[i][j] =
                 (
-                   field[( i )    ][( j - 1 )] +
-                   field[( i )    ][( j + 1 )] +
-                   field[( i - 1 )][( j )    ] +
+                   field[( i )][( j - 1 )] +
+                   field[( i )][( j + 1 )] +
+                   field[( i - 1 )][( j )] +
                    field[( i - 1 )][( j - 1 )] +
                    field[( i - 1 )][( j + 1 )] +
-                   field[( i + 1 )][( j  )   ] +
+                   field[( i + 1 )][( j )] +
                    field[( i + 1 )][( j - 1 )] +
                    field[( i + 1 )][( j + 1 )]
                 )
                 / 8 + Math.random() / 2;
+            }
+        }
+    }
+}
+
+function smoothUnderwater( height, reach )
+{
+    for ( var i = reach; i < dim - reach; i++ )
+    {
+        for ( var j = reach; j < dim - reach; j++ )
+        {
+            if ( field[i][j] <= height )
+            {
+                field[i][j] = (
+                    field[ i         ][ j - reach ] +
+                    field[ i         ][ j + reach ] +
+                    field[ i - reach ][ j         ] +
+                    field[ i - reach ][ j - reach ] +
+                    field[ i - reach ][ j + reach ] +
+                    field[ i + reach ][ j         ] +
+                    field[ i + reach ][ j - reach ] +
+                    field[ i + reach ][ j + reach ]
+                ) / 8;
             }
         }
     }
@@ -142,23 +208,21 @@ function smooth( smoothingArea, reach )
     {
         for ( j = -( VILLAGE_DIMENSIONS.y / 2 ) * smoothingArea ; j <= ( VILLAGE_DIMENSIONS.y / 2 ) * smoothingArea ; j++ )
         {
-            field[( middle.x + i )][( middle.y + j)] = (
-                field[( middle.x + i         )][( middle.y + j - reach )] +
-                field[( middle.x + i         )][( middle.y + j + reach )] +
-                field[( middle.x + i - reach )][( middle.y + j         )] +
+            field[( middle.x + i )][( middle.y + j )] = (
+                field[( middle.x + i )][( middle.y + j - reach )] +
+                field[( middle.x + i )][( middle.y + j + reach )] +
+                field[( middle.x + i - reach )][( middle.y + j )] +
                 field[( middle.x + i - reach )][( middle.y + j - reach )] +
                 field[( middle.x + i - reach )][( middle.y + j + reach )] +
-                field[( middle.x + i + reach )][( middle.y + j         )] +
+                field[( middle.x + i + reach )][( middle.y + j )] +
                 field[( middle.x + i + reach )][( middle.y + j - reach )] +
                 field[( middle.x + i + reach )][( middle.y + j + reach )]
-                ) / 8 + randBetween(-0.2, 0.2);
-
-
+                ) / 8 + randBetween( -0.2, 0.2 );
         }
     }
 }
 
-function squareStep(    depth,
+function squareStep( depth,
                         tl, tr,
                         bl, br )
 {
@@ -168,23 +232,23 @@ function squareStep(    depth,
     {
         squareStep( depth,
                     //top-left square
-                    tl,                     midBetween( tl, tr ),
-                    midBetween( tl, bl ),   midPoint );  
+                    tl, midBetween( tl, tr ),
+                    midBetween( tl, bl ), midPoint );
 
         squareStep( depth,
                     //top-right square
-                    midBetween( tl, tr ),   tr,
-                    midPoint,               midBetween( tr, br ) );  
+                    midBetween( tl, tr ), tr,
+                    midPoint, midBetween( tr, br ) );
 
         squareStep( depth,
                     //bottom-left square
-                    midBetween( tl, bl ),   midPoint,
-                    bl,                     midBetween( bl, br ) );  
+                    midBetween( tl, bl ), midPoint,
+                    bl, midBetween( bl, br ) );
 
         squareStep( depth,
                     //bottom-right square
-                    midPoint,               midBetween( tr, br ),
-                    midBetween( bl, br ),   br );  
+                    midPoint, midBetween( tr, br ),
+                    midBetween( bl, br ), br );
     }
     else
     {
@@ -199,7 +263,7 @@ function squareStep(    depth,
     }
 }
 
-function diamondStep(   depth,
+function diamondStep( depth,
                         tl, tr,
                         bl, br )
 {
@@ -210,29 +274,29 @@ function diamondStep(   depth,
 
         diamondStep( depth,
                         //top-left square
-                        tl,                     midBetween( tl, tr ),
+                        tl, midBetween( tl, tr ),
 
-                        midBetween( tl, bl ),   midPoint );
+                        midBetween( tl, bl ), midPoint );
 
 
         diamondStep( depth,
                         //top-right square
-                        midBetween( tl, tr ),   tr,
+                        midBetween( tl, tr ), tr,
 
-                        midPoint,               midBetween( tr, br ) );
+                        midPoint, midBetween( tr, br ) );
 
         diamondStep( depth,
                         //bottom-left square
-                        midBetween( tl, bl ),   midPoint,
+                        midBetween( tl, bl ), midPoint,
 
-                        bl,                     midBetween( bl, br ) );
+                        bl, midBetween( bl, br ) );
 
-                        
+
         diamondStep( depth,
                         //bottom-right square
-                        midPoint,               midBetween( tr, br ),
+                        midPoint, midBetween( tr, br ),
 
-                        midBetween( bl, br ),   br );
+                        midBetween( bl, br ), br );
     }
     else
     {
@@ -272,9 +336,19 @@ function diamondStep(   depth,
     }
 }
 
+var perfDebug = false;
+
 function GenerateShadowMapTexture( geometry, sunPosition )
 {
+    start = new Date().getTime();
+
     geometry.computeVertexNormals();
+
+    if ( perfDebug )
+    {
+        log( start, new Date().getTime(), "Comp Normals" );
+        start = new Date().getTime();
+    }
 
     var normalVector     = new THREE.Vector3(),
         up               = new THREE.Vector3( 0, 1, 0 );
@@ -284,20 +358,29 @@ function GenerateShadowMapTexture( geometry, sunPosition )
 
     //  The shadow map texture will be drawn on an HTML canvas' drawing context.
     //  For that, we need to access the context's imageData array of color values. ( [RGBA RGBA RGBA R...] )
-    canvas            = document.createElement( 'canvas' );
-    canvas.width      = width;
-    canvas.height     = height;
+    canvas               = document.createElement( 'canvas' );
+    canvas.width         = width;
+    canvas.height        = height;
 
-    context           = canvas.getContext( '2d' );
-    //  Clear the context first by filling it with black
-    context.fillStyle = '#000';
+    //  Get a clear context
+    context              = canvas.getContext( '2d' );
+    context.fillStyle    = '#000';
     context.fillRect( 0, 0, width, height );
 
-    image             = context.getImageData( 0, 0, canvas.width, canvas.height );
-    imageData         = image.data;
+    image                = context.getImageData( 0, 0, canvas.width, canvas.height );
+    imageData            = image.data;
+
+    var time1 = 0, time2 = 0, time3 = 0;
 
     for ( var i = 0, j = 0; j < imageData.length; i += 4, j += 3 )
     {
+        if ( imageData[i] != 0 )
+        {
+            continue;
+        }
+
+        start2 = new Date().getTime();
+
         //  Extract the current vertex's normal vector from the normal components array ( [XYZ XYZ XYZ XY...] )
         normalVector.x = normalComponents[j];
         normalVector.y = normalComponents[j + 1];
@@ -306,78 +389,140 @@ function GenerateShadowMapTexture( geometry, sunPosition )
         normalVector.normalize();
 
         //  Angle as a value between 0 and 1
-        angle    = angleBetweenVectors3D( normalVector, sunPosition ) / Math.PI * 2;
+
+        angle = angleBetweenVectors3D( normalVector, sunPosition ) / Math.PI * 2;
+
+        if ( perfDebug )
+        {
+            time1 += ( new Date().getTime() - start2 );
+            start2 = new Date().getTime();
+        }
 
         //  Shade scaled to the value domain of a color value [0, 255]
-        shade    = angle * 255;
+        shade = angle * 255;
 
         //  High angle to sun = low shade (mountainside), low angle = high shade (flat land).
         //  Therefore, invert the shade value.
         shadeInv = 255 - shade;
-        shadeInv /= 2;
+
+        //  Global texture brightness
+        shadeInv *= TEXTUREBRIGHTNESS;
 
         var upAngle = angleBetweenVectors3D( normalVector, up ) / Math.PI * 2;
 
-        //  Subtract a fixed value and a relative value (based on depth) when the vertex is under water
-        //  Since this is a shadow map, set x, y and z values equally
-        if ( geometry.attributes.position.array[j + 1] > WATERLEVEL - 10)
+        if ( perfDebug )
         {
-            if ( geometry.attributes.position.array[j + 1] <= 2 && geometry.attributes.position.array[j + 1] >= -10 && upAngle <= 0.5 )
+            time2 += ( new Date().getTime() - start2 );
+            start2 = new Date().getTime();
+        }
+
+        /***********************************
+        *           ABOVE WATER            *
+        ***********************************/
+        if ( geometry.attributes.position.array[j + 1] > WATERLEVEL - 10 )
+        {
+
+            /***********************************
+            *           Flat, low ground       *
+            *               (Beach)            *
+            ***********************************/
+            if ( geometry.attributes.position.array[j + 1] <= BEACH_HEIGHT && upAngle <= BEACH_SLOPE )
             {
-                shadeInv /= 2.5;
-                imageData[i]     = (shadeInv * (geometry.attributes.position.array[j + 1] + 10)).clamp8Bit();
-                imageData[i + 1] = (shadeInv * (geometry.attributes.position.array[j + 1] + 10) * 0.85).clamp8Bit();
-                imageData[i + 2] = (shadeInv * 8).clamp8Bit();
+                shadeInv /= 5;
+                imageData[i]     = ( shadeInv * ( geometry.attributes.position.array[j + 1] + 20 ) * 0.85 ).clamp8Bit( CLAMP_GRASS );
+                imageData[i + 1] = ( shadeInv * ( geometry.attributes.position.array[j + 1] + 20 ) * 0.85 ).clamp8Bit( CLAMP_GRASS );
+                imageData[i + 2] = ( shadeInv * 13 ).clamp8Bit( CLAMP_GRASS );
             }
-            else if ( upAngle <= 0.4 && geometry.attributes.position.array[j + 1] <= 200 )
+
+                /***********************************
+                *        Flat, medium ground       *
+                *        (Grass and/or Tree)       *
+                ***********************************/
+            else if ( geometry.attributes.position.array[j + 1] <= randBetween( GRASS_HEIGHT, GRASS_HEIGHT * 1.5 ) && upAngle <= GRASS_SLOPE )
             {
-                imageData[i]     = shadeInv.clamp8Bit();
-                imageData[i + 1] = (shadeInv * ( 2 - upAngle )).clamp8Bit();
-                imageData[i + 2] = shadeInv.clamp8Bit();
+                /***********************************
+                *               GRASS              *
+                ***********************************/
+
+                imageData[i] = shadeInv.clamp8Bit( CLAMP_GRASS );
+                imageData[i + 1] = ( shadeInv * ( 2 - upAngle ) ).clamp8Bit( CLAMP_GRASS );
+                imageData[i + 2] = shadeInv.clamp8Bit( CLAMP_GRASS );
+
+                if ( geometry.attributes.position.array[j + 1] <= randBetween( TREE_HEIGHT, TREE_HEIGHT * 1.5 ) && upAngle <= TREE_SLOPE && Math.random() < ( TREE_DENSITY / 100 ) )
+                {
+                    /***********************************
+                    *              + TREE              *
+                    ***********************************/
+                    geometry.attributes.position.array[j + 1] += randBetween( TREE_HEIGHT_MIN, TREE_HEIGHT_MAX );
+
+                    //  Color not only the tree but also the adjacent vertices (prevents non-green tree sides)
+                    shadeInv *= randBetween( 0.7, 0.9 );
+                    var treeR = shadeInv.clamp8Bit( CLAMP_GRASS );
+                    var treeG = ( shadeInv * ( 2 - upAngle ) ).clamp8Bit( CLAMP_GRASS );
+                    var treeB = shadeInv.clamp8Bit( CLAMP_GRASS );
+                    for ( var k = -4; k <= 4; k += 4 )
+                    {
+                        imageData[i + k] = treeR
+                        imageData[i + 1 + k] = treeG;
+                        imageData[i + 2 + k] = treeB;
+                    }
+                }
+
             }
+
+                /***********************************
+                *        Sloped, high ground       *
+                *               (Rock)             *
+                ***********************************/
             else
             {
-                imageData[i]     = (shadeInv - Math.random() * 20).clamp8Bit();
-                imageData[i + 1] = (shadeInv - Math.random() * 20).clamp8Bit();
-                imageData[i + 2] = (shadeInv - Math.random() * 20).clamp8Bit();
+                imageData[i] =
+                imageData[i + 1] =
+                imageData[i + 2] = ( shadeInv + randBetween( -20, 20 ) ).clamp8Bit( CLAMP_ROCK );
             }
 
         }
+
+            /***********************************
+            *           BELOW WATER            *
+            ***********************************/
         else
         {
-            shadeInv -= 10;
-
-            imageData[i]     =
-            imageData[i + 1] = 
-            imageData[i + 2] = (Math.max(0, shadeInv + geometry.attributes.position.array[j + 1])).clamp8Bit();
+            shadeInv /= 5;
+            imageData[i] = ( geometry.attributes.position.array[j + 1] + 20 ) * 0.85.clamp8Bit( CLAMP_WATER );
+            imageData[i + 1] = ( geometry.attributes.position.array[j + 1] + 20 ) * 0.85.clamp8Bit( CLAMP_WATER );
+            imageData[i + 2] = (shadeInv * 13 - geometry.attributes.position.array[j + 1]).clamp8Bit( CLAMP_WATER );
         }
 
+        if ( perfDebug )
+        {
+            time3 += ( new Date().getTime() - start2 );
+            start2 = new Date().getTime();
+        }
     }
-
-    //  Smooth out color transitions
-    //for ( x = 0; x < 10; x++ )
-    //{
-    //    for ( var i = 4; i < imageData.length - 4; i += 4 )
-    //    {
-    //        imageData[i] = ( imageData[i - 4] + imageData[i + 4] ) / 2;
-    //        imageData[i + 1] = ( imageData[i - 3] + imageData[i + 5] ) / 2;
-    //        imageData[i + 2] = ( imageData[i - 2] + imageData[i + 6] ) / 2;
-    //    }
-    //}
-    
 
     context.putImageData( image, 0, 0 );
 
-    var texture   = new THREE.CanvasTexture( canvas );
+    var texture = new THREE.CanvasTexture( canvas );
     texture.wrapS = THREE.ClampToEdgeWrapping;
     texture.wrapT = THREE.ClampToEdgeWrapping;
+
+    log( start, new Date().getTime(), "Create Texture" );
+
+    if(perfDebug)
+    {
+        console.log( "- step 1 \t\t" + time1 );
+        console.log( "- step 2 \t\t" + time2 );
+        console.log( "- step 3 \t\t" + time3 );
+    }
+
 
     return texture;
 }
 
-Number.prototype.clamp8Bit = function ( )
+Number.prototype.clamp8Bit = function ( clamp )
 {
-    return Math.min( Math.max( this, 0 ), 255 );
+    return Math.min( Math.max( this, clamp[0] ), clamp[1] );
 };
 
 function debug_displayOnConsole()
@@ -403,3 +548,8 @@ function debug_displayOnConsole()
     s = "";
 }
 
+function log( start, end, step )
+{
+    var time = end - start;
+    console.log( step + "\t\t Execution time: " + time );
+}

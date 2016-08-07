@@ -94,6 +94,8 @@
     <Content Include="js\QualityLevels.js" />
     <Content Include="js\script.menu.js" />
     <Content Include="js\script.splashScreen.js" />
+    <Content Include="Resources\Box2d.min.js" />
+    <Content Include="Resources\OrbitControls.js" />
     <Content Include="Resources\stats.min.js" />
     <Content Include="Resources\jquery-2.2.4.min.js" />
     <Content Include="Resources\three.min.js" />
