@@ -94,8 +94,7 @@ var action = function(button)
             isInMenu = false;
             //printMenuState();
             $("#menu").css("visibility", "hidden");
-            $("#menuButton").css("visibility", "visible");
-            $("#minigameButton").css("visibility", "visible");
+            $(".hiddenInMenu").css("visibility", "visible");
             debug ? console.log("action(" + button + ") was performed.") : false;
             break;
         case "Optionen":

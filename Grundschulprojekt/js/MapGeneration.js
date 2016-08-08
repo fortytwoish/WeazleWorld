@@ -43,8 +43,9 @@ function GenerateIsland( size, waterLevel )
 
     console.log( "Map dimensions: " + ( dim - 1 ) + "² (2^" + size + ")" );
     console.log( pointToString( topLeft ) + " -- \t" + pointToString( topRight ) );
-    console.log( " | \t" + pointToString( middle ) + " \t| " );
+    console.log( " | \t\t" + pointToString( middle ) + " \t| " );
     console.log( pointToString( bottomLeft ) + " -- \t" + pointToString( bottomRight ) );
+	console.log("Using offset value: \t\t" + offset + " / " + TERRAIN_OFFSET);
 
 
     //  Set height values of play area before heightmap generation so it fits into the map nicely
@@ -203,7 +204,7 @@ function smoothUnderwater( height, reach )
 
 function smooth( smoothingArea, reach )
 {
-    if(VILLAGE_DIMENSIONS.x / 2 * smoothingArea > field.length)
+    if( middle.x - (VILLAGE_DIMENSIONS.x / 2  * smoothingArea) < 1 || middle.x + (VILLAGE_DIMENSIONS.x / 2 * smoothingArea) > field.length)
     {
         return;
     }

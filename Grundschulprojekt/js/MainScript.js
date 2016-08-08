@@ -7,8 +7,8 @@ const PAUSE_IN_MENU      = true;
 const WATERLEVEL         = 0;
 const WINDOW_CLEAR_COLOR = 0x4FABFF;
 const FOG_COLOR          = 0x4FABFF;
-const TERRAIN_RESOLUTION = 9;
-const TERRAIN_OFFSET     = 150;
+const TERRAIN_RESOLUTION = 7;
+TERRAIN_OFFSET     		 = 100;
 const SUN_POSITION       = new THREE.Vector3( 0.45, 1, 0.45 ).normalize();
 const VILLAGE_DIMENSIONS = new THREE.Vector3( 20, 20, WATERLEVEL + 4);
 
@@ -176,27 +176,58 @@ $( function ()
         preventRaycastOnce = true;
     } );
 
+	$("#newMapButton").click(function()
+	{
+		var terrainRes = parseInt(prompt("Which resolution? (7-12)"));
+
+        if (terrainRes != null && terrainRes >= 7 && terrainRes <= 12)
+        {
+			console.log("Creating new terrain: " + terrainRes);
+			//Generate new terrain
+			setQuality_TerrainResDependant(terrainRes);
+			
+			//      ISLAND
+			var islandGeom 		 = GenerateIsland(terrainRes, WATERLEVEL);
+			
+			/* texture test */
+			var islandMat        = new THREE.MeshPhongMaterial( { map: GenerateShadowMapTexture( islandGeom, SUN_POSITION ) } );
+			islandMat.shading    = THREE.FlatShading;
+			
+			scene.remove(islandMesh);
+			islandMesh = new THREE.Mesh( islandGeom, islandMat );
+			scene.add(islandMesh);
+				
+
+		}
+		else
+		{
+			//	Cancel was pressed
+		}
+	} );
 
     $( "#menuButton" ).click( function ()
     {
         isInMenu = true;
-
         $( "#menu" ).css( "visibility", "visible" );
+		
         $("#menuButton").css("visibility", "hidden");
         $("#minigameButton").css("visibility", "hidden");
+		$("#newMapButton").css("visibility", "hidden");
     } );
 
     //Test, to be replaced by clicks on the island's objects
     $( "#minigameButton" ).click( function ()
     {
-        minigameID = prompt("Which minigame? (1-3)");
+        var minigameID = prompt("Which minigame? (1-3)");
 
         if (minigameID != null)
         {
             isInMenu = true;
+            $("#minigame").css("visibility", "visible");
+			
             $("#menuButton").css("visibility", "hidden");
             $("#minigameButton").css("visibility", "hidden");
-            $("#minigame").css("visibility", "visible");
+			$("#newMapButton").css("visibility", "hidden");
             console.log("minigame button clicked.");
 
             console.log("Reading: " + "html/minigame" + minigameID + ".html");
