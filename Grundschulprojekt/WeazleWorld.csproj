@@ -83,6 +83,7 @@
     <Content Include="img\wood_box.jpg" />
     <Content Include="Index.html" />
     <Content Include="js\AuxFunctions.js" />
+    <Content Include="js\funcInterface.js" />
     <Content Include="js\MainScript.js" />
     <Content Include="js\MapGeneration.js" />
     <Content Include="img\treeGame\tree1.png" />

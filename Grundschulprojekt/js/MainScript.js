@@ -55,7 +55,7 @@ function init()
 
     controls.enableDamping   = false; //TODO: Enable this for touchscreens
 
-    controls.enablePan       = false
+    controls.enablePan      = false;
 
     controls.rotateSpeed     = 1;
     controls.zoomSpeed       = 1;
