@@ -203,6 +203,11 @@ function smoothUnderwater( height, reach )
 
 function smooth( smoothingArea, reach )
 {
+    if(VILLAGE_DIMENSIONS.x / 2 * smoothingArea > field.length)
+    {
+        return;
+    }
+
     //  Smooth out the plateau's edges
     for ( i = -( VILLAGE_DIMENSIONS.x / 2 ) * smoothingArea ; i <= ( VILLAGE_DIMENSIONS.x / 2 ) * smoothingArea ; i++ )
     {

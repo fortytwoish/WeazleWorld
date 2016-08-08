@@ -7,8 +7,8 @@ const PAUSE_IN_MENU      = true;
 const WATERLEVEL         = 0;
 const WINDOW_CLEAR_COLOR = 0x4FABFF;
 const FOG_COLOR          = 0x4FABFF;
-const TERRAIN_RESOLUTION = 11;
-const TERRAIN_OFFSET     = 700;
+const TERRAIN_RESOLUTION = 9;
+const TERRAIN_OFFSET     = 150;
 const SUN_POSITION       = new THREE.Vector3( 0.45, 1, 0.45 ).normalize();
 const VILLAGE_DIMENSIONS = new THREE.Vector3( 20, 20, WATERLEVEL + 4);
 
@@ -58,10 +58,8 @@ function init()
     controls.enablePan      = false;
 
     controls.rotateSpeed     = 1;
+    controls.autoRotateSpeed = 1;
     controls.zoomSpeed       = 1;
-    //SET THESE TO AUTOMATICALLY ROTATE, FOR EXAMPLE WHEN VIEWING STATUE
-    //controls.autoRotate      = true;
-    //controls.autoRotateSpeed = 1;
 
     //      ISLAND
     var islandGeom       = GenerateIsland(TERRAIN_RESOLUTION, WATERLEVEL);
@@ -141,6 +139,7 @@ function animate()
     stats.begin();
     if (!isInMenu)
     {
+        controls.autoRotate = false;
 
         /*  UPDATE SCENE HERE */
         if ( Math.random() <= 0.01 )
@@ -154,6 +153,11 @@ function animate()
         waterMesh.position.y = WATERLEVEL - Math.sin(Date.now() / 1500);
         camera.updateProjectionMatrix();
         //stats.update();
+    }
+    else
+    {
+        //SET THESE TO AUTOMATICALLY ROTATE, FOR EXAMPLE WHEN VIEWING STATUE
+        controls.autoRotate = true;
     }
 
     //  continue render loop
@@ -175,34 +179,38 @@ $( function ()
 
     $( "#menuButton" ).click( function ()
     {
-        if ( isInMenu )
-        {
-            return;
-        }
         isInMenu = true;
 
         $( "#menu" ).css( "visibility", "visible" );
-        $( "#menuButton" ).css( "visibility", "hidden" );
+        $("#menuButton").css("visibility", "hidden");
+        $("#minigameButton").css("visibility", "hidden");
     } );
 
     //Test, to be replaced by clicks on the island's objects
     $( "#minigameButton" ).click( function ()
     {
-        if ( isInMenu )
-        {
-            return;
-        }
-        isInMenu = true;
+        minigameID = prompt("Which minigame? (1-3)");
 
-        minigameID = prompt( "Which minigame? (1-3)" );
-        console.log( "minigame button clicked." );
-        $( "#minigame" ).css( "visibility", "visible" );
-        console.log( "Reading: " + "html/minigame" + minigameID + ".html" );
-        $.get( "html/minigame" + minigameID + ".html", function ( data )
+        if (minigameID != null)
         {
-            console.log( "Contents: " + data );
-            $( "#minigame" ).html( data );
-        } );
+            isInMenu = true;
+            $("#menuButton").css("visibility", "hidden");
+            $("#minigameButton").css("visibility", "hidden");
+            $("#minigame").css("visibility", "visible");
+            console.log("minigame button clicked.");
+
+            console.log("Reading: " + "html/minigame" + minigameID + ".html");
+            $.get("html/minigame" + minigameID + ".html", function (data) {
+                console.log("Contents: " + data);
+                $("#minigame").html(data);
+            });
+        }
+        else
+        {
+            //Cancel was pressed
+        }
+
+
 
     } );    
 
@@ -216,13 +224,16 @@ $( function ()
     } );
 });
 
+//Initial
+var subsampleFactor = 4;
+
 function onWindowResize()
 {
-    var scrollbarSize = 7;
+    var scrollbarSize = 0;
 
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-	renderer.setPixelRatio(1);
+    renderer.setPixelRatio(window.devicePixelRatio / subsampleFactor);
     renderer.setSize( window.innerWidth - scrollbarSize, window.innerHeight - scrollbarSize );
 
 }
@@ -297,6 +308,31 @@ function onkeydown( event )
     else if ( event.key == "v" )
     {
         ambLight.color.b -= 0.05;
+    }
+    else if ( event.key == "1" )
+    {
+        subsampleFactor = 1;
+	onWindowResize();
+    }
+    else if ( event.key == "2" )
+    {
+        subsampleFactor = 2;
+	onWindowResize();
+    }
+    else if ( event.key == "3" )
+    {
+        subsampleFactor = 4;
+	onWindowResize();
+    }
+    else if ( event.key == "4" )
+    {
+        subsampleFactor = 8;
+	onWindowResize();
+    }
+    else if ( event.key == "5" )
+    {
+        subsampleFactor = 16;
+	onWindowResize();
     }
 }
 

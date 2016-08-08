@@ -1,7 +1,9 @@
 #menu {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     position: absolute;
-    background-color: rgba(171,171,171,0.95);
+    background-color: rgba(74, 124, 186, 0.40);
+    border: 5px solid #555;
+    border-radius: 10px;
     vertical-align: middle;
     padding: 20px;
     box-sizing: border-box;

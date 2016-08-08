@@ -3,7 +3,8 @@ var logo = "img/logo.png";
 var mainGame = "#mainGame";
 
 $(function () {
-    $(mainGame).css("display", "none");
+    //$(mainGame).css("display", "none");
+    $(menu).hide();
     $(appendToo + " *").remove();
     $(appendToo).append('<img src="' + logo + '" alt="Das Logo">');
     $(appendToo).append('<h1>Press Key or Mouse</h1>');
@@ -15,21 +16,21 @@ $(function () {
 
     $( appendToo ).on( "click touchstart", function ( e )
     {
-        $( appendToo ).off( "click" );
-        $( appendToo ).off( "touchstart" );
-        $(appendToo).off("keyup");
-        $(appendToo).css("display", "none");
-        $(mainGame).css("display", "");
-        initMenu();
+        splashscreenInteract();
     });
     $(appendToo).on("keyup", function (e) {
-        $( appendToo ).off( "click" );
-        $( appendToo ).off( "touchstart" );
-        $(appendToo).off("keyup");
-        $(appendToo).css("display", "none");
-        $(mainGame).css("display", "");
-        initMenu();
+        splashscreenInteract()
     } );
 
     $(appendToo).focus();
 });
+
+function splashscreenInteract()
+{
+    $(appendToo).off("click");
+    $(appendToo).off("touchstart");
+    $(appendToo).off("keyup");
+    $(appendToo).css("display", "none");
+    $(menu).show();
+    initMenu();
+}
