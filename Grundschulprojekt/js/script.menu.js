@@ -116,6 +116,11 @@ var action = function(button)
 */
 
 $(function () {
+    resizeMenu();
+});
+
+function resizeMenu()
+{
     var posX = (($(appendTo).parent().width() / 2) - (size[0] / 2));
     var posY = (($(appendTo).parent().height() / 2) - (size[1] / 2));
     $(appendTo).css(
@@ -126,4 +131,4 @@ $(function () {
             "top": posY
         }
     );
-});
+}

@@ -494,10 +494,13 @@ function GenerateShadowMapTexture( geometry, sunPosition )
             ***********************************/
         else
         {
+		geometry.attributes.position.array[j + 1] = -16384;
+/*
             shadeInv /= 5;
             imageData[i] = ( geometry.attributes.position.array[j + 1] + 20 ) * 0.85.clamp8Bit( CLAMP_WATER );
             imageData[i + 1] = ( geometry.attributes.position.array[j + 1] + 20 ) * 0.85.clamp8Bit( CLAMP_WATER );
             imageData[i + 2] = (shadeInv * 13 - geometry.attributes.position.array[j + 1]).clamp8Bit( CLAMP_WATER );
+*/
         }
 
         if ( perfDebug )

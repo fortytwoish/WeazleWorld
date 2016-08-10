@@ -71,7 +71,7 @@ function init()
 
     //      WATER
     var waterGeom        = new THREE.PlaneBufferGeometry( 16384, 16384, 1, 1 );
-    var waterMat         = new THREE.MeshPhongMaterial( { color: 0x0077DD, transparent: true, opacity: 0.95, specular: 0xFFFFFF, shininess: 10 } );
+    var waterMat         = new THREE.MeshPhongMaterial( { color: 0x0044BB, transparent: false, specular: 0xFFFFFF, shininess: 10 } );
     waterMesh            = new THREE.Mesh( waterGeom, waterMat );
     waterMesh.position.z = WATERLEVEL;
     waterMesh.rotation.x = degreeToRad( -90 );
@@ -183,9 +183,11 @@ $( function ()
         if (terrainRes != null && terrainRes >= 7 && terrainRes <= 12)
         {
 			console.log("Creating new terrain: " + terrainRes);
+
 			//Generate new terrain
 			setQuality_TerrainResDependant(terrainRes);
-			
+			controls.update(); //Necessary to bring the camera into bounds
+
 			//      ISLAND
 			var islandGeom 		 = GenerateIsland(terrainRes, WATERLEVEL);
 			
@@ -267,6 +269,8 @@ function onWindowResize()
     renderer.setPixelRatio(window.devicePixelRatio / subsampleFactor);
     renderer.setSize( window.innerWidth - scrollbarSize, window.innerHeight - scrollbarSize );
 
+    resizeSplashScreen();
+    resizeMenu();
 }
 
 raycaster = new THREE.Raycaster();

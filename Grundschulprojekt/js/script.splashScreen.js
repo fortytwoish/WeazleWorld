@@ -9,10 +9,7 @@ $(function () {
     $(appendToo).append('<img src="' + logo + '" alt="Das Logo">');
     $(appendToo).append('<h1>Press Key or Mouse</h1>');
 
-    var posX = (($(appendTo).parent().width() / 2) - ($(appendToo).width() / 2));
-    var posY = (($(appendTo).parent().height() / 2) - ($(appendToo).height() / 2));
-
-    $(appendToo).css({"left": posX, "top": posY});
+    resizeSplashScreen();
 
     $( appendToo ).on( "click touchstart", function ( e )
     {
@@ -33,4 +30,12 @@ function splashscreenInteract()
     $(appendToo).css("display", "none");
     $(menu).show();
     initMenu();
+}
+
+function resizeSplashScreen()
+{
+    var posX = (($(appendTo).parent().width() / 2) - ($(appendToo).width() / 2));
+    var posY = (($(appendTo).parent().height() / 2) - ($(appendToo).height() / 2));
+
+    $(appendToo).css({ "left": posX, "top": posY });
 }
