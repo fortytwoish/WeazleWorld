@@ -23,8 +23,8 @@ var item = function(key, value)
 */
 
 var mainMenu = new Array();
-mainMenu.push(new item("Start", "button"));
-mainMenu.push(new item("Optionen", "button"));
+mainMenu.push(new item("START", "button"));
+mainMenu.push(new item("OPTIONEN", "button"));
 
 var options = new Array();
 options.push(new item("Lautstärke", "range"));
@@ -64,7 +64,7 @@ var drawMenu = function(menuArr)
         {
             $(appendTo).append('<input class="menuAnimate" type="' + menuArr[i].value + '" value="' + menuArr[i].key + '">');
             debug ? console.log("Menu added '" + menuArr[i].key + "' entry.") : false;
-            $( "[value=" + menuArr[i].key + "]" ).on( "click touchstart", function ( e )
+            $( "[value=" + menuArr[i].key + "]" ).on( "click touchSTART", function ( e )
             {
                 var entryName = $(this).attr("value");
                 action(entryName);
@@ -90,14 +90,14 @@ var action = function(button)
 {
     switch(button)
     {
-        case "Start":
+        case "START":
             isInMenu = false;
             //printMenuState();
             $("#menu").css("visibility", "hidden");
             $(".hiddenInMenu").css("visibility", "visible");
             debug ? console.log("action(" + button + ") was performed.") : false;
             break;
-        case "Optionen":
+        case "OPTIONEN":
             drawMenu(options);
             debug ? console.log("action(" + button + ") was performed.") : false;
             break;

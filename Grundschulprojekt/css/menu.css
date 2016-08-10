@@ -1,21 +1,25 @@
 #menu {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
     position: absolute;
-    background-color: rgba(74, 124, 186, 0.40);
-    border: 5px solid #555;
-    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.65);
+    border: 2px solid #faf9d9;
+    border-radius: 20px;
     vertical-align: middle;
     padding: 20px;
     box-sizing: border-box;
 }
 #menu input{
+    font-family: 'Calibri';
+    letter-spacing: 2px;
+    font-weight: bold;
     display: block;
-    background-color: #555;
-    width: 70%;
+    background-color: #298AF4;
     border: none;
+    border-radius: 10px;
+    width: 70%;
     font-size: 20pt;
     margin: 20px auto;
-    color: #FFF;
+    color: #BFFFFF;
     padding: 5px;
 }
 #menu h1{
