@@ -27,3 +27,41 @@
 {
     height: 30px;
 }
+
+/*
+    trying things for messagebox
+*/
+
+#messageBox {
+ visibility:hidden;
+ background-color: yellow;
+ display: inline-block;
+ margin: 1em;
+ border-style: dotted; 
+ border: 10px;
+ position:absolute; 
+ top:2%; 
+ right:2%;
+ text-align: center;
+}
+#messageBoxContent {
+  background-color:yellow;
+  display: table;
+  height:  100px;
+  width:   300px;
+  padding: 10px;
+  padding-bottom: 30px;
+  border:  thin solid darkgray;
+}
+#messageBoxContent #messageBoxContentParagraph {
+  display:        table-cell;
+  vertical-align: middle;
+  
+}
+
+#messsageBoxButton
+{
+   position: absolute;
+    bottom: 0;
+    right:35%
+}

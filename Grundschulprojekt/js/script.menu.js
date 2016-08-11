@@ -95,6 +95,7 @@ var action = function(button)
             //printMenuState();
             $("#menu").css("visibility", "hidden");
             $(".hiddenInMenu").css("visibility", "visible");
+            $("#messageBox").css("visibility", "visible");
             debug ? console.log("action(" + button + ") was performed.") : false;
             break;
         case "OPTIONEN":

@@ -245,7 +245,22 @@ $( function ()
 
 
 
-    } );    
+    });
+
+    $("#showMessageBoxButton").click(function () {
+
+        console.log("Toggling Messagebox");
+        $("#messageBox").css("visibility", "visible");
+        $("#messageBox").toggle("slow");
+
+    });
+
+    $("#messsageBoxButton").click(function () {
+        $("#messageBoxContentParagraph").text(" ");
+
+        $("#messageBoxContentParagraph").append(getNextMessageBoxText());
+    });
+    
 
     //Menu Buttons - to be moved into menu.html
     $( "#continueButton" ).click( function ()
