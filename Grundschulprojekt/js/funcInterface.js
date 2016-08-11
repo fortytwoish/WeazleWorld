@@ -1,143 +1,174 @@
 //Init States
-var GAME_STATES = { "SPLASH", "START", "MENU", "MAIN", "MINIGAME_1", "MINIGAME_2", "MINIGAME_3", "SCORE_SCREEN"},
-var DIFFICULTIES = {"EASY", "NORMAL" , "HARD"};
-var STATUE_STATES = { "NOT_STARTED", "IN_CONSTRUCTION", "CONSTRUCTED"};
+var GAME_STATES = { 1:"SPLASH", 2:"START", 3:"MENU", 4:"MAIN", 5:"MINIGAME_1", 6:"MINIGAME_2", 7:"MINIGAME_3", 8:"SCORE_SCREEN"};
+var DIFFICULTIES = { 1:"EASY", 2:"NORMAL" , 3:"HARD"};
+var STATUE_STATES = { 1:"NOT_STARTED", 2:"IN_CONSTRUCTION", 3:"CONSTRUCTED"};
 
 var gameState = GAME_STATES.SPLASH;
 var difficulty = DIFFICULTIES.NORMAL;
 
-var statueModel = new int[];
+var statueModel = new [];
 var statueState = STATUE_STATES.NOT_STARTED;
-///////////// ----MG1------ / ----MG2------ / -----MG3---------- /
-//[0] possible [1] MG1Done  | [2] possible [3] MG2Done | [4] possible [5] MG3Done;
-statueModel = {0,0,0,0,0,0};
 
+///////////// ----MG1------ / ----MG2------ / -----MG3---------- /
+///////////// [0] MG1Done [1] accuracy  | [2] MG2Done [3] accuracy  | [4] MG3Done [5] accuracy;
+statueModel = {MG1Done:0 , MG1Accuracy:0 , MG2Done:0 , MG2Accuracy:0 , MG3Done:0 , MG3Accuracy:0};
 
 //initializing Menu 
 //INT 0<->1
 var volume_level = 1;
-var GRAPHIC_QUALITIES = { "VERY_LOW" ; "LOW" ; "MEDIUM"; "HIGH"; "MAXIMUM"};
+var GRAPHIC_QUALITIES = { 1:"VERY_LOW" , 2:"LOW" , 3:"MEDIUM", 4:"HIGH", 5:"MAXIMUM"};
 var graphicQuality = GRAPHIC_QUALITIES.MEDIUM;
 
-//Construction of MiniGame Database
-//--------//--------//-------//---------------//
-//	MG1 :  Played=>[0] Won => [1] Lost => [2] Accuracy=> [3]
-//	MG2 :  Played=>[4] Won => [5] Lost => [6] Accuracy=> [7] 
-//	MG3 :  Played=>[8] Won => [9] Lost =>[10] Accuracy=>[11]
 var MINIGAME_STATE = new int[12];
-MINIGAME_STATE = {0,0,0,0,0,0,0,0,0,0,0,0};
+//Construction of MiniGame Database
+//-----//--------------//-----------//--------//----------//--------------//
+//	MG1         : Possible=>[0]    Played=>[1]    Won => [2]  Lost => [3]  Accuracy=> [4]
+//	MG2         : Possible=>[5]    Played=>[6]    Won => [7]  Lost => [8]  Accuracy=> [9] 
+//	MG3         : Possible=>[10]   Played=>[11]    Won =>[12] Lost =>[13]  Accuracy=>[14]
+MINIGAME_STATE = {MG1Possible: 0 , MG1Played: 0 , MG1Won: 0 , MG1Lost: 0 , MG1Accuracy: 0 ,
+                  MG2Possible: 0 , MG2Played: 0 , MG2Won: 0 , MG2Lost: 0 , MG1Accuracy: 0 ,
+                  MG3Possibel: 0 , MG3Played: 0 , MG3Won: 0 , MG3Lost: 0 , MG2Accuracy: 0 };
 
-    function minigameWon(var minigameNumber, var points, var lostTries)
+    function minigameWon(minigameNumber, points, lostTries)
     {
-        if(minigameNumber == 1){
+        if(minigameNumber == 1)
         {
-            MINIGAME_STATE[0] +=    tries+1;
-            MINIGAME_STATE[1] +=    1;
-            MINIGAME_STATE[2] +=    lostTries;
-            MINIGAME_STATE[3] +=    points;
+            MINIGAME_STATE[1] +=    tries+1;
+            MINIGAME_STATE[2] +=    1;
+            MINIGAME_STATE[3] +=    lostTries;
+            MINIGAME_STATE[4] +=    points;
         }
         if(minigameNumber == 2)
         {
-	        MINIGAME_STATE[4] +=    tries+1;
-            MINIGAME_STATE[5] +=    1;
-            MINIGAME_STATE[6] +=    lostTries;
-            MINIGAME_STATE[7] +=    points;
+	        MINIGAME_STATE[6] +=    tries+1;
+            MINIGAME_STATE[7] +=    1;
+            MINIGAME_STATE[8] +=    lostTries;
+            MINIGAME_STATE[9] +=    points;
         }
         if(minigameNumber == 3)
         {
-            MINIGAME_STATE[8]  +=   tries+1;
-            MINIGAME_STATE[9]  +=   1;
-            MINIGAME_STATE[10] +=   lostTries;
-            MINIGAME_STATE[11] +=   points;
-        }	
+            MINIGAME_STATE[11] +=   tries+1;
+            MINIGAME_STATE[12] +=   1;
+            MINIGAME_STATE[13] +=   lostTries;
+            MINIGAME_STATE[14] +=   points;
+        }
     }
 
-    function initialize_StatueModel(mg1Max, mg2Max, mg3Max){
-        ///////////// ----MG1------ / ----MG2----------------- / -----MG3---------- /
-        //[0] possible [1] MG1Done  | [2] possible [3] MG2Done | [4] possible [5] MG3Done;
-        //statueModel = {0,0,0,0,0,0};
-        statueModel[0] = mg1Max;
-        statueModel[2] = mg2Max;
-        statuteModel[4] = mg3Max;
+    //Construction of MiniGame Database
+    //-------------//--------------//---------------//----------//-----------//--------------//
+    //	MG1         : Possible=>[0]    Played=>[1]    Won => [2]  Lost => [3]  Accuracy=> [4]
+    //	MG2         : Possible=>[5]    Played=>[6]    Won => [7]  Lost => [8]  Accuracy=> [9] 
+    //	MG3         : Possible=>[10]   Played=>[11]   Won =>[12]  Lost =>[13]  Accuracy=>[14]
+    function initialize_MinigameStateModel(mg1Possible, mg2Possible, mg3Possible){
+        MINIGAME_STATE.MG1Possible = mg1Possible;
+        MINIGAME_STATE.MG2Possible = mg2Possible;
+        MINIGAME_STATE.MG3Possible = mg3Possible;
     }
 
-    function start_Minigame1(){
-        //return html of mg1
+    //<<draft>> starting Minigame via minigameID
+    function start_Minigame(minigameID) {
+        $("#minigame").css("visibility", "visible");
+			
+        $("#menuButton").css("visibility", "hidden");
+        $("#minigameButton").css("visibility", "hidden");
+        $("#newMapButton").css("visibility", "hidden");
+        console.log("minigame button clicked.");
+
+        console.log("Reading: " + "html/minigame" + minigameID + ".html");
+        $.get("html/minigame" + minigameID + ".html", function (data) {
+            console.log("Contents: " + data);
+            $("#minigame").html(data);
+        });
     }
 
-    function start_Minigame2(){
-        //return html of mg2
+        //returns possible starts of MG1 (possible-played)
+    function canStartMG1(){
+        return MINIGAME_STATE.MG1Possible - MINIGAME_STATE.MG1Played;
     }
-    function start_Minigame3(){
-        //return html of mg3
+    
+    //returns possible starts of MG1 (possible-played)
+    function canStartMG2(){
+        return MINIGAME_STATE.MG2Possible - MINIGAME_STATE.MG2Played;
+    }
+    
+    //returns possible starts of MG1 (possible-played)
+    function canStartMG1(){
+        return MINIGAME_STATE.MG3Possible - MINIGAME_STATE.MG3Played;
     }
 
+    //Returns: int[15]
+    //	MG1         : Possible=>[0]    Played=>[1]    Won => [2]  Lost => [3]  Accuracy=> [4]
+    //	MG2         : Possible=>[5]    Played=>[6]    Won => [7]  Lost => [8]  Accuracy=> [9] 
+    //	MG3         : Possible=>[10]   Played=>[11]   Won =>[12]  Lost =>[13]  Accuracy=>[14]
+    //-------------//--------------//---------------//----------//-----------//--------------//
     function getMinigameStates(){
-        int tmp[] = new int[12];
+        tmp = new int[15];
 	
-        for(var i = 0; i<12; i++){
+        for(var i = 0; i<15; i++){
             tmp[i] = MINIGAME_STATE[i]
         }
         return tmp;
     }
 
+    //Returns: int[5]
+    //	MG1         : Possible=>[0]    Played=>[1]    Won => [2]  Lost => [3]  Accuracy=> [4]
+    //-------------//--------------//---------------//----------//-----------//--------------//
     function getMinigameOneState(){
-        int tmp[] = new int[4];
-        for(var i = 0; i<4; i++){
+        tmp = new int[5];
+        for(var i = 0; i<5; i++){
             tmp[i] = MINIGAME_STATE[i]
         }
         return tmp;
     }
 
+    //Returns: int[5]
+    //	MG2         : Possible=>[5]    Played=>[6]    Won => [7]  Lost => [8]  Accuracy=> [9] 
+    //-------------//--------------//---------------//----------//-----------//--------------//
     function getMinigameTwoState(){
-        int tmp[] = new int[4];
-        for(var i = 4; i<9; i++){
+        tmp = new int[5];
+        for(var i = 5; i<10; i++){
             tmp[i] = MINIGAME_STATE[i];
         }
         return tmp;
     }
-
+    
+    //Returns: int[5]
+    //	MG3         : Possible=>[10]   Played=>[11]   Won =>[12]  Lost =>[13]  Accuracy=>[14]
+    //-------------//--------------//---------------//----------//-----------//--------------//
     function getMinigameThreeState(){
-        int tmp[] = new int[4];
-        for(var i = 9; i<13; i++){
+        tmp = new int[4];
+        for(var i = 10; i<15; i++){
             tmp[i] = MINIGAME_STATE[i];
         }
         return tmp;
     }
 
+    //returns current StatueState
     function getStatueState(){
         return statueState;
     }
-
-
-    function getGameState()
+    
+    //returns current GameState
+    function getGameState(){
         return gameState;
     }
 
+    //draft <-<
     function click_SplashScreen(){
         gameState = GAME_STATES.START;
         //Start other scripts..		
     }
 
     //sets volume from 0-100
-    function setVolume(var a){
-        if(a>100) volume_level = 100;
-        else if(a<0) volume_level = 0;
-        else volume_level = a;
+    function setVolume(volume){
+        if(volume>100) volume_level = 100;
+        else if(volume<0) volume_level = 0;
+        else volume_level = volume;
     }
 
-    function setDifficulty(var _diff){
+    //sets difficulty DIFFICULTY.EASY//.MEDIUM//.HARD
+    function setDifficulty(_diff){
         difficulty = _diff;
-
-        if(_diff = DIFFICULTIES.EASY){
-            _diff = DIFFICULTIES.EASY;
-        }
-        else if(_diff == DIFFICULTIES.NORMAL){
-            difficulty = DIFFICULTIES.NORMAL
-        }
-        else if (_diff == DIFFICULTIES.HARD){
-            difficulty = DIFFICULTIES.HARD;
-        }
     }
 
     //Param= Quality settings concept ( CONST In MAP GEN)
@@ -150,34 +181,46 @@ MINIGAME_STATE = {0,0,0,0,0,0,0,0,0,0,0,0};
     function showCreditsScreen(){
         //TODO
     } 
-
-    function debug_PrintMinigameStates
+    
+        //Construction of MiniGame Database
+    //-----//--------------//-----------//--------//----------//--------------//
+    //	MG1         : Possible=>[0]    Played=>[1]    Won => [2]  Lost => [3]  Accuracy=> [4]
+    //	MG2         : Possible=>[5]    Played=>[6]    Won => [7]  Lost => [8]  Accuracy=> [9] 
+    //	MG3         : Possible=>[10]   Played=>[11]   Won =>[12]  Lost =>[13]  Accuracy=>[14]
+    function debug_PrintMinigameStates()
     {
-    //	MG1 :  Played=>[0] Won => [1] Lost => [2] Accuracy=> [3]
-    //	MG2 :  Played=>[4] Won => [5] Lost => [6] Accuracy=> [7] 
-    //	MG3 :  Played=>[8] Won => [9] Lost =>[10] Accuracy=>[11]
-        console.log("Minigame1: Played: " + MINIGAME_STATE[0] + " Won: " + MINIGAME_STATE[1] + " Lost: " + MINIGAME_STATE[2] + " Accuracy " + MINIGAME_STATE[3]);
-        console.log("Minigame2: Played: " + MINIGAME_STATE[4] + " Won: " + MINIGAME_STATE[5] + " Lost: " + MINIGAME_STATE[6] + " Accuracy " + MINIGAME_STATE[7]);
-        console.log("Minigame3: Played: " + MINIGAME_STATE[8] + " Won: " + MINIGAME_STATE[9] + " Lost: " + MINIGAME_STATE[10] + " Accuracy " + MINIGAME_STATE[12]);
+        console.log("Minigame1: Possible: " + MINIGAME_STATE[0] + " Played: " + MINIGAME_STATE[1] + " Won: " + MINIGAME_STATE[2] + " Lost " + MINIGAME_STATE[3] + " Accuracy:" + MINIGAME_STATE[4]);
+        console.log("Minigame1: Possible: " + MINIGAME_STATE[5] + " Played: " + MINIGAME_STATE[6] + " Won: " + MINIGAME_STATE[7] + " Lost " + MINIGAME_STATE[8] + " Accuracy:" + MINIGAME_STATE[9]);
+        console.log("Minigame1: Possible: " +MINIGAME_STATE[10] + " Played: " +MINIGAME_STATE[11] + " Won: " +MINIGAME_STATE[12] + " Lost " +MINIGAME_STATE[13] + " Accuracy:" + MINIGAME_STATE[14]);
+        
     }
 
+    //Print Debug: GameState
     function debug_PrintGameState(){
         console.log("Game State: " + gameState);
     }
 
+    //Print Debug: StatueState
     function debug_PrintStatueState(){
         console.log("Statue State: " + statueState);
     }
 
+    //Print Debug: Settings
     function debug_PrintSettings(){
         console.log("Difficulty : " + difficulty + " Volume Level: " + volumeLevel + " Graphic Quality : " + graphicQuality);
     }
-
+    
+    //Function to initialize the statue Model(possibles) according to prior set Difficulty
     function initialize_StatueModel(){
         switch (difficulty){
-            case "MEDIUM": 
-                statueModel[0]=statueModel[2]=statueModel[4] = 3;
-                //....
+            case DIFFICULTIES.EASY:
+                MINIGAME_STATE.MG1Possible=MINIGAME_STATE.MG1Possible=MINIGAME_STATE.MG1Possible = 2;
+            case DIFFICULTIES.MEDIUM:
+                MINIGAME_STATE.MG1Possible=MINIGAME_STATE.MG1Possible=MINIGAME_STATE.MG1Possible = 3;
+            case DIFFICULTIES.HARD:
+                MINIGAME_STATE.MG1Possible=MINIGAME_STATE.MG1Possible=MINIGAME_STATE.MG1Possible = 4;
+            default:
+                console.log("Init of StatueModel Possibilities Failed (Wrong Difficulty)");
         }
     }
 
@@ -195,3 +238,4 @@ MINIGAME_STATE = {0,0,0,0,0,0,0,0,0,0,0,0};
         Herzlichen Glückwunsch, Du hast die erste Aufgabe erfolgreich bewältigt! 
         Zu Deinen Ehren baut das Weazle Volk eine Statue. 
         Es ist von deinen Ergebnissen abhängig, wie hoch die Statue wird undaus welchem Material sie bestehen wird.
+        */
