@@ -1,0 +1,10 @@
+.maingameButtonDiv {
+    max-width: 100px;
+    position:absolute;
+    top:50px;
+}
+.maingameButtonDiv button{
+    margin: 4px;
+    width:100%;
+    visibility:hidden;
+}

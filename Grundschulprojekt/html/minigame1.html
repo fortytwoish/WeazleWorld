@@ -1,13 +1,27 @@
 ﻿<h1>minigame1</h1>
 <button id="exitMinigameButton" style="margin:auto">Exit</button>
+<button id="winMinigameButton"  style="margin:auto">Win</button>
+<button id="loseMinigameButton" style="margin:auto">Lose</button>
 <script>
         $(function () {
             $("#exitMinigameButton").click(function () {
-                isInMenu = false;
-                console.log("exitMinigame button clicked.");
-                parent.printMenuState();
-                $("#minigame").css("visibility", "hidden");
-                $("#minigameButton").css("visibility", "visible");
-            });
+                resetMinigame();
+                exitMinigame( 1 );
+            } );
+            $( "#winMinigameButton" ).click( function ()
+            {
+                resetMinigame();
+                minigameWon( 1 );
+            } );
+            $( "#loseMinigameButton" ).click( function ()
+            {
+                resetMinigame();
+                minigameLost( 1 );
+            } );
+
+            function resetMinigame()
+            {
+                //TODO
+            }
         });
 </script>

@@ -1,23 +1,23 @@
 ﻿//  Shadow clamp values (prevents full white and full black)
-const CLAMP_ROCK  = [30, 250];
-const CLAMP_GRASS = [30, 250];
-const CLAMP_WATER = [0, 255];
+const CLAMP_ROCK        = [30, 150];
+const CLAMP_GRASS       = [30, 250];
+const CLAMP_WATER       = [0, 255];
 const TEXTUREBRIGHTNESS = 0.5;
 
 
 //  "Biome" borders (upper limits)
-const BEACH_HEIGHT = 3.25;
-const BEACH_SLOPE  = 0.5;
-const GRASS_HEIGHT = 150;
-const GRASS_SLOPE  = 0.65;
-const TREE_HEIGHT  = 100;
-const TREE_SLOPE   = 0.45;
-const SNOW_HEIGHT  = 500;
+const BEACH_HEIGHT      = 3.25;
+const BEACH_SLOPE       = 0.5;
+const GRASS_HEIGHT      = 150;
+const GRASS_SLOPE       = 0.65;
+const TREE_HEIGHT       = 100;
+const TREE_SLOPE        = 0.45;
+const SNOW_HEIGHT       = 750;
 
 //  Chance of a fitting vertex being changed to a tree, in percent
-const TREE_DENSITY    = 15;
-const TREE_HEIGHT_MIN = 2;
-const TREE_HEIGHT_MAX = 4;
+const TREE_DENSITY      = 15;
+const TREE_HEIGHT_MIN   = 2;
+const TREE_HEIGHT_MAX   = 4;
 
 function GenerateIsland( size, waterLevel )
 {
@@ -378,11 +378,19 @@ function GenerateMaterial( geometry, sunPosition )
 
     var time1 = 0, time2 = 0, time3 = 0;
 
-    /*************************************
-    *       COLOR VALUE PER FACE         *
-    *************************************/
+    var fieldX = 0, fieldY = 0;
+
     for ( var i = 0, j = 0; j < imageData.length; i += 4, j += 3 )
     {
+        fieldX++;
+
+        if(fieldX >= dim)
+        {
+
+            fieldY++;
+            fieldX = 0;
+        }
+
         if ( imageData[i] != 0 )
         {
             continue;
@@ -430,12 +438,12 @@ function GenerateMaterial( geometry, sunPosition )
         ***********************************/
         if ( geometry.attributes.position.array[j + 1] > WATERLEVEL - 10 )
         {
-
             /***********************************
             *           Flat, low ground       *
             *               (Beach)            *
             ***********************************/
-            if ( geometry.attributes.position.array[j + 1] <= BEACH_HEIGHT && upAngle <= BEACH_SLOPE )
+
+            if ( geometry.attributes.position.array[j + 1] <= BEACH_HEIGHT&& upAngle <= BEACH_SLOPE )
             {
                 shadeInv /= 5;
                 imageData[i]     = ( shadeInv * ( geometry.attributes.position.array[j + 1] + 20 ) * 0.85 ).clamp8Bit( CLAMP_GRASS );
@@ -458,28 +466,25 @@ function GenerateMaterial( geometry, sunPosition )
 
                 if ( geometry.attributes.position.array[j + 1] <= randBetween( TREE_HEIGHT, TREE_HEIGHT * 1.5 ) && upAngle <= TREE_SLOPE && Math.random() < ( TREE_DENSITY / 100 ) )
                 {
-                    /***********************************
-                    *              + TREE              *
-                    ***********************************/
-                    geometry.attributes.position.array[j + 1] += randBetween( TREE_HEIGHT_MIN, TREE_HEIGHT_MAX );
+                    //  Don't generate trees in the play area
+                    if (   Math.abs( dim / 2 - fieldX ) > VILLAGE_DIMENSIONS.x
+                        || Math.abs( dim / 2 - fieldY ) > VILLAGE_DIMENSIONS.y )
+                    {                    
+                        /***********************************
+                        *              + TREE              *
+                        ***********************************/
+                        geometry.attributes.position.array[j + 1] += randBetween( TREE_HEIGHT_MIN, TREE_HEIGHT_MAX );
 
-                    //  Color not only the tree but also the adjacent vertices (prevents non-green tree sides)
-                    shadeInv *= randBetween( 0.7, 0.9 );
+                        shadeInv *= randBetween( 0.7, 0.9 );
 
-                    var treeR =   shadeInv                    .clamp8Bit( CLAMP_GRASS );
-                    var treeG = ( shadeInv * ( 2 - upAngle ) ).clamp8Bit( CLAMP_GRASS );
-                    var treeB =   shadeInv                    .clamp8Bit( CLAMP_GRASS );
-
-                    for ( var k = -4; k <= 4; k += 4 )
-                    {
-                        imageData[i + k]     = treeR
-                        imageData[i + 1 + k] = treeG;
-                        imageData[i + 2 + k] = treeB;
+                        imageData[i]     =   shadeInv                    .clamp8Bit( CLAMP_GRASS );
+                        imageData[i + 1] = ( shadeInv * ( 2 - upAngle ) ).clamp8Bit( CLAMP_GRASS );
+                        imageData[i + 2] =   shadeInv                    .clamp8Bit( CLAMP_GRASS );
                     }
                 }
 
             }
-            else if ( geometry.attributes.position.array[j + 1] >= randBetween( SNOW_HEIGHT * 0.75, SNOW_HEIGHT ) && upAngle <= 0.8 )
+            else if ( geometry.attributes.position.array[j + 1] >= randBetween( SNOW_HEIGHT * 0.95, SNOW_HEIGHT ) && upAngle <= 0.85 )
             {
                 /***********************************
                 *               SNOW              *

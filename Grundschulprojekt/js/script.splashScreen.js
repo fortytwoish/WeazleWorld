@@ -30,6 +30,8 @@ function splashscreenInteract()
     $(appendToo).css("display", "none");
     $(menu).show();
     initMenu();
+
+    endedSplashScreen();
 }
 
 function resizeSplashScreen()

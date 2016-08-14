@@ -19,19 +19,20 @@
     <link type="text/css" rel="stylesheet" href="css/foo.css">
     <link type="text/css" rel="stylesheet" href="css/menu.css">
     <link type="text/css" rel="stylesheet" href="css/splashScreen.css">
+    <link type="text/css" rel="stylesheet" href="css/maingame.css">
 </head>
 <body>
     <div id="mainGame" style="position:absolute; ">
 
         <!--MessageBox Placeholder at top right corner-->
-        <div id='messageBox'>
+        <div id='messageBox' class="menu blockRaycast">
             <div id='messageBoxContent'>
 
                 <p id='messageBoxContentParagraph'>
                         hallo YO
                 </p>
-                <input type="button" id="messsageBoxButton" value="Weiter" />
             </div>
+            <input type="button" id="messageBoxButton" value="Weiter" />
         </div>
 
      
@@ -40,17 +41,17 @@
         <script src="js/MainScript.js"></script>
 
         <!--MainGame Buttons-->
-        <div style="max-width: 82px; position:absolute; top:50px; ">
-            <button id="menuButton" class="blockRaycast hiddenInMenu" style="width:100%; visibility:hidden;">Menu</button>
-            <button id="minigameButton" class="blockRaycast hiddenInMenu" style="width:100%; visibility:hidden;">Minigame</button>
-            <button id="newMapButton" class="blockRaycast hiddenInMenu" style="width:100%; visibility:hidden;">New Map</button>
-            <button id="showMessageBoxButton" class="blockRaycast hiddenInMenu" style="width:100%; visibility:hidden;">MessageBox</button>
+        <div class="maingameButtonDiv">
+            <button id="menuButton" class="blockRaycast hiddenInMenu" >Menu</button>
+            <button id="minigameButton" class="blockRaycast hiddenInMenu" >Minigame</button>
+            <button id="newMapButton" class="blockRaycast hiddenInMenu" >New Map</button>
+            <button id="showMessageBoxButton" class="blockRaycast hiddenInMenu" >MessageBox</button>
         </div>
         <!--Placeholder div for minigame content-->
         <div id="minigame" position="relative" class="centeredMenu minigame blockRaycast" height="100%" width="100%"></div>
 
         <!--Menu centered horizontally at half width-->
-        <div id="menu" class="blockRaycast">    
+        <div id="menu" class="menu blockRaycast">    
             <h1>MENU</h1>
             <button id="continueButton" style="margin:auto">Continue</button>
         </div>

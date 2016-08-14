@@ -23,7 +23,7 @@ var item = function(key, value)
 */
 
 var mainMenu = new Array();
-mainMenu.push(new item("START", "button"));
+mainMenu.push(new item("WEITER", "button"));
 mainMenu.push(new item("OPTIONEN", "button"));
 
 var options = new Array();
@@ -64,7 +64,7 @@ var drawMenu = function(menuArr)
         {
             $(appendTo).append('<input class="menuAnimate" type="' + menuArr[i].value + '" value="' + menuArr[i].key + '">');
             debug ? console.log("Menu added '" + menuArr[i].key + "' entry.") : false;
-            $( "[value=" + menuArr[i].key + "]" ).on( "click touchSTART", function ( e )
+            $( "[value=" + menuArr[i].key + "]" ).on( "click touchstart", function ( e )
             {
                 var entryName = $(this).attr("value");
                 action(entryName);
@@ -90,12 +90,8 @@ var action = function(button)
 {
     switch(button)
     {
-        case "START":
-            isInMenu = false;
-            //printMenuState();
-            $("#menu").css("visibility", "hidden");
-            $(".hiddenInMenu").css("visibility", "visible");
-            $("#messageBox").css("visibility", "visible");
+        case "WEITER":
+            continueMainGame();
             debug ? console.log("action(" + button + ") was performed.") : false;
             break;
         case "OPTIONEN":

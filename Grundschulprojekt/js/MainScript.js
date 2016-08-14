@@ -15,7 +15,11 @@ const LIGHTSTR           = 0.8;
 const OPPOSITE_LIGHTSTR  = 0.5;
 const OPPOSITE_LIGHTCOL  = 0xDDDDFF;
 const VILLAGE_DIMENSIONS = new THREE.Vector3( 20, 20, WATERLEVEL + 4 );
-
+const STATUE_DIMENSIONS  = new THREE.Vector3( 10, 10, 10 );
+const STATUE_SHRINK_DIM  = new THREE.Vector3( 2,  2,  1 );
+const STATUE_GOLD_MAT    = new THREE.MeshPhongMaterial({color: 0xFF0000});
+const STATUE_SILVER_MAT  = new THREE.MeshPhongMaterial({color: 0x00FF00});
+const STATUE_BRONZE_MAT  = new THREE.MeshPhongMaterial({color: 0x0000FF});
 
 //  LOCALS
 var camera,
@@ -25,6 +29,7 @@ var camera,
     waterMesh,
     raftMesh,
     test_weazle,
+    test_statues = [],
     subsampleFactor = 1;
 
 waterCreated = false;
@@ -38,16 +43,16 @@ function main()
 function init()
 {
     //------------------------------------------------------//
-    //                  SCENE                               //
-    //------------------------------------------------------//
-    scene            = new THREE.Scene();
-    scene.fog        = new THREE.FogExp2( FOG_COLOR, 0.0004 );
-
-    //------------------------------------------------------//
     //                  RENDERER                            //
     //------------------------------------------------------//
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setClearColor( WINDOW_CLEAR_COLOR );
+    initRenderer();
+
+    //------------------------------------------------------//
+    //                  SCENE                               //
+    //------------------------------------------------------//
+    scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2( FOG_COLOR, 0.0004 );
+
 
     //------------------------------------------------------//
     //                  CAMERA                              //
@@ -71,74 +76,32 @@ function init()
 
     controls.enableDamping   = false; //TODO: Enable this for touchscreens
 
-    controls.enablePan      = false;
+    controls.enablePan       = true;
 
     controls.rotateSpeed     = 1;
     controls.autoRotateSpeed = 1;
     controls.zoomSpeed       = 1;
 
     //------------------------------------------------------//
-    //                  ISLAND                               //
+    //                  ISLAND                              //
     //------------------------------------------------------//
-    var islandGeom       = GenerateIsland(TERRAIN_RESOLUTION, WATERLEVEL);
-    var islandMat        = new THREE.MeshPhongMaterial( { map: GenerateMaterial( islandGeom, SUN_POSITION ) } );
-    islandMat.shading    = THREE.FlatShading;
-    islandMesh           = new THREE.Mesh( islandGeom, islandMat );
+    initIsland();
+
 
     //------------------------------------------------------//
     //                  WATER                               //
     //------------------------------------------------------//
-    var textureLoader = new THREE.TextureLoader();
-
-    textureLoader.load( 'img/waternormals.jpg', function (loadedTexture) //Called when the texture has finished loading
-    {
-        loadedTexture.wrapS = loadedTexture.wrapT = THREE.RepeatWrapping;
-
-        water = new THREE.Water( renderer, camera, scene,
-        {
-            //  Optional Parameters
-            textureWidth:    1024,
-            textureHeight:   1024,
-            waterNormals:    loadedTexture,
-            alpha:           0.9,
-            waterColor:      WATERCOLOR,
-            distortionScale: 15
-        } );
-
-        var planeGeom           = new THREE.PlaneBufferGeometry( 8192, 8192, 10, 10 );
-
-        waterPlane              = new THREE.Mesh( planeGeom, water.material );
-        waterPlane.rotation.x   = -Math.PI * 0.5;
-        waterPlane.add( water );
-
-        scene.add( waterPlane );
-
-        waterCreated = true;
-    });
+    initWater();
     
-    //  TEST_WEAZLE
-    var test_weazle_geom    = new THREE.CubeGeometry( 0.1, 0.5, 0.1 );
-    var test_weazle_mat     = new THREE.MeshBasicMaterial( { color: 0xFF3C22 } );
-    test_weazle             = new THREE.Mesh( test_weazle_geom, test_weazle_mat );
-    test_weazle.position.x  = 0;
-    test_weazle.position.y  = VILLAGE_DIMENSIONS.z + 0.25;
-    test_weazle.position.z  = 0;
-    var head                = new THREE.Mesh( new THREE.SphereGeometry( 0.125, 8, 8 ), new THREE.MeshBasicMaterial( { color: 0xDDCC77 } ) );
-    head.position.y         = 0.3;
-    test_weazle.add( head );
-    test_light              = new THREE.PointLight( 0xCC6611, 2, 4, 0 );
-    test_light.position.y   = 2;
-    test_weazle.add( test_light );
+    //------------------------------------------------------//
+    //                  WEAZLES                             //
+    //------------------------------------------------------//
+    initWeazles();
 
     //------------------------------------------------------//
-    //                  SUN LIGHT                           //
+    //                  LIGHTING                            //
     //------------------------------------------------------//
-    var directionalLight  = new THREE.DirectionalLight( 0xFFFFFF, LIGHTSTR );
-        directionalLight.position.set( SUN_POSITION.x, SUN_POSITION.y, SUN_POSITION.z );
-
-    //  Opposing sun light (fake light reflected from water to lighten shadows)
-    var directionalLight2 = new THREE.DirectionalLight( OPPOSITE_LIGHTCOL, OPPOSITE_LIGHTSTR );
-        directionalLight2.position.set( -SUN_POSITION.x, SUN_POSITION.y, -SUN_POSITION.z );
+    initLighting();
 
     //------------------------------------------------------//
     //                  -> SCENE                            //
@@ -168,6 +131,82 @@ function init()
 
     //  Call a window resize to ensure everything fits
     onWindowResize();
+}
+
+function initRenderer()
+{
+    renderer = new THREE.WebGLRenderer( { antialias: true } );
+    renderer.setClearColor( WINDOW_CLEAR_COLOR );
+}
+
+function initIsland()
+{
+    var islandGeom      = GenerateIsland( TERRAIN_RESOLUTION, WATERLEVEL );
+    var islandMat       = new THREE.MeshPhongMaterial(
+                        {
+                            map: GenerateMaterial( islandGeom, SUN_POSITION )
+                        } );
+    islandMat.shading   = THREE.FlatShading;
+    islandMesh          = new THREE.Mesh( islandGeom, islandMat );
+}
+
+function initWater()
+{
+    var textureLoader = new THREE.TextureLoader();
+
+    textureLoader.load( 'img/waternormals.jpg', function ( loadedTexture ) //Called when the texture has finished loading
+    {
+        loadedTexture.wrapS = loadedTexture.wrapT = THREE.RepeatWrapping;
+
+        water = new THREE.Water( renderer, camera, scene,
+        {
+            //  Optional Parameters
+            textureWidth: 1024,
+            textureHeight: 1024,
+            waterNormals: loadedTexture,
+            alpha: 0.9,
+            waterColor: WATERCOLOR,
+            distortionScale: 15
+        } );
+
+        var planeGeom = new THREE.PlaneBufferGeometry( 8192, 8192, 10, 10 );
+
+        waterPlane = new THREE.Mesh( planeGeom, water.material );
+        waterPlane.rotation.x = -Math.PI * 0.5;
+        waterPlane.add( water );
+
+        scene.add( waterPlane );
+
+        waterCreated = true;
+    } );
+}
+
+function initWeazles()
+{
+    //  test
+
+    var test_weazle_geom = new THREE.CubeGeometry( 0.1, 0.5, 0.1 );
+    var test_weazle_mat = new THREE.MeshBasicMaterial( { color: 0xFF3C22 } );
+    test_weazle = new THREE.Mesh( test_weazle_geom, test_weazle_mat );
+    test_weazle.position.x = 0;
+    test_weazle.position.y = VILLAGE_DIMENSIONS.z + 0.25;
+    test_weazle.position.z = 0;
+    var head = new THREE.Mesh( new THREE.SphereGeometry( 0.125, 8, 8 ), new THREE.MeshBasicMaterial( { color: 0xDDCC77 } ) );
+    head.position.y = 0.3;
+    test_weazle.add( head );
+    test_light = new THREE.PointLight( 0xCC6611, 2, 4, 0 );
+    test_light.position.y = 2;
+    test_weazle.add( test_light );
+}
+
+function initLighting()
+{
+    directionalLight = new THREE.DirectionalLight( 0xFFFFFF, LIGHTSTR );
+    directionalLight.position.set( SUN_POSITION.x, SUN_POSITION.y, SUN_POSITION.z );
+
+    //  Opposing sun light (fake light reflected from water to lighten shadows)
+    directionalLight2 = new THREE.DirectionalLight( OPPOSITE_LIGHTCOL, OPPOSITE_LIGHTSTR );
+    directionalLight2.position.set( -SUN_POSITION.x, SUN_POSITION.y, -SUN_POSITION.z );
 }
 
 //  Caution: Mostly debug stuff still
@@ -237,22 +276,7 @@ $( function ()
 
         if (terrainRes != null && terrainRes >= 7 && terrainRes <= 12)
         {
-			console.log("Creating new terrain: " + terrainRes);
-
-			//Generate new terrain
-			setQuality_TerrainResDependant(terrainRes);
-			controls.update(); //Necessary to bring the camera into bounds
-
-			//      ISLAND
-			var islandGeom 		 = GenerateIsland(terrainRes, WATERLEVEL);
-			
-			/* texture test */
-			var islandMat        = new THREE.MeshPhongMaterial( { map: GenerateMaterial( islandGeom, SUN_POSITION ) } );
-			islandMat.shading    = THREE.FlatShading;
-			
-			scene.remove(islandMesh);
-			islandMesh = new THREE.Mesh( islandGeom, islandMat );
-			scene.add(islandMesh);
+            click_MapGenStart( terrainRes );
 		}
 		else
 		{
@@ -262,12 +286,7 @@ $( function ()
 
     $( "#menuButton" ).click( function ()
     {
-        isInMenu = true;
-        $( "#menu" ).css( "visibility", "visible" );
-		
-        $("#menuButton").css("visibility", "hidden");
-        $("#minigameButton").css("visibility", "hidden");
-		$("#newMapButton").css("visibility", "hidden");
+        openMenu();
     } );
 
     //Test, to be replaced by clicks on the island's objects
@@ -275,54 +294,20 @@ $( function ()
     {
         var minigameID = prompt("Which minigame? (1-3)");
 
-        if (minigameID != null)
+        if ( minigameID != null )
         {
-            isInMenu = true;
-            $("#minigame").css("visibility", "visible");
-			
-            $("#menuButton").css("visibility", "hidden");
-            $("#minigameButton").css("visibility", "hidden");
-			$("#newMapButton").css("visibility", "hidden");
-            console.log("minigame button clicked.");
-
-            console.log("Reading: " + "html/minigame" + minigameID + ".html");
-            $.get("html/minigame" + minigameID + ".html", function (data) {
-                console.log("Contents: " + data);
-                $("#minigame").html(data);
-            });
+            startMinigame( minigameID );
         }
-        else
-        {
-            //Cancel was pressed
-        }
-
-
-
     });
 
     $("#showMessageBoxButton").click(function () {
-
-        console.log("Toggling Messagebox");
-        $("#messageBox").css("visibility", "visible");
-        $("#messageBox").toggle("slow");
-
+        click_MessageBox();
     });
 
-    $("#messsageBoxButton").click(function () {
-        $("#messageBoxContentParagraph").text(" ");
-
-        $("#messageBoxContentParagraph").append(getNextMessageBoxText());
-    });
-    
-
-    //Menu Buttons - to be moved into menu.html
-    $( "#continueButton" ).click( function ()
+    $( "#messageBoxButton" ).click( function ()
     {
-        isInMenu = false;
-
-        $( "#menu" )      .css( "visibility", "hidden" );
-        $( "#menuButton" ).css( "visibility", "visible" );
-    } );
+        click_MessageBoxWeiter();
+    });
 });
 
 //TODO: Find a better method to go fullscreen
@@ -364,7 +349,7 @@ function onDocumentMouseDown( event )
 
     event.preventDefault();
 
-    mouse.x =  (event.clientX / renderer.domElement.clientWidth)  * 2 - 1;
+    mouse.x =  ( event.clientX / renderer.domElement.clientWidth  ) * 2 - 1;
     mouse.y = -( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
@@ -420,6 +405,61 @@ function onkeydown( event )
         subsampleFactor = 16;
 	    onWindowResize();
     }
+}
+
+//------------------------------------------------------//
+//             INTERFACE IMPLEMENTATION                 //
+//------------------------------------------------------//
+function OnStatueModelChanged( minigameID )
+{
+    // Reference:
+    // { MG1Done:0 , MG1Accuracy:0 , MG2Done:0 , MG2Accuracy:0 , MG3Done:0 , MG3Accuracy:0, ... };
+    var currentStatueModel = getStatueModel();
+
+    //  1. Remove existing statue segment at that position
+    if ( test_statues[minigameID] != null )
+    {
+        scene.remove( test_statues[minigameID] );
+    }
+
+    //  2. Create new statue segment
+    var segmentGeom            = new THREE.BoxGeometry( STATUE_DIMENSIONS.x, STATUE_DIMENSIONS.y, STATUE_DIMENSIONS.z );
+
+    var minigameAcc = currentStatueModel[getStatueModelIndex(minigameID) + 1];
+
+    var segmentMat  = minigameAcc <= (1 / 3)
+                    ? STATUE_BRONZE_MAT
+                    : minigameAcc <= (2 / 3)
+                    ? STATUE_SILVER_MAT
+                    : STATUE_GOLD_MAT;
+
+    var segmentMesh = new THREE.Mesh( segmentGeom, segmentMat );
+        segmentMesh.position.y = STATUE_DIMENSIONS.z * ( minigameID - 1 );
+
+    test_statues[minigameID] = segmentMesh;
+    scene.add( segmentMesh );
+}
+
+function OnStatueStateChanged()
+{
+    // Reference:
+    // { 1:"NOT_STARTED", 2:"IN_CONSTRUCTION", 3:"CONSTRUCTED"};
+    var currentStatueState = getStatueState();
+
+    if( currentStatueState == "NOT_STARTED" )
+    {
+        if ( test_statue != null )
+        {
+            scene.remove( test_statue );
+        }
+
+        test_statue = null;
+    }
+}
+
+function OnMinigameAvailabilityChanged()
+{
+    
 }
 
 main();

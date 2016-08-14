@@ -30,7 +30,7 @@
 
 /*
     trying things for messagebox
-*/
+
 
 #messageBox {
  visibility:hidden;
@@ -64,4 +64,32 @@
    position: absolute;
     bottom: 0;
     right:35%
+}*/
+
+#messageBox {
+ visibility:hidden;
+ display: inline-block;
+ margin: 1em;
+ position:absolute; 
+ top:2%; 
+ right:2%;
+ text-align: center;
+}
+#messageBoxContent {
+  display: table;
+  color: white;
+  height:  100px;
+  width:   300px;
+  padding: 10px;
+  padding-bottom: 30px;
+}
+#messageBoxContent #messageBoxContentParagraph {
+  display:        table-cell;
+  vertical-align: middle;
+  
+}
+#messageBoxButton
+{
+   margin: auto;
+   vertical-align: bottom;
 }
