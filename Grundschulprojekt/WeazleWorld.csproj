@@ -80,7 +80,7 @@
     <Content Include="img\treeGame\tree2.png" />
     <Content Include="img\treeGame\tree3.png" />
     <Content Include="img\treeGame\woods.jpg" />
-    <Content Include="img\wood_box.jpg" />
+    <Content Include="img\waternormals.jpg" />
     <Content Include="Index.html" />
     <Content Include="js\AuxFunctions.js" />
     <Content Include="js\funcInterface.js" />
@@ -95,6 +95,7 @@
     <Content Include="js\QualityLevels.js" />
     <Content Include="js\script.menu.js" />
     <Content Include="js\script.splashScreen.js" />
+    <Content Include="Resources\water-material.js" />
     <Content Include="Resources\Box2d.min.js" />
     <Content Include="Resources\OrbitControls.js" />
     <Content Include="Resources\stats.min.js" />

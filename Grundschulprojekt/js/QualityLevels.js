@@ -44,9 +44,9 @@
 }
 
 function setQuality_TerrainResDependant( terrainRes )
-{	
+{
 	var dim = Math.pow(2, terrainRes);
-	waterMesh.scale.set(1/2, 1, 1/2); //test
+	//waterMesh.scale.set(1/2, 1, 1/2); //test
 	camera.far = dim * 2;
 	controls.maxDistance = Math.pow(2, terrainRes - 1);
 	

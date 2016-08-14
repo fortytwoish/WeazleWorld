@@ -12,6 +12,7 @@ const GRASS_HEIGHT = 150;
 const GRASS_SLOPE  = 0.65;
 const TREE_HEIGHT  = 100;
 const TREE_SLOPE   = 0.45;
+const SNOW_HEIGHT  = 500;
 
 //  Chance of a fitting vertex being changed to a tree, in percent
 const TREE_DENSITY    = 15;
@@ -89,10 +90,7 @@ function GenerateIsland( size, waterLevel )
     start = new Date().getTime();
 
     //  Smooth underwater
-    //for ( i = 10; i > 1; i-- )
-    //{
-    //    smoothUnderwater( waterLevel - 2, i + 1 );
-    //}
+    smoothUnderwater( waterLevel - 10, 1 );
 
     log( start, new Date().getTime(), "Smooth water" );
 
@@ -344,10 +342,12 @@ function diamondStep( depth,
 
 var perfDebug = false;
 
-function GenerateShadowMapTexture( geometry, sunPosition )
+function GenerateMaterial( geometry, sunPosition )
 {
     start = new Date().getTime();
 
+    //  The geometry's faces' normal vertices are used to compute their angle towards the sun as well as 
+    //  their slope.
     geometry.computeVertexNormals();
 
     if ( perfDebug )
@@ -378,6 +378,9 @@ function GenerateShadowMapTexture( geometry, sunPosition )
 
     var time1 = 0, time2 = 0, time3 = 0;
 
+    /*************************************
+    *       COLOR VALUE PER FACE         *
+    *************************************/
     for ( var i = 0, j = 0; j < imageData.length; i += 4, j += 3 )
     {
         if ( imageData[i] != 0 )
@@ -436,7 +439,7 @@ function GenerateShadowMapTexture( geometry, sunPosition )
             {
                 shadeInv /= 5;
                 imageData[i]     = ( shadeInv * ( geometry.attributes.position.array[j + 1] + 20 ) * 0.85 ).clamp8Bit( CLAMP_GRASS );
-                imageData[i + 1] = ( shadeInv * ( geometry.attributes.position.array[j + 1] + 20 ) * 0.85 ).clamp8Bit( CLAMP_GRASS );
+                imageData[i + 1] = ( shadeInv * ( geometry.attributes.position.array[j + 1] + 20 ) * 0.8 ) .clamp8Bit( CLAMP_GRASS );
                 imageData[i + 2] = ( shadeInv * 13 ).clamp8Bit( CLAMP_GRASS );
             }
 
@@ -449,7 +452,6 @@ function GenerateShadowMapTexture( geometry, sunPosition )
                 /***********************************
                 *               GRASS              *
                 ***********************************/
-
                 imageData[i] = shadeInv.clamp8Bit( CLAMP_GRASS );
                 imageData[i + 1] = ( shadeInv * ( 2 - upAngle ) ).clamp8Bit( CLAMP_GRASS );
                 imageData[i + 2] = shadeInv.clamp8Bit( CLAMP_GRASS );
@@ -463,17 +465,30 @@ function GenerateShadowMapTexture( geometry, sunPosition )
 
                     //  Color not only the tree but also the adjacent vertices (prevents non-green tree sides)
                     shadeInv *= randBetween( 0.7, 0.9 );
-                    var treeR = shadeInv.clamp8Bit( CLAMP_GRASS );
+
+                    var treeR =   shadeInv                    .clamp8Bit( CLAMP_GRASS );
                     var treeG = ( shadeInv * ( 2 - upAngle ) ).clamp8Bit( CLAMP_GRASS );
-                    var treeB = shadeInv.clamp8Bit( CLAMP_GRASS );
+                    var treeB =   shadeInv                    .clamp8Bit( CLAMP_GRASS );
+
                     for ( var k = -4; k <= 4; k += 4 )
                     {
-                        imageData[i + k] = treeR
+                        imageData[i + k]     = treeR
                         imageData[i + 1 + k] = treeG;
                         imageData[i + 2 + k] = treeB;
                     }
                 }
 
+            }
+            else if ( geometry.attributes.position.array[j + 1] >= randBetween( SNOW_HEIGHT * 0.75, SNOW_HEIGHT ) && upAngle <= 0.8 )
+            {
+                /***********************************
+                *               SNOW              *
+                ***********************************/
+                shadeInv *= 5;
+
+                imageData[i]     = shadeInv.clamp8Bit( CLAMP_ROCK );
+                imageData[i + 1] = shadeInv.clamp8Bit( CLAMP_ROCK );
+                imageData[i + 2] = shadeInv.clamp8Bit( CLAMP_ROCK );
             }
 
                 /***********************************
@@ -482,9 +497,12 @@ function GenerateShadowMapTexture( geometry, sunPosition )
                 ***********************************/
             else
             {
-                imageData[i] =
+                shadeInv += randBetween( -20, 20 );
+                shadeInv *= 1.75;
+
+                imageData[i]     = ( shadeInv + 12 ).clamp8Bit( CLAMP_ROCK );
                 imageData[i + 1] =
-                imageData[i + 2] = ( shadeInv + randBetween( -20, 20 ) ).clamp8Bit( CLAMP_ROCK );
+                imageData[i + 2] = shadeInv         .clamp8Bit( CLAMP_ROCK );
             }
 
         }
@@ -494,13 +512,12 @@ function GenerateShadowMapTexture( geometry, sunPosition )
             ***********************************/
         else
         {
-		geometry.attributes.position.array[j + 1] = -16384;
-/*
+
             shadeInv /= 5;
-            imageData[i] = ( geometry.attributes.position.array[j + 1] + 20 ) * 0.85.clamp8Bit( CLAMP_WATER );
-            imageData[i + 1] = ( geometry.attributes.position.array[j + 1] + 20 ) * 0.85.clamp8Bit( CLAMP_WATER );
-            imageData[i + 2] = (shadeInv * 13 - geometry.attributes.position.array[j + 1]).clamp8Bit( CLAMP_WATER );
-*/
+            imageData[i] = ( shadeInv * ( 0 + 20 ) * 0.85 + geometry.attributes.position.array[j + 1] ).clamp8Bit( CLAMP_GRASS );
+            imageData[i + 1] = ( shadeInv * ( 0 + 20 ) * 0.85 + geometry.attributes.position.array[j + 1] ).clamp8Bit( CLAMP_GRASS );
+            imageData[i + 2] = ( shadeInv * 13 + geometry.attributes.position.array[j + 1] ).clamp8Bit( CLAMP_GRASS );
+
         }
 
         if ( perfDebug )

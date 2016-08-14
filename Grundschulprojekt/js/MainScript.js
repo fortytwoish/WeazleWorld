@@ -1,16 +1,21 @@
 ﻿//  GLOBALS
 isInMenu           = true;
 preventRaycastOnce = false;
+TERRAIN_OFFSET     = 200;
+TERRAIN_RESOLUTION = 9;
 
 //  CONSTANTS
 const PAUSE_IN_MENU      = true;
 const WATERLEVEL         = 0;
-const WINDOW_CLEAR_COLOR = 0x4FABFF;
+const WATERCOLOR         = 0x55AAAA;
+const WINDOW_CLEAR_COLOR = 0x4FABEE;
 const FOG_COLOR          = 0x4FABFF;
-const TERRAIN_RESOLUTION = 7;
-TERRAIN_OFFSET     		 = 100;
 const SUN_POSITION       = new THREE.Vector3( 0.45, 1, 0.45 ).normalize();
-const VILLAGE_DIMENSIONS = new THREE.Vector3( 20, 20, WATERLEVEL + 4);
+const LIGHTSTR           = 0.8;
+const OPPOSITE_LIGHTSTR  = 0.5;
+const OPPOSITE_LIGHTCOL  = 0xDDDDFF;
+const VILLAGE_DIMENSIONS = new THREE.Vector3( 20, 20, WATERLEVEL + 4 );
+
 
 //  LOCALS
 var camera,
@@ -19,7 +24,10 @@ var camera,
     islandMesh,
     waterMesh,
     raftMesh,
-    test_weazle;
+    test_weazle,
+    subsampleFactor = 1;
+
+waterCreated = false;
 
 function main()
 {
@@ -29,29 +37,37 @@ function main()
 
 function init()
 {
-    //  SCENE
+    //------------------------------------------------------//
+    //                  SCENE                               //
+    //------------------------------------------------------//
     scene            = new THREE.Scene();
     scene.fog        = new THREE.FogExp2( FOG_COLOR, 0.0004 );
 
-    //  RENDERER
+    //------------------------------------------------------//
+    //                  RENDERER                            //
+    //------------------------------------------------------//
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setClearColor( WINDOW_CLEAR_COLOR );
 
-    //  CAMERA
-    camera            = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 4, 8192);
+    //------------------------------------------------------//
+    //                  CAMERA                              //
+    //------------------------------------------------------//
+    camera            = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 4, 3000000 );
     camera.position.x = 0;
     camera.position.y = 10;
     camera.position.z = 35;
     camera.lookAt( new THREE.Vector3( 0, 50, 0 ) );
 
-    //      CAMERA CONTROLS
+    //------------------------------------------------------//
+    //                  CAMERA CONTROLS                     //
+    //------------------------------------------------------//
     controls                 = new THREE.OrbitControls( camera, renderer.domElement );
 
     controls.minDistance     = 30;
     controls.maxDistance     = Math.pow(2, TERRAIN_RESOLUTION - 1);
 
-    controls.minPolarAngle   = degreeToRad( 0 );     //  | (0)   |/  (~15)    |_ (90) 
-    controls.maxPolarAngle   = degreeToRad( 80 );
+    controls.minPolarAngle   = degreeToRad( 5 );     //  | (0)   |/  (~15)    |_ (90) 
+    controls.maxPolarAngle   = degreeToRad( 85 );
 
     controls.enableDamping   = false; //TODO: Enable this for touchscreens
 
@@ -61,26 +77,49 @@ function init()
     controls.autoRotateSpeed = 1;
     controls.zoomSpeed       = 1;
 
-    //      ISLAND
+    //------------------------------------------------------//
+    //                  ISLAND                               //
+    //------------------------------------------------------//
     var islandGeom       = GenerateIsland(TERRAIN_RESOLUTION, WATERLEVEL);
-    
-    /* texture test */
-    var islandMat        = new THREE.MeshPhongMaterial( { map: GenerateShadowMapTexture( islandGeom, SUN_POSITION ) } );
+    var islandMat        = new THREE.MeshPhongMaterial( { map: GenerateMaterial( islandGeom, SUN_POSITION ) } );
     islandMat.shading    = THREE.FlatShading;
     islandMesh           = new THREE.Mesh( islandGeom, islandMat );
 
-    //      WATER
-    var waterGeom        = new THREE.PlaneBufferGeometry( 16384, 16384, 1, 1 );
-    var waterMat         = new THREE.MeshPhongMaterial( { color: 0x0044BB, transparent: false, specular: 0xFFFFFF, shininess: 10 } );
-    waterMesh            = new THREE.Mesh( waterGeom, waterMat );
-    waterMesh.position.z = WATERLEVEL;
-    waterMesh.rotation.x = degreeToRad( -90 );
+    //------------------------------------------------------//
+    //                  WATER                               //
+    //------------------------------------------------------//
+    var textureLoader = new THREE.TextureLoader();
+
+    textureLoader.load( 'img/waternormals.jpg', function (loadedTexture) //Called when the texture has finished loading
+    {
+        loadedTexture.wrapS = loadedTexture.wrapT = THREE.RepeatWrapping;
+
+        water = new THREE.Water( renderer, camera, scene,
+        {
+            //  Optional Parameters
+            textureWidth:    1024,
+            textureHeight:   1024,
+            waterNormals:    loadedTexture,
+            alpha:           0.9,
+            waterColor:      WATERCOLOR,
+            distortionScale: 15
+        } );
+
+        var planeGeom           = new THREE.PlaneBufferGeometry( 8192, 8192, 10, 10 );
+
+        waterPlane              = new THREE.Mesh( planeGeom, water.material );
+        waterPlane.rotation.x   = -Math.PI * 0.5;
+        waterPlane.add( water );
+
+        scene.add( waterPlane );
+
+        waterCreated = true;
+    });
     
-    //      TEST_WEAZLE
+    //  TEST_WEAZLE
     var test_weazle_geom    = new THREE.CubeGeometry( 0.1, 0.5, 0.1 );
     var test_weazle_mat     = new THREE.MeshBasicMaterial( { color: 0xFF3C22 } );
     test_weazle             = new THREE.Mesh( test_weazle_geom, test_weazle_mat );
-    //test_weazle.rotation.y = -Math.PI;
     test_weazle.position.x  = 0;
     test_weazle.position.y  = VILLAGE_DIMENSIONS.z + 0.25;
     test_weazle.position.z  = 0;
@@ -91,41 +130,47 @@ function init()
     test_light.position.y   = 2;
     test_weazle.add( test_light );
 
-    //      SUN LIGHT
-    var lightStr = 0.8;
-    var directionalLight = new THREE.DirectionalLight( 0xFFFFFF, lightStr );
-    directionalLight.position.set( SUN_POSITION.x, SUN_POSITION.y, SUN_POSITION.z );
+    //------------------------------------------------------//
+    //                  SUN LIGHT                           //
+    //------------------------------------------------------//
+    var directionalLight  = new THREE.DirectionalLight( 0xFFFFFF, LIGHTSTR );
+        directionalLight.position.set( SUN_POSITION.x, SUN_POSITION.y, SUN_POSITION.z );
 
-    var directionalLight2 = new THREE.DirectionalLight( 0xDDDDFF, lightStr / 2 );
-    directionalLight2.position.set( -SUN_POSITION.x, SUN_POSITION.y, -SUN_POSITION.z );
+    //  Opposing sun light (fake light reflected from water to lighten shadows)
+    var directionalLight2 = new THREE.DirectionalLight( OPPOSITE_LIGHTCOL, OPPOSITE_LIGHTSTR );
+        directionalLight2.position.set( -SUN_POSITION.x, SUN_POSITION.y, -SUN_POSITION.z );
 
-    //      AMBIENT LIGHT (reduce shadow darkness)
-    ambLight = new THREE.AmbientLight( 0xA09086, 1.5 );
-
-    //  PLACE INTO SCENE
-    scene    .add( test_weazle )
-    scene    .add( islandMesh );
-    scene    .add( waterMesh );
+    //------------------------------------------------------//
+    //                  -> SCENE                            //
+    //------------------------------------------------------//
+    scene.add( test_weazle );
+    scene.add( islandMesh );
 
     scene.add( directionalLight );
     scene.add( directionalLight2 );
-    //scene    .add( ambLight );
 
-    //  EVENT BINDING
+    //------------------------------------------------------//
+    //                  -> HTML                             //
+    //------------------------------------------------------//
+    var container = document.getElementById( "mainGame" );
+    container.appendChild( renderer.domElement );
+
+    stats = new Stats();
+    document.body.appendChild( stats.dom );
+
+    //------------------------------------------------------//
+    //                  EVENT BINDING                       //
+    //------------------------------------------------------//
     document.addEventListener( 'mousedown' , onDocumentMouseDown , false );
     document.addEventListener( 'touchstart', onDocumentTouchStart, false );
     document.addEventListener( 'keydown'   , onkeydown           , false );
     window  .addEventListener( 'resize'    , onWindowResize      , false );
 
-    var container = document.getElementById( "mainGame" );
-    container.appendChild( renderer.domElement );
-
-    stats         = new Stats();
-    document.body.appendChild( stats.dom );
-
+    //  Call a window resize to ensure everything fits
     onWindowResize();
 }
 
+//  Caution: Mostly debug stuff still
 function animate()
 {
     //  Prevent camera collision
@@ -139,35 +184,45 @@ function animate()
     stats.begin();
     if (!isInMenu)
     {
-        controls.autoRotate = false;
-
+        controls.autoRotate = false;    //Todo: Better way to handle autorotating while in menu
         /*  UPDATE SCENE HERE */
         if ( Math.random() <= 0.01 )
         {
-            //  teleport around village bounds
+            //  teleport weazle around village bounds
             test_weazle.position.x = ( Math.random() * VILLAGE_DIMENSIONS.x ) - VILLAGE_DIMENSIONS.x / 2;
             test_weazle.position.y = field[Math.round( middle.x + test_weazle.position.z )][Math.round( middle.y + test_weazle.position.x )] + 0.25;
             test_weazle.position.z = ( Math.random() * VILLAGE_DIMENSIONS.y ) - VILLAGE_DIMENSIONS.y / 2;
         }
-                                                                //speed
-        waterMesh.position.y = WATERLEVEL - Math.sin(Date.now() / 1500);
+        
+
         camera.updateProjectionMatrix();
-        //stats.update();
+
     }
     else
     {
         //SET THESE TO AUTOMATICALLY ROTATE, FOR EXAMPLE WHEN VIEWING STATUE
         controls.autoRotate = true;
     }
-
+           
     //  continue render loop
+
+    if ( waterCreated )
+    {
+        //waterPlane.position.y = WATERLEVEL - Math.sin( Date.now() / 1500 );
+        water.material.uniforms.time.value += 0.005;
+        water.render();
+    }
+
     controls.update(); // required if controls.enableDamping = true, or if controls.autoRotate = true
+    stats.update();
     stats.end();
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
 }
 
-//  EVENT HANDLERS
+//------------------------------------------------------//
+//                  EVENT HANDLING                      //
+//------------------------------------------------------//
 $( function ()
 {
     
@@ -192,14 +247,12 @@ $( function ()
 			var islandGeom 		 = GenerateIsland(terrainRes, WATERLEVEL);
 			
 			/* texture test */
-			var islandMat        = new THREE.MeshPhongMaterial( { map: GenerateShadowMapTexture( islandGeom, SUN_POSITION ) } );
+			var islandMat        = new THREE.MeshPhongMaterial( { map: GenerateMaterial( islandGeom, SUN_POSITION ) } );
 			islandMat.shading    = THREE.FlatShading;
 			
 			scene.remove(islandMesh);
 			islandMesh = new THREE.Mesh( islandGeom, islandMat );
 			scene.add(islandMesh);
-				
-
 		}
 		else
 		{
@@ -272,12 +325,10 @@ $( function ()
     } );
 });
 
-//Initial
-var subsampleFactor = 4;
-
+//TODO: Find a better method to go fullscreen
 function onWindowResize()
 {
-    var scrollbarSize = 0;
+    var scrollbarSize = 7;
 
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -288,10 +339,9 @@ function onWindowResize()
     resizeMenu();
 }
 
-raycaster = new THREE.Raycaster();
-mouse     = new THREE.Vector2();
+var raycaster = new THREE.Raycaster();
+var mouse     = new THREE.Vector2();
 
-//  Translate touch to mouseclick
 function onDocumentTouchStart( event )
 {
 
@@ -299,7 +349,7 @@ function onDocumentTouchStart( event )
 
     event.clientX = event.touches[0].clientX;
     event.clientY = event.touches[0].clientY;
-    onDocumentMouseDown(event);
+    onDocumentMouseDown( event );
 
 }
 
@@ -333,56 +383,42 @@ function onDocumentMouseDown( event )
 
 function onkeydown( event )
 {
-    console.log( ambLight.color );
 
     if(event.key == "r")
     {
-        ambLight.color.r += 0.05;
-    }
-    else if(event.key == "g")
-    {
-        ambLight.color.g += 0.05;
-    }
-    if ( event.key == "b" )
-    {
-        ambLight.color.b += 0.05;
-    }
-    else if ( event.key == "e" )
-    {
-        ambLight.color.r -= 0.05;
-    }
-    if ( event.key == "f" )
-    {
-        ambLight.color.g -= 0.05;
-    }
-    else if ( event.key == "v" )
-    {
-        ambLight.color.b -= 0.05;
+        if ( controls.autoRotate )
+        {
+            controls.autoRotate = false;
+        }
+        else
+        {
+            controls.autoRotate = true;
+        }
     }
     else if ( event.key == "1" )
     {
         subsampleFactor = 1;
-	onWindowResize();
+	    onWindowResize();
     }
     else if ( event.key == "2" )
     {
         subsampleFactor = 2;
-	onWindowResize();
+	    onWindowResize();
     }
     else if ( event.key == "3" )
     {
         subsampleFactor = 4;
-	onWindowResize();
+	    onWindowResize();
     }
     else if ( event.key == "4" )
     {
         subsampleFactor = 8;
-	onWindowResize();
+	    onWindowResize();
     }
     else if ( event.key == "5" )
     {
         subsampleFactor = 16;
-	onWindowResize();
+	    onWindowResize();
     }
 }
 
