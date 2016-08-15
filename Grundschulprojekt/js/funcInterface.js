@@ -145,7 +145,7 @@ function click_MessageBoxWeiter()
 }
 
 //------------------------------------------------------//
-//                  IN MINIGAME                        //
+//                  IN MINIGAME                         //
 //------------------------------------------------------//
 
 function exitMinigame()
@@ -252,7 +252,7 @@ function MinigameAvailabilityChanged()
 //GETTER AND SETTER>>>>>>>>>>>>>>>:
 
 //returns value of possible Minigames starts depending on minigameID
-function canStartMinigame(minigameID) {
+function mgPossible(minigameID) {
     switch (minigameID) {
         case "1":
             return MINIGAME_STATE.MG1Possible - MINIGAME_STATE.MG1Played;
@@ -289,6 +289,36 @@ function getStatueModelIndex( minigameID )
 {
     return ( minigameID - 1 ) * 2;
 }
+
+
+//Returns: int[5]
+//	MG[id]      : Possible=>[0]    Played=>[1]    Won => [2]  Lost => [3]  Accuracy=> [4]
+//-------------//--------------//---------------//----------//-----------//--------------//
+function getMinigameState(id) {
+    var from;
+    var to;
+    tmp = new int[5];
+        switch(id) {
+            case 1:
+                from = 0;
+                to = 5;
+                break;
+            case 2:
+                from = 6;
+                to = 10;
+                break;
+            case 3: 
+                from = 11;
+                to = 15;
+                break;
+        }
+        for (var i = from; i < to; i++) {
+            tmp[i] = MINIGAME_STATE[i]
+        }
+        return tmp;
+ }
+
+
 
 //Returns: int[5]
 //	MG1         : Possible=>[0]    Played=>[1]    Won => [2]  Lost => [3]  Accuracy=> [4]
