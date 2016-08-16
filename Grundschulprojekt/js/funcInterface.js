@@ -72,7 +72,7 @@ function endedSplashScreen()
 function continueMainGame()
 {
     isInMenu = false;
-    $( "#menu" ).css( "visibility", "hidden" );
+	hideMenu();
     $( ".hiddenInMenu" ).css( "visibility", "visible" );
     $( "#messageBox" ).css( "visibility", "visible" );
 }
@@ -106,8 +106,8 @@ function click_MapGenStart(terrainRes)
 
 function openMenu()
 {
-    isInMenu = true;
-    $( "#menu" ).css( "visibility", "visible" );
+	isInMenu = true;
+	showMenu();
 
     hideButtons();
 }

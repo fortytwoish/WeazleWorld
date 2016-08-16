@@ -7,19 +7,79 @@
     padding: 20px;
     box-sizing: border-box;
 }
+.menu h1, h2 {
+	font-family: 'Calibri';
+	color: #FFFFFF;
+	text-align: center;
+}
+.menu h1{
+    font-size: 25pt;
+	margin-bottom: 20px;
+}
+.menu h2{
+	font-size: 20pt;
+	margin-bottom: 10px;
+}
 .menu input{
-    font-family: 'Calibri';
+    width: 70%;
+	display: block;
+	margin: 0 auto 25px auto;
+}
+.menu input[type=button]{
+	font-family: 'Calibri';
     letter-spacing: 2px;
     font-weight: bold;
-    display: block;
     background-color: #298AF4;
     border: none;
     border-radius: 10px;
-    width: 70%;
     font-size: 20pt;
-    margin: 20px auto;
     color: #BFFFFF;
     padding: 5px;
+}
+.menu input[type=range]{
+    /*removes default webkit styles*/
+    -webkit-appearance: none;
+
+	/*fix for FF unable to apply focus style bug */
+    border: 1px solid #FFFFFF;
+}
+.menu input[type=range]::-webkit-slider-runnable-track{
+    width: 300px;
+    height: 5px;
+    background: #FFFFFF;
+    border: none;
+    border-radius: 3px;
+}
+.menu input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #298AF4;
+    margin-top: -4px;
+}
+.menu input[type=range]:hover::-webkit-slider-thumb{
+    background: #BFFFFF;
+}
+.menu input[type=range]:focus::-webkit-slider-thumb{
+    background: #BFFFFF;
+}
+/*
+	input[type=range]::-moz-range-track {
+	input[type=range]::-moz-range-thumb {
+	input[type=range]:-moz-focusring{
+	input[type=range]::-ms-track {
+	input[type=range]::-ms-fill-lower {
+	input[type=range]::-ms-fill-upper {
+	input[type=range]::-ms-thumb {
+	input[type=range]:focus::-ms-fill-lower {
+	input[type=range]:focus::-ms-fill-upper {
+*/
+
+.menu input:disabled{
+    color: #AAAAAA;
+	background-color: #444444;
 }
 .menu input:focus
 {
@@ -29,16 +89,4 @@
 {
     background-color: #BFFFFF;
     color: #298AF4;
-}
-.menu h1{
-    display: block;
-    text-align: center;
-    margin: 10px auto;
-    font-size: 20pt;
-    color: #FFF;
-}
-.menuAnimate{
-    position: relative;
-    opacity: 0;
-    bottom: 10px;
 }

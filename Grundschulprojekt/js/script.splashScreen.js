@@ -36,8 +36,8 @@ function splashscreenInteract()
 
 function resizeSplashScreen()
 {
-    var posX = (($(appendTo).parent().width() / 2) - ($(appendToo).width() / 2));
-    var posY = (($(appendTo).parent().height() / 2) - ($(appendToo).height() / 2));
+    var posX = (($(APPENDTO).parent().width() / 2) - ($(appendToo).width() / 2));
+    var posY = (($(APPENDTO).parent().height() / 2) - ($(appendToo).height() / 2));
 
     $(appendToo).css({ "left": posX, "top": posY });
 }

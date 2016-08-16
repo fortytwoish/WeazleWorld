@@ -3,129 +3,126 @@
 *   CONST
 */
 
-var size = [300, 400];
-var appendTo = "#menu";
-var debug = true;
-var click = new Audio("audio/click.mp3");
+var SIZE = [300, 400];
+var APPENDTO = "#menu";
+var DEBUG = true;
 
 /*
 *   ITEM
 */
 
-var item = function(key, value)
-{
-    this.key = key;
-    this.value = value;
+var Menu = function (menu, title) {
+	this.menu = menu;
+	this.title = title;
+}
+
+var MenuEntry = function(id, html, init) {
+	this.id = id;
+	this.html = html.replace('<input', '<input id="' + id + '"');
+	this.init = init;
 }
 
 /*
 *   CREATE MENU
 */
 
-var mainMenu = new Array();
-mainMenu.push(new item("WEITER", "button"));
-mainMenu.push(new item("OPTIONEN", "button"));
+var mainMenuEntries = new Array();
+mainMenuEntries.push(new MenuEntry("menuNewGame", '<input type="button" value="Neues Spiel">', function ()
+{
+	$("#" + this.id).on("click", function ()
+	{
+		continueMainGame();
+	});
+}));
+mainMenuEntries.push(new MenuEntry("menuContinue", '<input type="button" value="Fortsetzen">', function () {
+	$("#" + this.id).attr("disabled", true);
+}));
+mainMenuEntries.push(new MenuEntry("menuOptions", '<input type="button" value="Optionen">', function () {
+	$("#" + this.id).on("click", function () {
+		drawMenu(optionMenu);
+	});
+}));
 
-var options = new Array();
-options.push(new item("Lautstärke", "range"));
-options.push(new item("Qualität", "range"));
-options.push(new item("Credits", "button"));
-options.push(new item("Hauptmenü", "button"));
+var optionEntries = new Array();
+optionEntries.push(new MenuEntry("menuVolume", '<input type="range" min="0" max="100" value="100">', function () {
+
+	$("<h2>Lautstärke</h2>").insertBefore("#" + this.id);
+	$("#" + this.id).on("change", function () {
+		setVolume(this.value);
+	});
+}));
+optionEntries.push(new MenuEntry("menuQuality", '<input type="range" min="1" max="5" value="1">', function () {
+	$("<h2>Qualität</h2>").insertBefore("#" + this.id);
+}));
+optionEntries.push(new MenuEntry("menuCredits", '<input type="button" value="Credits">', function () {
+
+}));
+optionEntries.push(new MenuEntry("menuBack", '<input type="button" value="Zurück">', function () {
+	$("#" + this.id).on("click", function () {
+		drawMenu(mainMenu);
+	});
+}));
+
+var mainMenu = new Menu(mainMenuEntries, "Hauptmenü");
+var optionMenu = new Menu(optionEntries, "Optionen");
 
 /*
-*   FUNCTIONS
+*   GLOBAL FUNCTIONS
 */
 
-function initMenu()
+hideMenu = function()
 {
-    drawMenu(mainMenu);
+	$("#menu").css("visibility", "hidden");
 }
 
-var drawMenu = function(menuArr)
+showMenu = function()
 {
-    $(appendTo + " *").remove();
-    for(i = 0; i < menuArr.length; i++)
-    {
-
-        if(menuArr[i].value == "range")
-        {
-            $(appendTo).append('<h1 class="menuAnimate">' + menuArr[i].key + '</h1>');
-            $(appendTo).append('<input class="menuAnimate" type="' + menuArr[i].value + '" value="' + menuArr[i].key + '">');
-            debug ? console.log("Menu added '" + menuArr[i].key + "' slider.") : false;
-            $("[value=" + menuArr[i].key + "]").on("change", function(e){
-                var entryName = $(this).attr("value");
-                action(entryName);
-                click.play();
-                debug ? console.log("You changed '" + entryName + "' to " + $(this).val()) : false;
-            });
-            debug ? console.log("Eventhandler added to '" + menuArr[i].key + "' slider.") : false;
-        }
-        else
-        {
-            $(appendTo).append('<input class="menuAnimate" type="' + menuArr[i].value + '" value="' + menuArr[i].key + '">');
-            debug ? console.log("Menu added '" + menuArr[i].key + "' entry.") : false;
-            $( "[value=" + menuArr[i].key + "]" ).on( "click touchstart", function ( e )
-            {
-                var entryName = $(this).attr("value");
-                action(entryName);
-                click.play();
-                debug ? console.log( "You clicked on '" + entryName + "'" ) : false;
-            } );
-            debug ? console.log("Eventhandler added to '" + menuArr[i].key + "' entry.") : false;
-        }
-    }
-    $(appendTo + " *").animate(
-    {
-        "opacity": "1",
-        "bottom": "0"
-    },
-    500);
+	drawMenu(mainMenu);
+	$("#menu").css("visibility", "visible");
 }
 
 /*
-*   BUTTON FUNCTIONS
+*   LOCAL FUNCTIONS
 */
 
-var action = function(button)
+var initMenu = function()
 {
-    switch(button)
-    {
-        case "WEITER":
-            continueMainGame();
-            debug ? console.log("action(" + button + ") was performed.") : false;
-            break;
-        case "OPTIONEN":
-            drawMenu(options);
-            debug ? console.log("action(" + button + ") was performed.") : false;
-            break;
-        case "Hauptmenü":
-            drawMenu(mainMenu);
-            debug ? console.log("action(" + button + ") was performed.") : false;
-            break;
-        default:
-            debug ? console.log("action() no action defined") : false;
-            break;
-    }
+	drawMenu(mainMenu);
+}
+
+var drawMenu = function (toDraw)
+{
+	$(APPENDTO + " *").remove();
+	if (DEBUG) console.log("Drawing '" + toDraw.title + "'.");
+	$(APPENDTO).html("<h1>" + toDraw.title + "</h1>");
+	for (i = 0; i < toDraw.menu.length; i++)
+	{
+		$(APPENDTO).append(toDraw.menu[i].html);
+		if (DEBUG) console.log("Menu add '" + toDraw.menu[i].id + "'.");
+
+		toDraw.menu[i].init();
+		if (DEBUG) console.log("Exec init func for '" + toDraw.menu[i].id + "'.");
+	}
+}
+
+var resizeMenu = function () {
+	var posX = (($(APPENDTO).parent().width() / 2) - (SIZE[0] / 2));
+	var posY = (($(APPENDTO).parent().height() / 2) - (SIZE[1] / 2));
+	$(APPENDTO).css(
+        {
+        	"width": SIZE[0],
+        	"height": SIZE[1],
+        	"left": posX,
+        	"top": posY
+        }
+    );
 }
 
 /*
 *   INIT
 */
 
-$(function () {
+$(function ()
+{
     resizeMenu();
 });
-
-function resizeMenu()
-{
-    var posX = (($(appendTo).parent().width() / 2) - (size[0] / 2));
-    var posY = (($(appendTo).parent().height() / 2) - (size[1] / 2));
-    $(appendTo).css(
-        {
-            "width": size[0],
-            "height": size[1],
-            "left": posX,
-            "top": posY
-        }
-    );
-}
