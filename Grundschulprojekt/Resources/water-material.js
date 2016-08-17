@@ -115,7 +115,7 @@ THREE.ShaderLib['water'] = {
     // Compute final 3d distortion, and project it to get the mirror sampling
     '  float distance = length(worldToEye);',
     '  vec2 distortion = distordCoord.xy * distortionScale * sqrt(distance) * 0.07;',
-    ' vec3 mirrorDistord = mirrorCoord.xyz + vec3(distortion.x, distortion.y, 4.0);',
+    ' vec3 mirrorDistord = mirrorCoord.xyz + vec3(distortion.x, distortion.y, 4.2);',
     ' vec3 reflectionSample = texture2DProj(mirrorSampler, mirrorDistord).xyz;',
 
     // Compute other parameters as the reflectance and the water appareance

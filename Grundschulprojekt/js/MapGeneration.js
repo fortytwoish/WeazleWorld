@@ -1,13 +1,13 @@
 ﻿//  Shadow clamp values (prevents full white and full black)
 const CLAMP_ROCK        = [30, 150];
-const CLAMP_GRASS       = [30, 250];
+const CLAMP_GRASS       = [30, 200];
 const CLAMP_WATER       = [0, 255];
 const TEXTUREBRIGHTNESS = 0.5;
 
 
 //  "Biome" borders (upper limits)
 const BEACH_HEIGHT      = 3.25;
-const BEACH_SLOPE       = 0.5;
+const BEACH_SLOPE       = 0.75;
 const GRASS_HEIGHT      = 150;
 const GRASS_SLOPE       = 0.65;
 const TREE_HEIGHT       = 100;
@@ -123,6 +123,19 @@ function GenerateIsland( size, waterLevel )
     for ( i = 0; i < 10; i++ )
     {
         smooth( 1, 1 );
+    }
+
+    padding = 3;
+    //  Force-set height values again, to ensure that a play area exists
+    for ( i = -( VILLAGE_DIMENSIONS.x / 2 ) - padding; i <= ( VILLAGE_DIMENSIONS.x / 2 ) + padding; i++ )
+    {
+        for ( j = -( VILLAGE_DIMENSIONS.y / 2 ) - padding; j <= ( VILLAGE_DIMENSIONS.y / 2 ) + padding; j++ )
+        {
+            if ( Math.pow( Math.abs( i ) + Math.abs( j ), 2 ) < Math.pow( VILLAGE_DIMENSIONS.x + padding, 2 ) )
+            {
+                field[( middle.x + i )][( middle.y + j )] = VILLAGE_DIMENSIONS.z;
+            }
+        }
     }
 
     start = new Date().getTime();
@@ -443,9 +456,9 @@ function GenerateMaterial( geometry, sunPosition )
             *               (Beach)            *
             ***********************************/
 
-            if ( geometry.attributes.position.array[j + 1] <= BEACH_HEIGHT&& upAngle <= BEACH_SLOPE )
+            if ( geometry.attributes.position.array[j + 1] <= BEACH_HEIGHT && upAngle <= BEACH_SLOPE )
             {
-                shadeInv /= 5;
+                shadeInv /= 7;
                 imageData[i]     = ( shadeInv * ( geometry.attributes.position.array[j + 1] + 20 ) * 0.85 ).clamp8Bit( CLAMP_GRASS );
                 imageData[i + 1] = ( shadeInv * ( geometry.attributes.position.array[j + 1] + 20 ) * 0.8 ) .clamp8Bit( CLAMP_GRASS );
                 imageData[i + 2] = ( shadeInv * 13 ).clamp8Bit( CLAMP_GRASS );
@@ -460,9 +473,9 @@ function GenerateMaterial( geometry, sunPosition )
                 /***********************************
                 *               GRASS              *
                 ***********************************/
-                imageData[i] = shadeInv.clamp8Bit( CLAMP_GRASS );
-                imageData[i + 1] = ( shadeInv * ( 2 - upAngle ) ).clamp8Bit( CLAMP_GRASS );
-                imageData[i + 2] = shadeInv.clamp8Bit( CLAMP_GRASS );
+                imageData[i]     = ( shadeInv * 0.9 ).clamp8Bit( CLAMP_GRASS );
+                imageData[i + 1] = ( shadeInv * 1.5 ).clamp8Bit( CLAMP_GRASS );
+                imageData[i + 2] = ( shadeInv * 0.8 ).clamp8Bit( CLAMP_GRASS );
 
                 if ( geometry.attributes.position.array[j + 1] <= randBetween( TREE_HEIGHT, TREE_HEIGHT * 1.5 ) && upAngle <= TREE_SLOPE && Math.random() < ( TREE_DENSITY / 100 ) )
                 {

@@ -7,26 +7,32 @@
     switch( level )
     {
         case 1:
+            setQuality_TerrainResDependant( 7 );
+            renderer.antialias = true;
+            renderer.setPixelRatio( 1 );
+            break;
+        case 2:
+
             setQuality_TerrainResDependant( 8 );
             renderer.antialias      = true;
             renderer.setPixelRatio( 1 );
             break;
-        case 2:
+        case 3:
             setQuality_TerrainResDependant( 9 );
             renderer.antialias      = true;
             renderer.setPixelRatio( 1 );
             break;
-        case 3:
+        case 4:
             setQuality_TerrainResDependant( 10 );
             renderer.antialias      = true;
             renderer.setPixelRatio( 1 );
             break;
-        case 4:
+        case 5:
             setQuality_TerrainResDependant( 11 );
             renderer.antialias      = true;
             renderer.setPixelRatio( 1 );
             break;
-        case 5:
+        case 6:
             setQuality_TerrainResDependant( 12 );
             renderer.antialias      = true;
             renderer.setPixelRatio( 1 );
@@ -45,32 +51,46 @@
 
 function setQuality_TerrainResDependant( terrainRes )
 {
-	var dim = Math.pow(2, terrainRes);
-	//waterMesh.scale.set(1/2, 1, 1/2); //test
-	camera.far = dim * 2;
+    TERRAIN_RESOLUTION = terrainRes;
+
+    //  Water Plane is initially created at 512x512
+    WATER_SCALE_FACTOR = Math.pow( 2, ( terrainRes - 7 ) + 1 );
+    if ( waterMesh != null )
+    {
+        scene.remove( waterMesh );
+        initWater();
+    }
+
+    camera.far = Math.pow( 2, terrainRes + 1 );
+
 	controls.maxDistance = Math.pow(2, terrainRes - 1);
-	
+	controls.update();
+
     switch ( terrainRes )
     {
         case 7:
+            scene.fog.density = 0.003;
 		    TERRAIN_OFFSET = 50;
             break;
         case 8:
+            scene.fog.density = 0.002;
 			TERRAIN_OFFSET = 100;
             break;
         case 9:
+            scene.fog.density = 0.001;
 			TERRAIN_OFFSET = 200;
             break;
         case 10:
+            scene.fog.density = 0.0008;
             TERRAIN_OFFSET = 400;
             break;
         case 11:
+            scene.fog.density = 0.0005;
             TERRAIN_OFFSET = 800;
             break;
         case 12:
+            scene.fog.density = 0.0002;
             TERRAIN_OFFSET = 1200;
             break;
     }
-	
-	console.log("New TerrainOffset: " + TERRAIN_OFFSET);
 }

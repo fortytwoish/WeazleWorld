@@ -1,10 +1,12 @@
 ﻿//  GLOBALS
 isInMenu           = true;
 preventRaycastOnce = false;
-TERRAIN_OFFSET     = 200;
-TERRAIN_RESOLUTION = 9;
+TERRAIN_OFFSET     = 0;
+TERRAIN_RESOLUTION = 0;
+WATER_SCALE_FACTOR = 1;
 
 //  CONSTANTS
+const DEFAULT_QUALITY    = 4;
 const PAUSE_IN_MENU      = true;
 const WATERLEVEL         = 0;
 const WATERCOLOR         = 0x55AAAA;
@@ -50,14 +52,13 @@ function init()
     //------------------------------------------------------//
     //                  SCENE                               //
     //------------------------------------------------------//
-    scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2( FOG_COLOR, 0.0004 );
-
+    scene     = new THREE.Scene();
+    scene.fog = new THREE.FogExp2( FOG_COLOR, 0.001 );
 
     //------------------------------------------------------//
     //                  CAMERA                              //
     //------------------------------------------------------//
-    camera            = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 4, 3000000 );
+    camera            = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 3000000 );
     camera.position.x = 0;
     camera.position.y = 10;
     camera.position.z = 35;
@@ -68,7 +69,7 @@ function init()
     //------------------------------------------------------//
     controls                 = new THREE.OrbitControls( camera, renderer.domElement );
 
-    controls.minDistance     = 30;
+    controls.minDistance     = 10;
     controls.maxDistance     = Math.pow(2, TERRAIN_RESOLUTION - 1);
 
     controls.minPolarAngle   = degreeToRad( 5 );     //  | (0)   |/  (~15)    |_ (90) 
@@ -82,17 +83,18 @@ function init()
     controls.autoRotateSpeed = 1;
     controls.zoomSpeed       = 1;
 
-    //------------------------------------------------------//
-    //                  ISLAND                              //
-    //------------------------------------------------------//
-    initIsland();
-
-
+    //  Set default terrain gen & render quality
+    setQualityLevel( DEFAULT_QUALITY );
+    
     //------------------------------------------------------//
     //                  WATER                               //
     //------------------------------------------------------//
     initWater();
-    
+
+    //------------------------------------------------------//
+    //                  ISLAND                              //
+    //------------------------------------------------------//
+    initIsland();
     //------------------------------------------------------//
     //                  WEAZLES                             //
     //------------------------------------------------------//
@@ -135,19 +137,10 @@ function init()
 
 function initRenderer()
 {
-    renderer = new THREE.WebGLRenderer( { antialias: true } );
+    renderer                    = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setClearColor( WINDOW_CLEAR_COLOR );
-}
-
-function initIsland()
-{
-    var islandGeom      = GenerateIsland( TERRAIN_RESOLUTION, WATERLEVEL );
-    var islandMat       = new THREE.MeshPhongMaterial(
-                        {
-                            map: GenerateMaterial( islandGeom, SUN_POSITION )
-                        } );
-    islandMat.shading   = THREE.FlatShading;
-    islandMesh          = new THREE.Mesh( islandGeom, islandMat );
+    renderer.shadowMap.enabled  = true;
+    renderer.shadowMapType      = THREE.PCFSoftShadowMap;
 }
 
 function initWater()
@@ -169,40 +162,60 @@ function initWater()
             distortionScale: 15
         } );
 
-        var planeGeom = new THREE.PlaneBufferGeometry( 8192, 8192, 10, 10 );
+        var planeGeom = new THREE.PlaneBufferGeometry( 128 * WATER_SCALE_FACTOR, 128 * WATER_SCALE_FACTOR, 1, 1 );
 
-        waterPlane = new THREE.Mesh( planeGeom, water.material );
-        waterPlane.rotation.x = -Math.PI * 0.5;
-        waterPlane.add( water );
+        waterMesh = new THREE.Mesh( planeGeom, water.material );
+        waterMesh.rotation.x = -Math.PI * 0.5;
+        waterMesh.add( water );
 
-        scene.add( waterPlane );
+        scene.add( waterMesh );
 
         waterCreated = true;
     } );
 }
 
+function initIsland()
+{
+    var islandGeom              = GenerateIsland( TERRAIN_RESOLUTION, WATERLEVEL );
+    var islandMat               = new THREE.MeshPhongMaterial(
+                                {
+                                    map: GenerateMaterial( islandGeom, SUN_POSITION )
+                                } );
+    islandMat.shading           = THREE.FlatShading;
+    islandMesh                  = new THREE.Mesh( islandGeom, islandMat );
+    islandMesh.receiveShadow    = true;
+}
+
 function initWeazles()
 {
-    //  test
+    Weazle_init();
 
-    var test_weazle_geom = new THREE.CubeGeometry( 0.1, 0.5, 0.1 );
-    var test_weazle_mat = new THREE.MeshBasicMaterial( { color: 0xFF3C22 } );
-    test_weazle = new THREE.Mesh( test_weazle_geom, test_weazle_mat );
-    test_weazle.position.x = 0;
-    test_weazle.position.y = VILLAGE_DIMENSIONS.z + 0.25;
-    test_weazle.position.z = 0;
-    var head = new THREE.Mesh( new THREE.SphereGeometry( 0.125, 8, 8 ), new THREE.MeshBasicMaterial( { color: 0xDDCC77 } ) );
-    head.position.y = 0.3;
-    test_weazle.add( head );
-    test_light = new THREE.PointLight( 0xCC6611, 2, 4, 0 );
-    test_light.position.y = 2;
-    test_weazle.add( test_light );
+    weazles = [];
+}
+
+function onWeazleLoadingFinished()
+{
+    for ( var i = 0; i < 10; i++ )
+    {
+        weazles[i] = new Weazle();
+        scene.add( weazles[i].mesh );
+    }
 }
 
 function initLighting()
 {
     directionalLight = new THREE.DirectionalLight( 0xFFFFFF, LIGHTSTR );
-    directionalLight.position.set( SUN_POSITION.x, SUN_POSITION.y, SUN_POSITION.z );
+    directionalLight.position.set( SUN_POSITION.x * 20, SUN_POSITION.y * 20, SUN_POSITION.z * 20 );
+    directionalLight.castShadow = true;
+    var shadowCamDist = 20;
+    directionalLight.shadowCameraRight      = shadowCamDist;
+    directionalLight.shadowCameraLeft       = -shadowCamDist;
+    directionalLight.shadowCameraTop        = shadowCamDist;
+    directionalLight.shadowCameraBottom     = -shadowCamDist;
+    directionalLight.shadowCameraFar        = shadowCamDist * 2;
+    directionalLight.shadowMapHeight        =
+    directionalLight.shadowMapWidth         = 8192;
+    scene.add( new THREE.CameraHelper( directionalLight.shadow.camera ) );
 
     //  Opposing sun light (fake light reflected from water to lighten shadows)
     directionalLight2 = new THREE.DirectionalLight( OPPOSITE_LIGHTCOL, OPPOSITE_LIGHTSTR );
@@ -212,12 +225,18 @@ function initLighting()
 //  Caution: Mostly debug stuff still
 function animate()
 {
-    //  Prevent camera collision
-    var terrainAtCameraPos = field[Math.round( middle.x + camera.position.z )][Math.round( middle.y + camera.position.x )];
+    var camFieldX = Math.round( middle.x + camera.position.z );
+    var camFieldY = Math.round( middle.y + camera.position.x );
 
-    if ( camera.position.y <= terrainAtCameraPos + 10 )
+    //  Prevent camera collision
+    if ( camFieldX >= 0 && camFieldX < field.length && camFieldY >= 0 && camFieldY < field.length )
     {
-        camera.position.y = terrainAtCameraPos + 10;
+        var terrainAtCameraPos = field[camFieldX][camFieldY ];
+
+        if ( camera.position.y <= terrainAtCameraPos )
+        {
+            camera.position.y = terrainAtCameraPos;
+        }
     }
 
     stats.begin();
@@ -225,13 +244,13 @@ function animate()
     {
         controls.autoRotate = false;    //Todo: Better way to handle autorotating while in menu
         /*  UPDATE SCENE HERE */
-        if ( Math.random() <= 0.01 )
+
+        for ( var i = 0; i < weazles.length; i++ )
         {
-            //  teleport weazle around village bounds
-            test_weazle.position.x = ( Math.random() * VILLAGE_DIMENSIONS.x ) - VILLAGE_DIMENSIONS.x / 2;
-            test_weazle.position.y = field[Math.round( middle.x + test_weazle.position.z )][Math.round( middle.y + test_weazle.position.x )] + 0.25;
-            test_weazle.position.z = ( Math.random() * VILLAGE_DIMENSIONS.y ) - VILLAGE_DIMENSIONS.y / 2;
+            weazles[i].moveRandomly();
+
         }
+        
         
 
         camera.updateProjectionMatrix();
@@ -353,7 +372,7 @@ function onDocumentMouseDown( event )
     mouse.y = -( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
-    objects = [ test_weazle ];
+    objects = [ ];
     var intersects = raycaster.intersectObjects(objects);
 
     if ( intersects.length > 0 )
