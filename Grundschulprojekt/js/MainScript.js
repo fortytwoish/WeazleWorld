@@ -6,7 +6,7 @@ TERRAIN_RESOLUTION = 0;
 WATER_SCALE_FACTOR = 1;
 
 //  CONSTANTS
-const DEFAULT_QUALITY    = 4;
+const DEFAULT_QUALITY    = 2;
 const PAUSE_IN_MENU      = true;
 const WATERLEVEL         = 0;
 const WATERCOLOR         = 0x55AAAA;
@@ -29,8 +29,6 @@ var camera,
     renderer,
     islandMesh,
     waterMesh,
-    raftMesh,
-    test_weazle,
     test_statues = [],
     subsampleFactor = 1;
 
@@ -98,7 +96,7 @@ function init()
     //------------------------------------------------------//
     //                  WEAZLES                             //
     //------------------------------------------------------//
-    initWeazles();
+    //initWeazles();
 
     //------------------------------------------------------//
     //                  LIGHTING                            //
@@ -108,7 +106,6 @@ function init()
     //------------------------------------------------------//
     //                  -> SCENE                            //
     //------------------------------------------------------//
-    scene.add( test_weazle );
     scene.add( islandMesh );
 
     scene.add( directionalLight );
@@ -206,16 +203,16 @@ function initLighting()
 {
     directionalLight = new THREE.DirectionalLight( 0xFFFFFF, LIGHTSTR );
     directionalLight.position.set( SUN_POSITION.x * 20, SUN_POSITION.y * 20, SUN_POSITION.z * 20 );
-    directionalLight.castShadow = true;
-    var shadowCamDist = 20;
-    directionalLight.shadowCameraRight      = shadowCamDist;
-    directionalLight.shadowCameraLeft       = -shadowCamDist;
-    directionalLight.shadowCameraTop        = shadowCamDist;
-    directionalLight.shadowCameraBottom     = -shadowCamDist;
-    directionalLight.shadowCameraFar        = shadowCamDist * 2;
-    directionalLight.shadowMapHeight        =
-    directionalLight.shadowMapWidth         = 8192;
-    scene.add( new THREE.CameraHelper( directionalLight.shadow.camera ) );
+    //directionalLight.castShadow = true;
+    //var shadowCamDist = 20;
+    //directionalLight.shadowCameraRight      = shadowCamDist;
+    //directionalLight.shadowCameraLeft       = -shadowCamDist;
+    //directionalLight.shadowCameraTop        = shadowCamDist;
+    //directionalLight.shadowCameraBottom     = -shadowCamDist;
+    //directionalLight.shadowCameraFar        = shadowCamDist * 2;
+    //directionalLight.shadowMapHeight        =
+    //directionalLight.shadowMapWidth         = 8192;
+    //scene.add( new THREE.CameraHelper( directionalLight.shadow.camera ) );
 
     //  Opposing sun light (fake light reflected from water to lighten shadows)
     directionalLight2 = new THREE.DirectionalLight( OPPOSITE_LIGHTCOL, OPPOSITE_LIGHTSTR );
@@ -245,11 +242,11 @@ function animate()
         controls.autoRotate = false;    //Todo: Better way to handle autorotating while in menu
         /*  UPDATE SCENE HERE */
 
-        for ( var i = 0; i < weazles.length; i++ )
-        {
-            weazles[i].moveRandomly();
+        //for ( var i = 0; i < weazles.length; i++ )
+        //{
+        //    weazles[i].moveRandomly();
 
-        }
+        //}
         
         
 

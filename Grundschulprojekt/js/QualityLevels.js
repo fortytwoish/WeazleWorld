@@ -8,33 +8,39 @@
     {
         case 1:
             setQuality_TerrainResDependant( 7 );
-            renderer.antialias = true;
+            renderer.antialias      = false;
+            subsampleFactor         = 2;
             renderer.setPixelRatio( 1 );
             break;
         case 2:
 
             setQuality_TerrainResDependant( 8 );
-            renderer.antialias      = true;
+            renderer.antialias      = false;
+            subsampleFactor         = 2;
             renderer.setPixelRatio( 1 );
             break;
         case 3:
             setQuality_TerrainResDependant( 9 );
-            renderer.antialias      = true;
+            renderer.antialias      = false;
+            subsampleFactor         = 1;
             renderer.setPixelRatio( 1 );
             break;
         case 4:
             setQuality_TerrainResDependant( 10 );
             renderer.antialias      = true;
+            subsampleFactor         = 1;
             renderer.setPixelRatio( 1 );
             break;
         case 5:
             setQuality_TerrainResDependant( 11 );
             renderer.antialias      = true;
+            subsampleFactor         = 1;
             renderer.setPixelRatio( 1 );
             break;
         case 6:
             setQuality_TerrainResDependant( 12 );
             renderer.antialias      = true;
+            subsampleFactor         = 1;
             renderer.setPixelRatio( 1 );
             break;
         case "htcone":
