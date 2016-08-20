@@ -1,95 +1,329 @@
 ﻿<style>
-	#minigame2{
+	#minigame2 {
 		text-align: center;
 	}
-	#minigame2 #source{
-		background-color: blue;
-		height: 100px;
-		width: 100px;
-		display: block;
-		position: absolute;
-		top: 0;
-		right: 0;
-	}
-	#minigame2 table{
-		display: inline-block;
-		border-collapse: collapse;
-	}
-	#minigame2 td{
-		background: url(../img/waterGame/tube.png) center no-repeat;
-		background-size: 60% 60%;
-		background-color: red;
-		height: 140px;
-		width: 140px;
-		display: inline-block;
-	}
-	#minigame2 #target{
-		background-color: antiquewhite;
-		height: 100px;
-		width: 100px;
-		display: block;
-		position: absolute;
-		bottom: 0;
-		left: 0;
-	}
+
+		#minigame2 #source {
+			background-color: blue;
+			height: 100px;
+			width: 100px;
+			display: block;
+			position: absolute;
+			top: 0;
+			right: 0;
+		}
+
+		#minigame2 table {
+			display: inline-block;
+			border-collapse: collapse;
+		}
+
+		#minigame2 td {
+			position: relative;
+			display: inline-block;
+		}
+
+		#minigame2 td img{
+			display: block;
+			position: absolute;
+			width: 100%;
+			height: 100%;
+		}
+
+		#minigame2 #target {
+			background-color: antiquewhite;
+			height: 100px;
+			width: 100px;
+			display: block;
+			position: absolute;
+			bottom: 0;
+			left: 0;
+		}
 </style>
 <script type="text/javascript" src="../Resources/jquery-2.2.4.min.js"></script>
 <script>
-	$(function () {
+	/*
+	*   CONST
+	*/
 
-		var current = [	[0, 0, 0],
-						[0, 0, 0],
-						[0, 0, 0]];
+	var DIFFICULTIES = {
+		TUT: [3, 3],
+		EASY: [4, 4],
+		MEDIUM: [5, 4],
+		HARD: [7, 5]
+	};
+	var GSMEFIELD_HEIGHT = 500;
 
-		var target = [  [0, 1, 3],
-						[1, 3, 1],
-						[0, 2, 2]];
+	var DEBUG_LEVEL = {
+		OFF: 0,
+		DEBUG: 1,
+		VERBOSE: 2
+	};
+	var PIPE_TYPES = {
+		STRAIGHT: 1,
+		CURVE: 2
+	};
 
-		jQuery.fn.rotate = function (degrees) {
-			$(this).css({ 'transform': 'rotate(' + degrees + 'deg)' });
-			return $(this);
-		};
+	var DEBUG = DEBUG_LEVEL.VERBOSE;
 
-		$('td').click(function () {
+	/*
+	*   OBJECTS
+	*/
 
-			var row = $(this).closest('tr').index();
-			var col = $(this).closest('td').index();
+	var Pipe = function (type, targetRotation) {
+		var typeLocal = type;
+		var currentRotationLocal = (parseInt(Math.random() * 4) * 90);
+		var targetRotationLocal = targetRotation;
 
-			if (current[row][col] === 3) {
-				current[row][col] = 0;
-			} else {
-				current[row][col]++;
+		this.getType = function () {
+			return typeLocal;
+		}
+
+		this.getRotation = function () {
+			return currentRotationLocal;
+		}
+
+		this.isInCorrectPosition = function () {
+			if (currentRotationLocal === targetRotationLocal || targetRotationLocal === -1 || typeLocal === PIPE_TYPES.STRAIGHT && currentRotationLocal === targetRotationLocal + 180)
+				return true;
+			return false;
+		}
+
+		this.turn = function () {
+			if (currentRotationLocal < 270)
+				currentRotationLocal += 90;
+			else
+				currentRotationLocal = 0;
+		}
+	}
+
+	var PIPES = {
+		UPDOWN: new Pipe(PIPE_TYPES.STRAIGHT, 0),
+		UPLEFT: new Pipe(PIPE_TYPES.CURVE, 0),
+		RIGHTDOWN: new Pipe(PIPE_TYPES.CURVE, 180),
+		RIGHTLEFT: new Pipe(PIPE_TYPES.STRAIGHT, 90)
+	};
+
+	/*
+	*   LOCAL FUNCTIONS
+	*/
+
+	var drawGameField = function (gameField) {
+
+		// Tabelle leeren
+		$("table *").remove();
+
+		// Pipes einfügen
+		for (var i = 0; i < gameField.length; i++) {
+			var s = '<tr>';
+			for (var j = 0; j < gameField[i].length; j++) {
+				switch (gameField[i][j].getType())
+				{
+					case PIPE_TYPES.STRAIGHT:
+						s = s + '<td><img class="pipe" style="transform: rotate(' + gameField[i][j].getRotation() + 'deg);" src="/img/waterGame/STRAIGHT.png" alt="STRAIGHT"></td>';
+						break;
+					case PIPE_TYPES.CURVE:
+						s = s + '<td><img class="pipe" style="transform: rotate(' + gameField[i][j].getRotation() + 'deg);" src="/img/waterGame/CURVE.png" alt="CURVE"></td>';
+						break;
+				}
 			}
+			$("table").append(s + '</tr>');
+		}
 
-			$(this).rotate(current[row][col] * 90);
+		// Eventlistener
+		$('td').on("mouseenter", function () {
+			$(this).append('<img id="rotate" src="/img/waterGame/rotate.gif" alt="STRAIGHT">');
 
-			if (current[row][col] === target[row][col]) {
-				$(this).css("background-color", "green");
-			} else {
-				$(this).css("background-color", "");
-			}
+			$('#rotate').on("click", function () {
+
+				var row = $(this).closest('tr').index();
+				var col = $(this).closest('td').index();
+
+				gameField[row][col].turn();
+
+				$(this).parent().children(".pipe").css({ 'transform': 'rotate(' + gameField[row][col].getRotation() + 'deg)' });
+			});
 		});
 
-	})
+		$('td').on("mouseleave", function () {
+			$(this).children("#rotate").remove();
+		});
+
+		// Größe anpassen
+		var pipeHeight = parseInt(GSMEFIELD_HEIGHT / gameField.length) + "px";
+		var pipeWidth = parseInt(GSMEFIELD_HEIGHT / gameField.length) + "px";
+
+		$("td").css({
+			height: pipeHeight,
+			width: pipeWidth
+		});
+	}
+
+	var generateGameField = function (size) {
+
+		// Baut das Array auf
+		var gameField = new Array(size[1]);
+		for (var i = 0; i < gameField.length; i++) {
+			gameField[i] = new Array(size[0]);
+			for (var j = 0; j < gameField[i].length; j++) {
+				if (parseInt(Math.random() * 2) === 0)
+					gameField[i][j] = new Pipe(PIPE_TYPES.CURVE, -1);
+				else
+					gameField[i][j] = new Pipe(PIPE_TYPES.STRAIGHT, -1);
+			}
+		}
+
+		if (DEBUG >= DEBUG_LEVEL.DEBUG) console.log("Array aufgebaut");
+
+		// Zufälliger Weg
+		if (parseInt(Math.random() * 2) === 0) {
+			gameField[0][size[0] - 1] = PIPES.RIGHTDOWN;
+			if (DEBUG >= DEBUG_LEVEL.VERBOSE) console.log("RIGHTDOWN " + 0 + " " + (size[0] - 1));
+		} else {
+			gameField[0][size[0] - 1] = PIPES.RIGHTLEFT;
+			if (DEBUG >= DEBUG_LEVEL.VERBOSE) console.log("RIGHTLEFT " + 0 + " " + (size[0] - 1));
+		}
+
+		for (var i = 0, j = size[0] - 1; i < gameField.length - 1 || j > 0;) {
+			switch (gameField[i][j]) {
+				case PIPES.UPDOWN:
+					if (i < gameField.length - 2) {
+						if (parseInt(Math.random() * 2) === 0)
+							gameField[++i][j] = PIPES.UPDOWN;
+						else
+							gameField[++i][j] = PIPES.UPLEFT;
+					} else {
+						gameField[++i][j] = PIPES.UPLEFT;
+					}
+					if (DEBUG >= DEBUG_LEVEL.VERBOSE) console.log("UPDOWN " + i + " " + j);
+					break;
+				case PIPES.UPLEFT:
+					if (j > 0) {
+						if (parseInt(Math.random() * 2) === 0)
+							gameField[i][--j] = PIPES.RIGHTDOWN;
+						else
+							gameField[i][--j] = PIPES.RIGHTLEFT;
+					} else {
+						gameField[i][--j] = PIPES.RIGHTLEFT;
+					}
+					if (DEBUG >= DEBUG_LEVEL.VERBOSE) console.log("UPLEFT " + i + " " + j);
+					break;
+				case PIPES.RIGHTDOWN:
+					if (i < gameField.length - 1) {
+						if (parseInt(Math.random() * 2) === 0)
+							gameField[++i][j] = PIPES.UPDOWN;
+						else
+							gameField[++i][j] = PIPES.UPLEFT;
+					} else {
+						console.log("Vor: " + i);
+						gameField[++i][j] = PIPES.UPDOWN;
+						console.log("Nach: " + i);
+					}
+					if (DEBUG >= DEBUG_LEVEL.VERBOSE) console.log("RIGHTDOWN " + i + " " + j);
+					break;
+				case PIPES.RIGHTLEFT:
+					if (j > 1) {
+						if (parseInt(Math.random() * 2) === 0)
+							gameField[i][--j] = PIPES.RIGHTLEFT;
+						else
+							gameField[i][--j] = PIPES.RIGHTDOWN;
+					} else {
+						gameField[i][--j] = PIPES.RIGHTDOWN;
+					}
+					if (DEBUG >= DEBUG_LEVEL.VERBOSE) console.log("RIGHTLEFT " + i + " " + j);
+					break;
+			}
+		}
+
+		if (DEBUG >= DEBUG_LEVEL.DEBUG) console.log("Weg erzeugt");
+
+		// Testausgabe row = zeile
+		if (DEBUG >= DEBUG_LEVEL.VERBOSE) {
+			console.log("Lösung");
+			gameField.forEach(function (row) {
+				var s = '[';
+				row.forEach(function (col) {
+					switch (col) {
+						case PIPES.UPDOWN:
+							s = s + ' ' + "|";
+							break;
+						case PIPES.UPLEFT:
+							s = s + ' ' + "L";
+							break;
+						case PIPES.RIGHTDOWN:
+							s = s + ' ' + "D";
+							break;
+						case PIPES.RIGHTLEFT:
+							s = s + ' ' + "-";
+							break;
+						default:
+							s = s + ' ' + " ";
+							break;
+					}
+				});
+				console.log(s + ' ]');
+			});
+		}
+
+		return gameField;
+	}
+
+	var check = function(gameField) {
+		for (var i = 0; i < gameField.length; i++) {
+			for (var j = 0; j < gameField[i].length; j++) {
+				if (!gameField[i][j].isInCorrectPosition())
+					return false;
+			}
+		}
+		return true;
+	}
+
+	/*
+	*   INIT
+	*/
+
+	$(function () {
+
+		var gameField = generateGameField(DIFFICULTIES.TUT);
+
+		drawGameField(gameField);
+
+		$("#check").on("click", function() {
+			if (check(gameField))
+				alert("RICHTIG!");
+			else
+				alert("Falsch du dummer trottel!");
+		});
+
+		$("#clevel").on("change", function () {
+			switch (this.value) {
+				case "TUT":
+					gameField = generateGameField(DIFFICULTIES.TUT);
+					break;
+				case "EASY":
+					gameField = generateGameField(DIFFICULTIES.EASY);
+					break;
+				case "MEDIUM":
+					gameField = generateGameField(DIFFICULTIES.MEDIUM);
+					break;
+				case "HARD":
+					gameField = generateGameField(DIFFICULTIES.HARD);
+					break;
+			}
+			drawGameField(gameField);
+		});
+
+	});
 </script>
 <div id="minigame2">
 	<div id="source"></div>
-	<table>
-		<tr>
-			<td></td>
-			<td></td>
-			<td></td>
-		</tr>
-		<tr>
-			<td></td>
-			<td></td>
-			<td></td>
-		</tr>
-		<tr>
-			<td></td>
-			<td></td>
-			<td></td>
-		</tr>
-	</table>
+	<table></table>
+	<select id="clevel" name="level" size="1">
+		<option>TUT</option>
+		<option>EASY</option>
+		<option>MEDIUM</option>
+		<option>HARD</option>
+	</select>
+	<input id="check" type="button" value="Wasser marsch">
 	<div id="target"></div>
 </div>

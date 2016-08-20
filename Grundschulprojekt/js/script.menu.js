@@ -1,4 +1,3 @@
-
 /*
 *   CONST
 */
@@ -8,7 +7,7 @@ var APPENDTO = "#menu";
 var DEBUG = true;
 
 /*
-*   ITEM
+*   OBJECTS
 */
 
 var Menu = function (menu, title) {
@@ -44,15 +43,19 @@ mainMenuEntries.push(new MenuEntry("menuOptions", '<input type="button" value="O
 }));
 
 var optionEntries = new Array();
-optionEntries.push(new MenuEntry("menuVolume", '<input type="range" min="0" max="100" value="100">', function () {
-
+optionEntries.push(new MenuEntry("menuVolume", '<input type="range" min="0" max="100">', function () {
 	$("<h2>Lautstärke</h2>").insertBefore("#" + this.id);
+	$("#" + this.id).attr("value", getVolume());
 	$("#" + this.id).on("change", function () {
 		setVolume(this.value);
 	});
 }));
 optionEntries.push(new MenuEntry("menuQuality", '<input type="range" min="1" max="5" value="1">', function () {
 	$("<h2>Qualität</h2>").insertBefore("#" + this.id);
+	$("#" + this.id).attr("value", getQuality());
+	$("#" + this.id).on("change", function () {
+		setQualityLevel(this.value);
+	});
 }));
 optionEntries.push(new MenuEntry("menuCredits", '<input type="button" value="Credits">', function () {
 
