@@ -87,6 +87,9 @@
     <Content Include="img\treeGame\tree2.png" />
     <Content Include="img\treeGame\tree3.png" />
     <Content Include="img\treeGame\woods.jpg" />
+    <Content Include="img\waterGame\CURVE.png" />
+    <Content Include="img\waterGame\rotate.gif" />
+    <Content Include="img\waterGame\STRAIGHT.png" />
     <Content Include="img\waternormals.jpg" />
     <Content Include="Index.html" />
     <Content Include="js\AuxFunctions.js" />
@@ -118,15 +121,13 @@
     <Content Include="Models\Otter.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="img\waterGame\Pipe.psd" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="img\Enum1.cs" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
