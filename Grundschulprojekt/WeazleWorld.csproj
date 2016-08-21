@@ -106,7 +106,10 @@
     <Content Include="js\script.menu.js" />
     <Content Include="js\script.splashScreen.js" />
     <Content Include="js\Weazle.js" />
+    <Content Include="Resources\easeljs-0.8.2.min.js" />
     <Content Include="Resources\OBJLoader.js" />
+    <Content Include="Resources\preloadjs-0.6.2.min.js" />
+    <Content Include="Resources\tweenjs-0.6.2.min.js" />
     <Content Include="Resources\water-material.js" />
     <Content Include="Resources\Box2d.min.js" />
     <Content Include="Resources\OrbitControls.js" />
