@@ -78,6 +78,7 @@
     <Content Include="html\minigame2.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="html\Outline effect %28Three.js%29.html" />
     <Content Include="img\head.png" />
     <Content Include="img\logo.png" />
     <Content Include="img\rahmen.gif" />

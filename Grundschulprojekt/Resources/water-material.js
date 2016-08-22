@@ -105,17 +105,17 @@ THREE.ShaderLib['water'] = {
     
     // Revert normal if the eye is bellow the mesh
     '  if(dot(eyeDirection, surfaceZ) < 0.0)',
-    '    distordNormal = distordNormal * -1.0;',
+    '    distordNormal      = distordNormal * -1.0;',
 
     // Compute diffuse and specular light (use normal and eye direction)
-    '  vec3 diffuseLight = vec3(0.0);',
-    '  vec3 specularLight = vec3(0.0);',
+    '  vec3 diffuseLight    = vec3(0.0);',
+    '  vec3 specularLight   = vec3(0.0);',
     '  sunLight(distordNormal, eyeDirection, 100.0, 2.0, 0.5, diffuseLight, specularLight);',
     
     // Compute final 3d distortion, and project it to get the mirror sampling
-    '  float distance = length(worldToEye);',
-    '  vec2 distortion = distordCoord.xy * distortionScale * sqrt(distance) * 0.07;',
-    ' vec3 mirrorDistord = mirrorCoord.xyz + vec3(distortion.x, distortion.y, 4.2);',
+    '  float distance       = length(worldToEye);',
+    '  vec2 distortion      = distordCoord.xy * distortionScale * sqrt(distance) * 0.07;',
+    ' vec3 mirrorDistord    = mirrorCoord.xyz + vec3(distortion.x, distortion.y, 1.0);',
     ' vec3 reflectionSample = texture2DProj(mirrorSampler, mirrorDistord).xyz;',
 
     // Compute other parameters as the reflectance and the water appareance

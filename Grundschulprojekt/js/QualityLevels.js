@@ -69,7 +69,7 @@ function setQuality_TerrainResDependant( terrainRes )
 
     camera.far = Math.pow( 2, terrainRes + 1 );
 
-	controls.maxDistance = Math.pow(2, terrainRes - 1);
+	controls.maxDistance = Math.pow(2, terrainRes);
 	controls.update();
 
     switch ( terrainRes )

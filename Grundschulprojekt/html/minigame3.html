@@ -2,6 +2,8 @@
 
 <nav id="buttonArea" style="margin-top:10px;">
     <button id="startGameButton" style="margin:0 55px; display:inline-block;width:200px; height:30px; ">START</button>
+    <button id="winMinigameButton" style="margin:auto">Win</button>
+    <button id="loseMinigameButton" style="margin:auto">Lose</button>
     <button id="exitMinigameButton" style="margin:0 55px;display:inline-block; float:right; width:200px; height:30px;">Exit</button>
 </nav>
 
@@ -144,14 +146,26 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
         });
     });
 
+    $( "#winMinigameButton" ).click( function ()
+    {
+        resetMinigame();
+        minigameWon( 3 );
+    } );
+    $( "#loseMinigameButton" ).click( function ()
+    {
+        resetMinigame();
+        minigameLost( 3 );
+    } );
+    $( "#exitMinigameButton" ).click( function ()
+    {
+        resetMinigame();
+        exitMinigame();
+    } );
 
-    $("#exitMinigameButton").click(function () {
-        isInMenu = false;
-        console.log("exitMinigame button clicked.");
-        parent.printMenuState();
-        $("#minigame").css("visibility", "hidden");
-        $("#minigameButton").css("visibility", "visible");
-    });
+    function resetMinigame()
+    {
+        //TODO!!
+    }
 
     function randBetween(low, high) {
         var result = ((Math.random() * (high - low)) + low).parseInt();

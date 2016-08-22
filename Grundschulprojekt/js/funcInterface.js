@@ -3,14 +3,20 @@
 /////DO NOT MODIFY|DO NOT MODIFY|DO NOT MODIFY|DO NOT MODIFY|DO NOT MODIFY|DO NOT MODIFY/////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 
-    //Initial_ StateINIT>>>>>>>>>:
-        var currentMessageBoxValue = 1;
+username = "[Username not set]";
+showTutorials = true;
 
-        var GAME_STATES = { 1:"SPLASH", 2:"START", 3:"MENU", 4:"MAIN", 5:"MINIGAME", 66:"SCORE_SCREEN"};
-        var DIFFICULTIES = { 1:"EASY", 2:"NORMAL" , 3:"HARD"};
+    //Initial_ StateINIT>>>>>>>>>:
+        currentMessageBoxValue = 1
+        currentMessageBoxTexte = [""];
+        currentMessageBoxEndText = "";
+        currentMessageBoxCompleteFunction = null;
+
+        var GAME_STATES   = { 1:"SPLASH", 2:"START", 3:"MENU", 4:"MAIN", 5:"MINIGAME", 66:"SCORE_SCREEN"};
+        var DIFFICULTIES  = { 1:"EASY", 2:"NORMAL" , 3:"HARD"};
         var STATUE_STATES = { 1:"NOT_STARTED", 2:"IN_CONSTRUCTION", 3:"CONSTRUCTED"};
 
-        var gameState = GAME_STATES.SPLASH;
+        var gameState  = GAME_STATES.SPLASH;
         var difficulty = DIFFICULTIES.NORMAL;
 
         var statueModel;
@@ -18,56 +24,47 @@
 
         ///////////// ----MG1------ / ----MG2------ / -----MG3---------- /
         ///////////// [0] MG1Done [1] accuracy  | [2] MG2Done [3] accuracy  | [4] MG3Done [5] accuracy;
-        statueModel = {MG1Done:0 , MG1Accuracy:0 , MG2Done:0 , MG2Accuracy:0 , MG3Done:0 , MG3Accuracy:0};
+        statueModel = [0,          0,              0,          0,              0,          0];
 
         //INT 0<->1
-        var volume_level = 1;
+        var volume_level      = 1;
         var GRAPHIC_QUALITIES = { 1: "VERY_LOW", 2: "LOW", 3: "MEDIUM", 4: "HIGH", 5: "MAXIMUM" };
-        var graphicQuality = GRAPHIC_QUALITIES.MEDIUM;
+        var graphicQuality    = GRAPHIC_QUALITIES.MEDIUM;
 
         var MINIGAME_STATE;
         //Construction of MiniGame Database
         //-----//--------------//-----------//--------//----------//--------------//
         //	MG1         : Possible=>[0]    Played=>[1]    Won => [2]  Lost => [3]  Accuracy=> [4]
         //	MG2         : Possible=>[5]    Played=>[6]    Won => [7]  Lost => [8]  Accuracy=> [9] 
-        //	MG3         : Possible=>[10]   Played=>[11]    Won =>[12] Lost =>[13]  Accuracy=>[14]
-        MINIGAME_STATE = {MG1Possible: 0 , MG1Played: 0 , MG1Won: 0 , MG1Lost: 0 , MG1Accuracy: 0 ,
-            MG2Possible: 0 , MG2Played: 0 , MG2Won: 0 , MG2Lost: 0 , MG1Accuracy: 0 ,
-            MG3Possibel: 0 , MG3Played: 0 , MG3Won: 0 , MG3Lost: 0 , MG2Accuracy: 0
-        };
-
-
+        //	MG3         : Possible=>[10]   Played=>[11]   Won =>[12]  Lost =>[13]  Accuracy=>[14]
+        MINIGAME_STATE = [0,               0,             0,          0,           0,
+                          0,               0,             0,          0,           0,
+                          0,               0,             0,          0,           0];
+        
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 //INITIALIZES|INITIALIZES|INITIALIZES|INITIALIZES|INITIALIZES|INITIALIZES|INITIALIZES////////
 //REPORT IF MODIFY|REPORT IF MODIFY|REPORT IF MODIFY|REPORT IF MODIFY|REPORT IF MODIFY///////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 
     //INITIALIZES>>>>>>>>>>>>>>>>:
-       
+        
         //Function to initialize the statue Model(possibles) according to prior set Difficulty
         function initialize_StatueModel() {
             switch (difficulty) {
                 case DIFFICULTIES.EASY:
-                    MINIGAME_STATE.MG1Possible = MINIGAME_STATE.MG2Possible = MINIGAME_STATE.MG3Possible = 9;
+                    MINIGAME_STATE[0] = MINIGAME_STATE[5] = MINIGAME_STATE[10] = 12;
                 case DIFFICULTIES.MEDIUM:                                                      
-                    MINIGAME_STATE.MG1Possible = MINIGAME_STATE.MG2Possible = MINIGAME_STATE.MG3Possible = 6;
+                    MINIGAME_STATE[0] = MINIGAME_STATE[5] = MINIGAME_STATE[10] = 8;
                 case DIFFICULTIES.HARD:                                                        
-                    MINIGAME_STATE.MG1Possible = MINIGAME_STATE.MG2Possible = MINIGAME_STATE.MG3Possible = 3;
+                    MINIGAME_STATE[0] = MINIGAME_STATE[5] = MINIGAME_STATE[10] = 4;
                 default:
                     console.log("Init of StatueModel Possibilities Failed (Wrong Difficulty)");
             }
         }
-
-        //Construction of MiniGame Database
-        //-------------//--------------//---------------//----------//-----------//--------------//
-        //	MG1         : Possible=>[0]    Played=>[1]    Won => [2]  Lost => [3]  Accuracy=> [4]
-        //	MG2         : Possible=>[5]    Played=>[6]    Won => [7]  Lost => [8]  Accuracy=> [9] 
-        //	MG3         : Possible=>[10]   Played=>[11]   Won =>[12]  Lost =>[13]  Accuracy=>[14]
-        function initialize_MinigameStateModel(mg1Possible, mg2Possible, mg3Possible) {
-            MINIGAME_STATE.MG1Possible = mg1Possible;
-            MINIGAME_STATE.MG2Possible = mg2Possible;
-            MINIGAME_STATE.MG3Possible = mg3Possible;
-        }
+        
+        //  default
+        difficulty = DIFFICULTIES.HARD;
+        initialize_StatueModel();
     
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 //HANDLES|HANDLES|HANDLES|HANDLES|HANDLES|HANDLES|HANDLES|HANDLES|HANDLES|HANDLES|HANDLES////
@@ -85,9 +82,10 @@
 function continueMainGame()
 {
     isInMenu = false;
-	hideMenu();
+    hideMenu();
     $( ".hiddenInMenu" ).css( "visibility", "visible" );
     $( "#messageBox" ).css( "visibility", "visible" );
+    $( "#messageBox" ).hide();
 }
 
     //------------------------------------------------------//
@@ -98,7 +96,6 @@ function continueMainGame()
             gameState = GAME_STATES.START;
         
             if (terrainRes != null && terrainRes >= 7 && terrainRes <= 12) {
-                console.log("Creating new terrain: " + terrainRes);
 
                 //Generate new terrain
                 setQuality_TerrainResDependant(terrainRes);
@@ -108,52 +105,64 @@ function continueMainGame()
                 var islandGeom = GenerateIsland(terrainRes, WATERLEVEL);
 
                 /* texture test */
-                var islandMat = new THREE.MeshPhongMaterial({ map: GenerateMaterial(islandGeom, SUN_POSITION) });
+                var islandMat     = new THREE.MeshPhongMaterial({ map: GenerateMaterial(islandGeom, SUN_POSITION) });
                 islandMat.shading = THREE.FlatShading;
 
                 scene.remove(islandMesh);
-                islandMesh = new THREE.Mesh(islandGeom, islandMat);
-                scene.add(islandMesh);
+                islandMesh        = new THREE.Mesh(islandGeom, islandMat);
+                scene.add(   islandMesh);
             }
         } //to be moved to menu
 
-function openMenu()
-{
-	isInMenu = true;
-	showMenu();
+        function openMenu()
+        {
+	        isInMenu = true;
+	        showMenu();
 
             hideButtons();
         }
 
         function startMinigame( minigameID )
         {
-            var loc = window.location.pathname;
-            var dir = loc.substring( 0, loc.lastIndexOf( '/' ) );
-
-            console.log( dir );
+            if ( !mgPossible( minigameID ) )
+            {
+                alert(  "BUG:\n"
+                      + "Minigame " + minigameID + " kann nicht (mehr?) gestartet werden!\n\n"
+                      + "(Es sollte also garnicht verfügbar sein...)");
+                return;
+            }
 
             isInMenu = true;
-            $( "#minigame" ).css( "visibility", "visible" );
 
             hideButtons();
 
-            console.log( "Reading: " + "html/minigame" + minigameID + ".html" );
+            //console.log( "Reading: " + "html/minigame" + minigameID + ".html" );
             $.get( "html/minigame" + minigameID + ".html", function ( data )
             {
-                console.log( "Contents: " + data );
+                //console.log( "Contents: " + data );
                 $( "#minigame" ).html( data );
+                $( "#minigame" ).css( "visibility", "visible" );
             } );
+
         }
     
         function click_MessageBox()
         {
             console.log( "Toggling Messagebox" );
-            $( "#messageBox" ).css( "visibility", "visible" );
+            //$( "#messageBox" ).css( "visibility", "visible" );
             $( "#messageBox" ).toggle( "slow" );
         }
 
         function click_MessageBoxWeiter()
         {
+            if ( currentMessageBoxValue == currentMessageBoxTexte.length - 1 )
+            {
+                $( "#messageBoxButton" ).val( currentMessageBoxEndText );
+            }
+            else if ( currentMessageBoxValue == currentMessageBoxTexte.length )
+            {
+                exitMessageBox();
+            }
             $( "#messageBoxContentParagraph" ).text( getNextMessageBoxText() );
         }
 
@@ -169,26 +178,50 @@ function openMenu()
             showButtons();
         }
 
-        //  TODO UPDATE MINIGAME AVAILABILITY
-        function minigameWon( minigameNumber/*, points, lostTries*/ )
+        function minigamePlayed( minigameNumber )
         {
             exitMinigame();
 
-            MINIGAME_STATE[ getMinigameStateIndex(minigameNumber) + 1 ]++;   //  Played++
-            MINIGAME_STATE[ getMinigameStateIndex(minigameNumber) + 2 ]++;   //  Won++
+            var played = getMinigameState( minigameNumber, 1 ) + 1;
 
-            updateAccuracy( minigameNumber );
+            setMinigameState( minigameNumber, 1, played ); //  Played++
+
+            if( played == 1)
+            {
+                MinigameAvailabilityChanged( minigameNumber + 1, true );
+            }
+            else if( getMinigameState( minigameNumber, 0) ==  played)
+            {
+                MinigameAvailabilityChanged( minigameNumber, false );
+            }
         }
 
-        //  TODO UPDATE MINIGAME AVAILABILITY
+        function minigameWon( minigameNumber/*, points, lostTries*/ )
+        {
+            minigamePlayed( minigameNumber );
+
+            var won = getMinigameState( minigameNumber, 2 ) + 1;
+
+            setMinigameState( minigameNumber, 2, won ); //  Won   ++
+
+            updateStatueModel( minigameNumber, 1, won );
+        }
+
         function minigameLost( minigameNumber/*, points, lostTries*/ )
         {
-            exitMinigame();
+            //  The first game (tutorial) can't be lost
+            var played = getMinigameState( minigameNumber, 1 );
+            if ( played == 0 )
+            {
+                exitMinigame();
+                return;
+            }
 
-            MINIGAME_STATE[ getMinigameStateIndex(minigameNumber) + 1 ]++;   //  Played++
-            MINIGAME_STATE[ getMinigameStateIndex(minigameNumber) + 3 ]++;   //  Lost++
+            minigamePlayed( minigameNumber );
 
-            updateAccuracy( minigameNumber );
+            var lost = getMinigameState( minigameNumber, 3 ) + 1;
+
+            setMinigameState( minigameNumber, 3, lost );   //  Lost  ++
         }
 
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
@@ -210,36 +243,23 @@ function openMenu()
             $( "#newMapButton" ).css( "visibility", "visible" );
         }
 
-        function updateAccuracy( minigameID )
+        function showMessageBox( messageArr, endText, completeFunction )
         {
-            var acc = ( getMinigameStateIndex( minigameID ) + 1 )   //  Minigame #X Played
-                    / ( getMinigameStateIndex( minigameID ) + 2 );  //  Minigame #X Won
+            hideButtons();
+            $( "#messageBoxButton" ).val( "weiter" );
+            $( "#messageBox" ).show("slow");
+            currentMessageBoxTexte = messageArr;
+            currentMessageBoxEndText = endText;
+            currentMessageBoxCompleteFunction = completeFunction;
+            currentMessageBoxValue = 0;
 
-            MINIGAME_STATE[getMinigameStateIndex( minigameID ) + 4] = acc;  //  Minigame #X Accuracy
-            updateStatueModel(minigameID, 1, acc);                          //  Statuemodel for Minigame #X Accuracy
+            click_MessageBoxWeiter();
         }
 
-        function show_MessageBox(message) {
-       
-            $("# ")
- 
-        }
-
-        function start_Minigame( minigameID )
+        function exitMessageBox()
         {
-            $( "#minigame" ).css( "visibility", "visible" );
-
-            $( "#menuButton" ).css( "visibility", "hidden" );
-            $( "#minigameButton" ).css( "visibility", "hidden" );
-            $( "#newMapButton" ).css( "visibility", "hidden" );
-            console.log( "minigame button clicked." );
-
-            console.log( "Reading: " + "html/minigame" + minigameID + ".html" );
-            $.get( "html/minigame" + minigameID + ".html", function ( data )
-            {
-                console.log( "Contents: " + data );
-                $( "#minigame" ).html( data );
-            } );
+            $( "#messageBox" ).hide( "slow",  function(){showButtons()} );
+            currentMessageBoxCompleteFunction();
         }
 
         function showCreditsScreen()
@@ -260,9 +280,9 @@ function openMenu()
             OnStatueStateChanged();
         }
 
-        function MinigameAvailabilityChanged()
+        function MinigameAvailabilityChanged( minigameID, isAvailable )
         {
-            OnMinigameAvailabilityChanged();
+            OnMinigameAvailabilityChanged( minigameID, isAvailable );
         }
 
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
@@ -270,19 +290,14 @@ function openMenu()
 //REPORT IF MODIFY|REPORT IF MODIFY|REPORT IF MODIFY|REPORT IF MODIFY|REPORT IF MODIFY///////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 
-        //returns value of possible Minigames starts depending on minigameID
-        function mgPossible(minigameID) {
-            switch (minigameID) {
-                case "1":
-                    return MINIGAME_STATE.MG1Possible - MINIGAME_STATE.MG1Played;
-                case "2":
-                    return MINIGAME_STATE.MG2Possible - MINIGAME_STATE.MG2Played;
-                case "3":
-                    return MINIGAME_STATE.MG3Possible - MINIGAME_STATE.MG3Played;
-                default:
-                    console.log("Error in minigameID ( canstartMinigame..)");
-                    return;
-            }
+        //  Minigames can be started if:
+        //      1. They were played less than their "possible" value allows
+        //      2. The previous minigame has been played at least once (if there is a previous)
+        function mgPossible( minigameID )
+        {
+                      //   Possible                       //   Played
+            return    getMinigameState( minigameID, 0 ) > getMinigameState( minigameID, 1 ) 
+                   && (minigameID == 1 || getMinigameState( minigameID - 1, 2 ) > 0);
         }
 
         //Returns: int[15]
@@ -293,15 +308,11 @@ function openMenu()
         function getMinigameStates() {
             tmp = new int[15];
 
-            for (var i = 0; i < 15; i++) {
-                tmp[i] = MINIGAME_STATE[i]
+            for ( var i = 0; i < 15; i++ )
+            {
+                tmp[i] = MINIGAME_STATE[i];
             }
             return tmp;
-        }
-
-        function getMinigameStateIndex( minigameID )
-        {
-            return (minigameID - 1) * 5;
         }
 
         function getStatueModelIndex( minigameID )
@@ -312,61 +323,18 @@ function openMenu()
         //Returns: int[5]
         //	MG[id]      : Possible=>[0]    Played=>[1]    Won => [2]  Lost => [3]  Accuracy=> [4]
         //-------------//--------------//---------------//----------//-----------//--------------//
-        function getMinigameState(id) {
-            var from;
-            var to;
-            tmp = new int[5];
-                switch(id) {
-                    case 1:
-                        from = 0;
-                        to = 5;
-                        break;
-                    case 2:
-                        from = 6;
-                        to = 10;
-                        break;
-                    case 3: 
-                        from = 11;
-                        to = 15;
-                        break;
-                }
-                for (var i = from; i < to; i++) {
-                    tmp[i] = MINIGAME_STATE[i]
-                }
-                return tmp;
-         }
+        function getMinigameState( id, propertyID )
+        {
+            var ind = ( id - 1 ) * 5;
 
-        //Returns: int[5]
-        //	MG1         : Possible=>[0]    Played=>[1]    Won => [2]  Lost => [3]  Accuracy=> [4]
-        //-------------//--------------//---------------//----------//-----------//--------------//
-        function getMinigameOneState() {
-            tmp = new int[5];
-            for (var i = 0; i < 5; i++) {
-                tmp[i] = MINIGAME_STATE[i]
-            }
-            return tmp;
+            return MINIGAME_STATE[ind + propertyID];
         }
 
-        //Returns: int[5]
-        //	MG2         : Possible=>[5]    Played=>[6]    Won => [7]  Lost => [8]  Accuracy=> [9] 
-        //-------------//--------------//---------------//----------//-----------//--------------//
-        function getMinigameTwoState() {
-            tmp = new int[5];
-            for (var i = 5; i < 10; i++) {
-                tmp[i] = MINIGAME_STATE[i];
-            }
-            return tmp;
-        }
-
-        //Returns: int[5]
-        //	MG3         : Possible=>[10]   Played=>[11]   Won =>[12]  Lost =>[13]  Accuracy=>[14]
-        //-------------//--------------//---------------//----------//-----------//--------------//
-        function getMinigameThreeState() {
-            tmp = new int[4];
-            for (var i = 10; i < 15; i++) {
-                tmp[i] = MINIGAME_STATE[i];
-            }
-            return tmp;
+        function setMinigameState( id, propertyID, value )
+        {
+            var ind = ( id - 1 ) * 5;
+            
+            MINIGAME_STATE[ind + propertyID] = value;
         }
 
         //returns current StatueState
@@ -395,39 +363,66 @@ function openMenu()
             if ( statueModel[getStatueModelIndex( minigameID ) + propertyID] != value )
             {
                 statueModel[getStatueModelIndex( minigameID ) + propertyID] = value;
-                StatueModelChanged( Math.floor( minigameID ) );
+                StatueModelChanged( minigameID );
             }
         }
 
         //returns current GameState
-        function getGameState() {
+        function getGameState()
+        {
             return gameState;
         }
 
         //sets volume from 0-100
-        function setVolume(volume) {
+        function setVolume( volume )
+        {
             if (volume > 100) volume_level = 100;
             else if (volume < 0) volume_level = 0;
             else volume_level = volume;
         }
 
         //sets difficulty DIFFICULTY.EASY//.MEDIUM//.HARD
-        function setDifficulty(_diff) {
+        function setDifficulty( _diff )
+        {
             difficulty = _diff;
         }
 
-        function getNextMessageBoxText() {
-            if ( currentMessageBoxValue > messageBoxTexte.length )
-                currentMessageBoxValue = 1;
-            return messageBoxTexte[currentMessageBoxValue++];
+        function getNextMessageBoxText()
+        {
+            //  TODO if next text is last one, change button text to exit
+            if ( currentMessageBoxValue > currentMessageBoxTexte.length )
+            {
+                //  TODO exit message box here
+                currentMessageBoxValue = 0;
+            }
+
+            return currentMessageBoxTexte[currentMessageBoxValue++];
         }
 
-        function getVolume() {
+        function getVolume()
+        {
             return volume_level;
         }
 
-        function getQuality() {
+        function getQuality()
+        {
             return graphicQuality;
+        }
+
+        function getResourceFromMinigameID( minigameID )
+        {
+            switch(minigameID)
+            {
+                case 1:
+                    return "Stein";
+                    break;
+                case 2:
+                    return "Wasser";
+                    break;
+                case 3:
+                    return "Holz";
+                    break;
+            }
         }
 
 
@@ -471,13 +466,59 @@ function openMenu()
 
     //<draft>: AUFBAU GAMETEXTS>>:
 
-        //FIRST DRAFT 
-        var messageBoxTexte = { 1:"Willkommen auf Weazle Island",
-            2:"Dein Ziel ist die Unterstützung des Weazle Volks, welches auf dieser Insel gestrandet ist.",
-            3:"Die Weazle werden Missstände ankündigen und Euer kluger Kopf wird ihre Probleme lösen.",
-            4:"Viel Spaß und Erfolg!",
-            5:"Nun schaut euch erst einmal in Ruhe auf der Insel um.",
-            6:"Sobald über einem Weazle ein Ausrufezeichen erscheint, solltest Du mit ihr oder ihm sprechen.",
-            7:"Herzlichen Glückwunsch, Du hast die erste Aufgabe erfolgreich bewältigt!",
-            8:"Zu Deinen Ehren baut das Weazle Volk eine Statue. ",
-            9:"Es ist von deinen Ergebnissen abhängig, wie hoch die Statue wird undaus welchem Material sie bestehen wird."};
+        function getMaingameStartedText()
+        {
+            var text = [];
+            text[0]= "Hallo, " + username + "!",
+            text[1]= "Willkommen auf Weazle Island",
+            text[2]= "Dein Ziel ist die Unterstützung des Weazle Volks, welches auf dieser Insel gestrandet ist.",
+            text[3]= "Die Weazle werden Missstände ankündigen und Euer kluger Kopf wird ihre Probleme lösen.",
+            text[4]= "Viel Spaß und Erfolg!",
+            text[5]= "Nun schaut euch erst einmal in Ruhe auf der Insel um.",
+            text[6]= "Sobald über einem Weazle ein Ausrufezeichen erscheint, solltest Du mit ihr oder ihm sprechen.",
+            text[7]= "Herzlichen Glückwunsch, Du hast die erste Aufgabe erfolgreich bewältigt!",
+            text[8]= "Zu Deinen Ehren baut das Weazle Volk eine Statue. ",
+            text[9]= "Es ist von deinen Ergebnissen abhängig, wie hoch die Statue wird und aus welchem Material sie bestehen wird."
+        };
+
+        function getFirstSegmentBuiltText(minigameID)
+        {
+            var text = [];
+            text[0] = "Glückwunsch, du hast deinen Weazles ihr erstes Stück " + getResourceFromMinigameID( minigameID ) + " beschafft!";
+            text[1] = "Allerdings brauchen sie noch ein wenig mehr. Wenn du ihnen mehr blalblalblba";
+            text[1] = "Schau mal, die Weazles fangen an, einen Teil der Statue zu deinen Ehren zu bauen!";
+            return text;
+        }
+
+        function getNextSegmentBuiltText(minigameID)
+        {
+            var text = [];
+            text[0] = "Glückwunsch, aus Dank für das weitere " + getResourceFromMinigameID( minigameID ) + " werden die Weazles dieses Segment weiter ausgebaut!";
+            text[1] = "Wenn du ihnen noch mehr bringst, werden sie es sicherlich noch weiter verschönern!";
+            return text;
+        }
+
+        function getLastSegmentBuiltText(minigameID)
+        {
+            var score = getMinigameState(minigameID, 2);
+
+            var score_text  = score > 4
+                            ? "[ACHTUNG, UNMÖGLICHER WERT]"
+                            : score == 4
+                            ? "das außerordentlich viele"
+                            : score == 3
+                            ? "das viele"
+                            : score == 2
+                            ? "die paar Stücke"
+                            : score == 1
+                            ? "das eine Stück"
+                            : "[AHTUNG, UNMÖGLICHER WERT]";
+
+            var text = [];
+            text[0] = "Glückwunsch, die Weazles werden zum Dank für " + score_text + " " + getResourceFromMinigameID( minigameID ) + " das Segment der Statue zu deinen Ehren fertigstellen!";
+            return text;
+        }
+
+        segmentBuiltEndText = "Zeig's mir!";
+
+        

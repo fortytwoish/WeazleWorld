@@ -19,6 +19,8 @@ const TREE_DENSITY      = 15;
 const TREE_HEIGHT_MIN   = 2;
 const TREE_HEIGHT_MAX   = 4;
 
+island_peaks = [0, 0, 0];
+
 function GenerateIsland( size, waterLevel )
 {
     dim = Math.pow( 2, size ) + 1;
@@ -403,6 +405,19 @@ function GenerateMaterial( geometry, sunPosition )
             fieldY++;
             fieldX = 0;
         }
+
+        ////  Can the current coordinate be a new peak?
+        //if ( geometry.attributes.position.array[j + 1] > island_peaks[0] )
+        //{
+        //    var i = 1;
+        //    //  Which peak is it?
+        //    while( geometry.attributes.position.array[j + 1] > island_peaks[i] )
+        //    {
+        //        i++;
+        //    }
+        //    //Insert value into array at position i-1
+        //    for(var k = i - 1; )
+        //}
 
         if ( imageData[i] != 0 )
         {

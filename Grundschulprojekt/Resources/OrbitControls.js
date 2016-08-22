@@ -123,7 +123,10 @@ THREE.OrbitControls = function ( object, domElement ) {
 		var lastPosition = new THREE.Vector3();
 		var lastQuaternion = new THREE.Quaternion();
 
-		return function update () {
+		return function update ( overrideValue ) {
+
+		    //console.log( spherical.radius );
+		    //spherical.radius += 0.1;
 
 			var position = scope.object.position;
 
@@ -152,6 +155,10 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 			spherical.makeSafe();
 
+			if ( overrideValue )
+			{
+			    spherical.radius = overrideValue;
+			}
 
 			spherical.radius *= scale;
 
@@ -245,10 +252,10 @@ THREE.OrbitControls = function ( object, domElement ) {
 	var EPS = 0.000001;
 
 	// current position in spherical coordinates
-	var spherical = new THREE.Spherical();
+	spherical = new THREE.Spherical();
 	var sphericalDelta = new THREE.Spherical();
 
-	var scale = 1;
+	scale = 1;
 	var panOffset = new THREE.Vector3();
 	var zoomChanged = false;
 

@@ -17,11 +17,12 @@ const LIGHTSTR           = 0.8;
 const OPPOSITE_LIGHTSTR  = 0.5;
 const OPPOSITE_LIGHTCOL  = 0xDDDDFF;
 const VILLAGE_DIMENSIONS = new THREE.Vector3( 20, 20, WATERLEVEL + 4 );
-const STATUE_DIMENSIONS  = new THREE.Vector3( 10, 10, 10 );
-const STATUE_SHRINK_DIM  = new THREE.Vector3( 2,  2,  1 );
+const STATUE_DIMENSIONS  = new THREE.Vector3( 5, 5, 5 );
 const STATUE_GOLD_MAT    = new THREE.MeshPhongMaterial({color: 0xFF0000});
 const STATUE_SILVER_MAT  = new THREE.MeshPhongMaterial({color: 0x00FF00});
 const STATUE_BRONZE_MAT  = new THREE.MeshPhongMaterial({color: 0x0000FF});
+const STATUE_WOOD_MAT    = new THREE.MeshPhongMaterial({color: 0x666666});
+
 
 //  LOCALS
 var camera,
@@ -32,6 +33,7 @@ var camera,
     test_statues = [],
     subsampleFactor = 1;
 
+clickable_objects = [];
 waterCreated = false;
 
 function main()
@@ -81,26 +83,19 @@ function init()
     controls.autoRotateSpeed = 1;
     controls.zoomSpeed       = 1;
 
+    controls.target          = new THREE.Vector3( 0, 10, 0 );
+
     //  Set default terrain gen & render quality
     setQualityLevel( DEFAULT_QUALITY );
     
-    //------------------------------------------------------//
-    //                  WATER                               //
-    //------------------------------------------------------//
     initWater();
 
-    //------------------------------------------------------//
-    //                  ISLAND                              //
-    //------------------------------------------------------//
     initIsland();
-    //------------------------------------------------------//
-    //                  WEAZLES                             //
-    //------------------------------------------------------//
+
+    initMinigameNodes();
+
     //initWeazles();
 
-    //------------------------------------------------------//
-    //                  LIGHTING                            //
-    //------------------------------------------------------//
     initLighting();
 
     //------------------------------------------------------//
@@ -137,7 +132,6 @@ function initRenderer()
     renderer                    = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setClearColor( WINDOW_CLEAR_COLOR );
     renderer.shadowMap.enabled  = true;
-    renderer.shadowMapType      = THREE.PCFSoftShadowMap;
 }
 
 function initWater()
@@ -183,6 +177,110 @@ function initIsland()
     islandMesh.receiveShadow    = true;
 }
 
+function initMinigameNodes()
+{
+    //test
+    //var material = new THREE.MeshNormalMaterial();
+
+    //var sphereGeometry = new THREE.SphereGeometry( 50, 32, 16 );
+    //var sphere = new THREE.Mesh( sphereGeometry, material );
+    //sphere.position.set( -60, 55, 0 );
+    //scene.add( sphere );
+
+    //var outlineMaterial1 = new THREE.MeshBasicMaterial( { color: 0xff0000, side: THREE.BackSide } );
+    //var outlineMesh1 = new THREE.Mesh( sphereGeometry, outlineMaterial1 );
+    //outlineMesh1.position.set( -60, 55, 0);
+    //outlineMesh1.scale.multiplyScalar( 1.05 );
+    //scene.add( outlineMesh1 );
+
+
+    var outlineMat       = new THREE.MeshPhongMaterial( { color: 0xFF0000, side: THREE.BackSide, emissive: 0xFF0000 } );
+    var outlineThickness = 1.1;
+
+    //  Init the models
+    //  1. Rock
+    var rock_dim          = new THREE.Vector3( 10, 8, 10 );
+
+    minigame_rock         = new THREE.Mesh( new THREE.CubeGeometry( rock_dim.x, rock_dim.y, rock_dim.z ),
+                                            new THREE.MeshPhongMaterial( { color: 0xBBBBBB } ) );
+    minigame_rock_outline = new THREE.Mesh( minigame_rock.geometry,
+                                            outlineMat );
+    minigame_rock_outline.scale.multiplyScalar( outlineThickness );
+
+    //  2. Water
+    var water_dim   = new THREE.Vector3( 10, 8, 10 );
+
+    minigame_water  = new THREE.Mesh( new THREE.CubeGeometry( water_dim.x, water_dim.y, water_dim.z ),
+                                      new THREE.MeshPhongMaterial( { color: 0x0000FF } ) );
+
+    minigame_water_outline = new THREE.Mesh( minigame_water.geometry,
+                                             outlineMat );
+    minigame_water_outline.scale.multiplyScalar( outlineThickness );
+    minigame_water_outline.visible = false;
+
+    //  3. Tree
+    var tree_dim    = new THREE.Vector3( 5, 20, 5 );
+    var leaves_dim  = new THREE.Vector3( 8, 8, 8 );
+
+    minigame_tree   = new THREE.Mesh( new THREE.CubeGeometry( tree_dim.x, tree_dim.y, tree_dim.z ),
+                                      new THREE.MeshPhongMaterial( { color: 0xAAAA22 } ) );
+    tree_leaves     = new THREE.Mesh( new THREE.CubeGeometry( leaves_dim.x, leaves_dim.y, leaves_dim.z ),
+                                      new THREE.MeshPhongMaterial( { color: 0x00FF00 } ) );
+
+    tree_leaves.position.y = tree_dim.y / 2 + leaves_dim.y / 2;
+
+    var outlineGeom =  minigame_tree.geometry;
+    minigame_tree.updateMatrix();
+    outlineGeom.merge( minigame_tree.geometry, minigame_tree.matrix );
+    tree_leaves.updateMatrix();
+    outlineGeom.merge(   tree_leaves.geometry,   tree_leaves.matrix );
+
+    minigame_tree.add( tree_leaves );
+
+    minigame_tree_outline = new THREE.Mesh( outlineGeom,
+                                            outlineMat );
+    minigame_tree_outline.scale.multiplyScalar( outlineThickness );
+    minigame_tree_outline.visible = false;
+
+    //  Generate map coordinates for each minigame
+    nodeCoordinates = [];
+    for ( var i = 0; i < 3; i++ )
+    {
+        do
+        {
+            var xpos = randBetween( -dim / 2, dim / 2 - 1 );
+            var zpos = randBetween( -dim / 2, dim / 2 - 1 );
+            var ypos = field[Math.round( middle.x + zpos )][Math.round( middle.y + xpos )];
+        }
+        while ( ypos < WATERLEVEL );
+
+        //TODO: Check for overlapping
+
+        nodeCoordinates.push( new THREE.Vector3( xpos, ypos, zpos ) );
+    }
+
+    minigame_rock.position.x  = minigame_rock_outline.position.x  = nodeCoordinates[0].x;
+    minigame_rock.position.y  = minigame_rock_outline.position.y  = nodeCoordinates[0].y + rock_dim.y  / 2 - 1;
+    minigame_rock.position.z  = minigame_rock_outline.position.z  = nodeCoordinates[0].z;
+
+    minigame_water.position.x = minigame_water_outline.position.x = nodeCoordinates[1].x;
+    minigame_water.position.y = minigame_water_outline.position.y = nodeCoordinates[1].y + water_dim.y / 2 - 1;
+    minigame_water.position.z = minigame_water_outline.position.z = nodeCoordinates[1].z;
+
+    minigame_tree.position.x  = minigame_tree_outline.position.x  = nodeCoordinates[2].x;
+    minigame_tree.position.y  = minigame_tree_outline.position.y  = nodeCoordinates[2].y + tree_dim.y  / 2 - 1;
+    minigame_tree.position.z  = minigame_tree_outline.position.z  = nodeCoordinates[2].z;
+
+    scene.add( minigame_rock );
+    scene.add( minigame_rock_outline );
+    scene.add( minigame_water );
+    scene.add( minigame_water_outline );
+    scene.add( minigame_tree );
+    scene.add( minigame_tree_outline );
+
+    OnMinigameAvailabilityChanged( 1, true );
+}
+
 function initWeazles()
 {
     Weazle_init();
@@ -203,13 +301,13 @@ function initLighting()
 {
     directionalLight = new THREE.DirectionalLight( 0xFFFFFF, LIGHTSTR );
     directionalLight.position.set( SUN_POSITION.x * 20, SUN_POSITION.y * 20, SUN_POSITION.z * 20 );
-    //directionalLight.castShadow = true;
-    //var shadowCamDist = 20;
-    //directionalLight.shadowCameraRight      = shadowCamDist;
-    //directionalLight.shadowCameraLeft       = -shadowCamDist;
-    //directionalLight.shadowCameraTop        = shadowCamDist;
-    //directionalLight.shadowCameraBottom     = -shadowCamDist;
-    //directionalLight.shadowCameraFar        = shadowCamDist * 2;
+    directionalLight.castShadow = true;
+    var shadowCamDist = 10;
+    directionalLight.shadowCameraRight      = shadowCamDist;
+    directionalLight.shadowCameraLeft       = -shadowCamDist;
+    directionalLight.shadowCameraTop        = shadowCamDist;
+    directionalLight.shadowCameraBottom     = -shadowCamDist;
+    directionalLight.shadowCameraFar        = shadowCamDist * 2;
     //directionalLight.shadowMapHeight        =
     //directionalLight.shadowMapWidth         = 8192;
     //scene.add( new THREE.CameraHelper( directionalLight.shadow.camera ) );
@@ -236,10 +334,31 @@ function animate()
         }
     }
 
+    if ( controls.autoRotate )
+    {
+        controls.update();
+    }
+
     stats.begin();
+
+    //var scaleMult = 1.15 + Math.sin(Date.now() / 1500) / 5;
+
+    //if(minigame_rock_outline.visible)
+    //{
+    //    minigame_rock_outline.scale.set( scaleMult, scaleMult, scaleMult );
+    //}
+    //if(minigame_water_outline.visible)
+    //{
+    //    minigame_water_outline.scale.set( scaleMult, scaleMult, scaleMult );
+    //}
+    //if(minigame_tree_outline.visible)
+    //{
+    //    minigame_tree_outline.scale.set( scaleMult, scaleMult, scaleMult );
+    //}
+
     if (!isInMenu)
     {
-        controls.autoRotate = false;    //Todo: Better way to handle autorotating while in menu
+        //controls.autoRotate = false;    //Todo: Better way to handle autorotating while in menu
         /*  UPDATE SCENE HERE */
 
         //for ( var i = 0; i < weazles.length; i++ )
@@ -250,13 +369,13 @@ function animate()
         
         
 
-        camera.updateProjectionMatrix();
+        //camera.updateProjectionMatrix();
 
     }
     else
     {
         //SET THESE TO AUTOMATICALLY ROTATE, FOR EXAMPLE WHEN VIEWING STATUE
-        controls.autoRotate = true;
+        //controls.autoRotate = true;
     }
            
     //  continue render loop
@@ -268,7 +387,7 @@ function animate()
         water.render();
     }
 
-    controls.update(); // required if controls.enableDamping = true, or if controls.autoRotate = true
+    //controls.update(); // required if controls.enableDamping = true, or if controls.autoRotate = true
     stats.update();
     stats.end();
     requestAnimationFrame(animate);
@@ -369,14 +488,25 @@ function onDocumentMouseDown( event )
     mouse.y = -( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
-    objects = [ ];
-    var intersects = raycaster.intersectObjects(objects);
+    var intersects = raycaster.intersectObjects(clickable_objects);
 
     if ( intersects.length > 0 )
     {
-        var color = Math.random() * 0xffffff;
-        intersects[0].object.material.color.setHex( color );
-        test_light.color.setHex( color );
+        console.log( intersects[0].object );
+        if ( intersects[0].object == minigame_rock )
+        {
+            startMinigame( 1 );
+        }
+        else if ( intersects[0].object == minigame_water )
+        {
+            startMinigame( 2 );
+        }
+        else if ( intersects[0].object == minigame_tree || intersects[0].object == tree_leaves  )
+        {
+            startMinigame( 3 );
+        }
+        //var color = Math.random() * 0xffffff;
+        //intersects[0].object.material.color.setHex( color );
 
     }
 
@@ -394,6 +524,17 @@ function onkeydown( event )
         else
         {
             controls.autoRotate = true;
+        }
+    }
+    else if ( event.key == "s" )
+    {
+        if ( directionalLight.castShadow )
+        {
+            directionalLight.castShadow = false;
+        }
+        else
+        {
+            directionalLight.castShadow = true;
         }
     }
     else if ( event.key == "1" )
@@ -428,32 +569,139 @@ function onkeydown( event )
 //------------------------------------------------------//
 function OnStatueModelChanged( minigameID )
 {
-    // Reference:
-    // { MG1Done:0 , MG1Accuracy:0 , MG2Done:0 , MG2Accuracy:0 , MG3Done:0 , MG3Accuracy:0, ... };
-    var currentStatueModel = getStatueModel();
+
 
     //  1. Remove existing statue segment at that position
     if ( test_statues[minigameID] != null )
     {
-        scene.remove( test_statues[minigameID] );
+        var oldSegmentMesh = test_statues[minigameID];
     }
 
     //  2. Create new statue segment
-    var segmentGeom            = new THREE.BoxGeometry( STATUE_DIMENSIONS.x, STATUE_DIMENSIONS.y, STATUE_DIMENSIONS.z );
+    var segmentGeom    = new THREE.BoxGeometry( STATUE_DIMENSIONS.x / minigameID, STATUE_DIMENSIONS.y, STATUE_DIMENSIONS.z / minigameID );
 
-    var minigameAcc = currentStatueModel[getStatueModelIndex(minigameID) + 1];
+    var minigameWon    = getMinigameState( minigameID, 2 );
+    var minigamePlayed = getMinigameState( minigameID, 1 );
 
-    var segmentMat  = minigameAcc <= (1 / 3)
-                    ? STATUE_BRONZE_MAT
-                    : minigameAcc <= (2 / 3)
-                    ? STATUE_SILVER_MAT
-                    : STATUE_GOLD_MAT;
+    var segmentMat     = minigameWon == 1
+                       ? STATUE_WOOD_MAT
+                       : minigameWon == 2
+                       ? STATUE_BRONZE_MAT
+                       : minigameWon == 3
+                       ? STATUE_SILVER_MAT
+                       : STATUE_GOLD_MAT;
 
-    var segmentMesh = new THREE.Mesh( segmentGeom, segmentMat );
-        segmentMesh.position.y = STATUE_DIMENSIONS.z * ( minigameID - 1 );
+    var segmentMesh            = new THREE.Mesh( segmentGeom, segmentMat );
+        segmentMesh.castShadow = true;
+        segmentMesh.position.y = STATUE_DIMENSIONS.z * ( minigameID - 1 ) + field[middle.x][middle.y];
 
-    test_statues[minigameID] = segmentMesh;
-    scene.add( segmentMesh );
+    test_statues[minigameID]   = segmentMesh;
+
+    //  Show message
+    if ( showTutorials )
+    {
+        switch ( minigamePlayed )
+        {
+            case 1:
+                showMessageBox( getFirstSegmentBuiltText( minigameID ),
+                                segmentBuiltEndText,
+                                function () { changeStatueModel( oldSegmentMesh, segmentMesh ) } );
+                break;
+            case 4:
+                showMessageBox( getLastSegmentBuiltText( minigameID ),
+                                segmentBuiltEndText,
+                                function () { changeStatueModel( oldSegmentMesh, segmentMesh ) } );
+                break;
+            default:
+                showMessageBox( getNextSegmentBuiltText( minigameID ),
+                                segmentBuiltEndText,
+                                function () { changeStatueModel( oldSegmentMesh, segmentMesh ) } );
+                break;
+        }
+    }
+    else
+    {
+        changeStatueModel( oldSegmentMesh, segmentMesh );
+    }
+    
+
+    //  Move camera to statue
+    //TODO: Animation
+
+    //  Add statue segment
+    //TODO: Animation
+
+}
+
+function changeStatueModel( oldSegmentMesh, mesh )
+{
+    controls.enabled = false;
+
+    var oldRad = spherical.radius;
+    var oldRotateSpeed = controls.autoRotateSpeed;
+
+    var targetRad = 30;
+    var targetRotateSpd = 5;
+    var zoomInTime = 1500;
+    var zoomOutTime = 1000;
+    var segmentBuildTime = 2000;
+    var timeUntilZoomOut = 2000;
+
+    controls.autoRotate = true;
+
+    $( { n: oldRad } ).animate( { n: targetRad }, {
+        duration: zoomInTime,
+        step: function ( now, fx )
+        {
+            controls.update( now );
+        },
+        complete: function()
+        {
+            // > Segment build animation here <
+
+            setTimeout( function ()
+            {
+                if ( oldSegmentMesh )
+                {
+                    scene.remove( oldSegmentMesh );
+                }
+                scene.add( mesh );
+            }, segmentBuildTime );
+        }
+    } );
+    $( { n: 0 } ).animate( { n: targetRotateSpd }, {
+        duration: zoomInTime,
+        step: function ( now, fx )
+        {
+            controls.autoRotateSpeed = now;
+        }
+    } );
+
+    setTimeout( function ()
+    {
+
+        $( { n: targetRad } ).animate( { n: oldRad }, {
+            duration: zoomOutTime,
+            step: function ( now, fx )
+            {
+                controls.update( now );
+            }
+        } );
+
+        $( { n: targetRotateSpd } ).animate( { n: 0 }, {
+            duration: zoomInTime,
+            step: function ( now, fx )
+            {
+                controls.autoRotateSpeed = now;
+            },
+            complete: function()
+            {
+                controls.autoRotateSpeed = oldRotateSpeed;
+                controls.autoRotate = false;
+                controls.enabled = true;
+            }
+        } );
+    }, (zoomInTime + segmentBuildTime + timeUntilZoomOut ) );
 }
 
 function OnStatueStateChanged()
@@ -473,9 +721,47 @@ function OnStatueStateChanged()
     }
 }
 
-function OnMinigameAvailabilityChanged()
+function OnMinigameAvailabilityChanged( minigameID, isAvailable )
 {
-    
+    if ( isAvailable )
+    {
+        console.log( "minigame " + minigameID + " is now available." );
+        switch ( minigameID )
+        {
+            case 1:
+                clickable_objects.push( minigame_rock );
+                minigame_rock_outline.visible = true;
+                break;
+            case 2:
+                clickable_objects.push( minigame_water );
+                minigame_water_outline.visible = true;
+                break;
+            case 3:
+                clickable_objects.push( minigame_tree );
+                minigame_tree_outline.visible = true;
+                break;
+        }
+    }
+    else
+    {
+        console.log( "minigame " + minigameID + " is no longer available." );
+        switch ( minigameID )
+        {
+            case 1:
+                clickable_objects.splice( minigame_rock, 1 );
+                minigame_rock_outline.visible = false;
+                break;
+            case 2:
+                clickable_objects.splice( minigame_water, 1 );
+                minigame_water_outline.visible = false;
+                break;
+            case 3:
+                clickable_objects.splice( minigame_tree, 1 );
+                minigame_tree_outline.visible = false;
+                break;
+        }
+    }
+
 }
 
 main();
