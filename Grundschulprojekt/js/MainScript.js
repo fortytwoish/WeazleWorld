@@ -6,7 +6,7 @@ TERRAIN_RESOLUTION = 0;
 WATER_SCALE_FACTOR = 1;
 
 //  CONSTANTS
-const DEFAULT_QUALITY    = 2;
+const DEFAULT_QUALITY    = 3;
 const PAUSE_IN_MENU      = true;
 const WATERLEVEL         = 0;
 const WATERCOLOR         = 0x55AAAA;
@@ -442,7 +442,12 @@ $( function ()
     $( "#messageBoxButton" ).click( function ()
     {
         click_MessageBoxWeiter();
-    });
+    } );
+
+    $( "#exitStatueButton" ).click( function ()
+    {
+        ExitShowStatue();
+    } );
 });
 
 //TODO: Find a better method to go fullscreen
@@ -475,10 +480,15 @@ function onDocumentTouchStart( event )
 
 function onDocumentMouseDown( event )
 {
-  
+
     if (preventRaycastOnce)
     {
         preventRaycastOnce = false;
+        return;
+    }
+
+    if ( !controls.enabled )
+    {
         return;
     }
 
@@ -492,7 +502,6 @@ function onDocumentMouseDown( event )
 
     if ( intersects.length > 0 )
     {
-        console.log( intersects[0].object );
         if ( intersects[0].object == minigame_rock )
         {
             startMinigame( 1 );
@@ -505,8 +514,16 @@ function onDocumentMouseDown( event )
         {
             startMinigame( 3 );
         }
-        //var color = Math.random() * 0xffffff;
-        //intersects[0].object.material.color.setHex( color );
+        else if ( arrayContains(test_statues, intersects[0].object) )
+        {
+            $( "#exitStatueButton" ).show();
+            setTimeout( function ()
+            {
+                ShowStatue();
+            }, 250 );
+            
+        }
+
 
     }
 
@@ -517,6 +534,7 @@ function onkeydown( event )
 
     if(event.key == "r")
     {
+        console.log( "Auto Rotate: " + controls.autoRotate + " speed: " + controls.autoRotateSpeed );
         if ( controls.autoRotate )
         {
             controls.autoRotate = false;
@@ -569,8 +587,6 @@ function onkeydown( event )
 //------------------------------------------------------//
 function OnStatueModelChanged( minigameID )
 {
-
-
     //  1. Remove existing statue segment at that position
     if ( test_statues[minigameID] != null )
     {
@@ -635,40 +651,39 @@ function OnStatueModelChanged( minigameID )
 
 function changeStatueModel( oldSegmentMesh, mesh )
 {
-    controls.enabled = false;
+    controls.enabled     = false;
 
-    var oldRad = spherical.radius;
-    var oldRotateSpeed = controls.autoRotateSpeed;
+    oldRad           = spherical.radius;
+    oldRotateSpeed   = controls.autoRotateSpeed;
 
-    var targetRad = 30;
-    var targetRotateSpd = 5;
-    var zoomInTime = 1500;
-    var zoomOutTime = 1000;
-    var segmentBuildTime = 2000;
-    var timeUntilZoomOut = 2000;
+    targetRad        = 30;
+    targetRotateSpd  = 5;
+    zoomInTime       = 1500;
+    zoomOutTime      = 1000;
+    segmentBuildTime = 2000;
+    timeUntilZoomOut = 2000;
 
-    controls.autoRotate = true;
+    controls.autoRotate  = true;
 
-    $( { n: oldRad } ).animate( { n: targetRad }, {
-        duration: zoomInTime,
-        step: function ( now, fx )
+    ShowStatue(function()
+    {
+        // > Segment build animation here <
+
+        setTimeout( function ()
         {
-            controls.update( now );
-        },
-        complete: function()
-        {
-            // > Segment build animation here <
-
-            setTimeout( function ()
+            if ( oldSegmentMesh )
             {
-                if ( oldSegmentMesh )
-                {
-                    scene.remove( oldSegmentMesh );
-                }
-                scene.add( mesh );
-            }, segmentBuildTime );
-        }
+                clickable_objects.splice( oldSegmentMesh );
+                scene.remove( oldSegmentMesh );
+            }
+            clickable_objects.push( mesh );
+            scene.add( mesh );
+        }, segmentBuildTime );
     } );
+
+    //----------------------//
+    //    1. ROTATE IN      //
+    //----------------------//
     $( { n: 0 } ).animate( { n: targetRotateSpd }, {
         duration: zoomInTime,
         step: function ( now, fx )
@@ -679,7 +694,9 @@ function changeStatueModel( oldSegmentMesh, mesh )
 
     setTimeout( function ()
     {
-
+        //----------------------//
+        //     3. ZOOM OUT      //
+        //----------------------//
         $( { n: targetRad } ).animate( { n: oldRad }, {
             duration: zoomOutTime,
             step: function ( now, fx )
@@ -687,7 +704,9 @@ function changeStatueModel( oldSegmentMesh, mesh )
                 controls.update( now );
             }
         } );
-
+        //----------------------//
+        //    3. ROTATE OUT     //
+        //----------------------//
         $( { n: targetRotateSpd } ).animate( { n: 0 }, {
             duration: zoomInTime,
             step: function ( now, fx )
@@ -697,11 +716,85 @@ function changeStatueModel( oldSegmentMesh, mesh )
             complete: function()
             {
                 controls.autoRotateSpeed = oldRotateSpeed;
-                controls.autoRotate = false;
-                controls.enabled = true;
+                controls.autoRotate      = false;
+                controls.enabled         = true;
             }
         } );
     }, (zoomInTime + segmentBuildTime + timeUntilZoomOut ) );
+}
+
+function ShowStatue( completeFctn )
+{
+    oldRad              = spherical.radius;
+    oldRotateSpeed      = controls.autoRotateSpeed;
+
+    targetRad           = 30;
+    targetRotateSpd     = 5;
+    var zoomInTime      = 1500;
+
+    controls.autoRotate = true;
+
+    //----------------------//
+    //     1.  ZOOM IN      //
+    //----------------------//
+    $( { n: oldRad } ).animate( { n: targetRad }, {
+        duration: zoomInTime,
+        step: function ( now, fx )
+        {
+            controls.update( now );
+        }
+        ,complete: function()
+        {
+            if(completeFctn)
+            {
+                completeFctn();
+            }
+        }
+    } );
+    //----------------------//
+    //    1. ROTATE IN      //
+    //----------------------//
+    $( { n: 0 } ).animate( { n: targetRotateSpd }, {
+        duration: zoomInTime,
+        step: function ( now, fx )
+        {
+            controls.autoRotateSpeed = now;
+        }
+    } );
+
+    controls.enabled = false;
+}
+
+function ExitShowStatue()
+{
+    var zoomOutTime = 1000;
+
+    //----------------------//
+    //       ZOOM OUT       //
+    //----------------------//
+    $( { n: targetRad } ).animate( { n: oldRad }, {
+        duration: zoomOutTime,
+        step: function ( now, fx )
+        {
+            controls.update( now );
+        }
+    } );
+    //----------------------//
+    //      ROTATE OUT      //
+    //----------------------//
+    $( { n: targetRotateSpd } ).animate( { n: 0 }, {
+        duration: zoomInTime,
+        step: function ( now, fx )
+        {
+            controls.autoRotateSpeed = now;
+        },
+        complete: function ()
+        {
+            controls.autoRotateSpeed = oldRotateSpeed;
+            controls.autoRotate      = false;
+            controls.enabled         = true;
+        }
+    } );
 }
 
 function OnStatueStateChanged()

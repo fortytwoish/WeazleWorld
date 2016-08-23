@@ -484,16 +484,28 @@ function continueMainGame()
         function getFirstSegmentBuiltText(minigameID)
         {
             var text = [];
-            text[0] = "Glückwunsch, du hast deinen Weazles ihr erstes Stück " + getResourceFromMinigameID( minigameID ) + " beschafft!";
-            text[1] = "Allerdings brauchen sie noch ein wenig mehr. Wenn du ihnen mehr blalblalblba";
-            text[1] = "Schau mal, die Weazles fangen an, einen Teil der Statue zu deinen Ehren zu bauen!";
+            var ind = 0;
+            text[ind++] = "Glückwunsch, du hast deinen Weazles ihr erstes Stück " + getResourceFromMinigameID( minigameID ) + " beschafft!";
+            text[ind++] = "Allerdings brauchen sie noch ein wenig mehr. Je mehr du ihnen bringst, desto dankbarer werden deine Weazles sein.";
+            if ( minigameID < 3 )
+            {
+                text[ind++] = "Du kannst ihnen aber auch " + getResourceFromMinigameID( minigameID ) + " bringen, welches sie ebenfalls sehr dringend brauchen!";
+            }
+            if ( minigameID == 1 )
+            {
+                text[ind++] = "Schau mal, die Weazles fangen an, eine Statue zu deinen Ehren zu bauen!";
+            }
+            else
+            {
+                text[ind++] = "Schau mal, die Weazles fangen an, einen neuen Teil der Statue zu deinen Ehren zu bauen!";
+            }
             return text;
         }
 
         function getNextSegmentBuiltText(minigameID)
         {
             var text = [];
-            text[0] = "Glückwunsch, aus Dank für das weitere " + getResourceFromMinigameID( minigameID ) + " werden die Weazles dieses Segment weiter ausgebaut!";
+            text[0] = "Gut gemacht! Aus Dank für das weitere Stück " + getResourceFromMinigameID( minigameID ) + " werden die Weazles einen Teil der Statue weiter ausbauen!";
             text[1] = "Wenn du ihnen noch mehr bringst, werden sie es sicherlich noch weiter verschönern!";
             return text;
         }
@@ -502,9 +514,7 @@ function continueMainGame()
         {
             var score = getMinigameState(minigameID, 2);
 
-            var score_text  = score > 4
-                            ? "[ACHTUNG, UNMÖGLICHER WERT]"
-                            : score == 4
+            var score_text  = score == 4
                             ? "das außerordentlich viele"
                             : score == 3
                             ? "das viele"
@@ -512,10 +522,11 @@ function continueMainGame()
                             ? "die paar Stücke"
                             : score == 1
                             ? "das eine Stück"
-                            : "[AHTUNG, UNMÖGLICHER WERT]";
+                            : "[ACHTUNG, UNMÖGLICHER WERT]";
 
             var text = [];
             text[0] = "Glückwunsch, die Weazles werden zum Dank für " + score_text + " " + getResourceFromMinigameID( minigameID ) + " das Segment der Statue zu deinen Ehren fertigstellen!";
+            text[1] = "Sie haben jetzt genug " + getResourceFromMinigameID( minigameID ) + ". Aber bestimmt kannst du ihnen noch andere Dinge bringen!";
             return text;
         }
 

@@ -10,49 +10,42 @@
             setQuality_TerrainResDependant( 7 );
             renderer.antialias      = false;
             subsampleFactor         = 2;
-            renderer.setPixelRatio( 1 );
             break;
         case 2:
-
             setQuality_TerrainResDependant( 8 );
             renderer.antialias      = false;
             subsampleFactor         = 2;
-            renderer.setPixelRatio( 1 );
             break;
         case 3:
             setQuality_TerrainResDependant( 9 );
             renderer.antialias      = false;
             subsampleFactor         = 1;
-            renderer.setPixelRatio( 1 );
             break;
         case 4:
             setQuality_TerrainResDependant( 10 );
             renderer.antialias      = true;
             subsampleFactor         = 1;
-            renderer.setPixelRatio( 1 );
             break;
         case 5:
             setQuality_TerrainResDependant( 11 );
             renderer.antialias      = true;
             subsampleFactor         = 1;
-            renderer.setPixelRatio( 1 );
             break;
         case 6:
             setQuality_TerrainResDependant( 12 );
             renderer.antialias      = true;
             subsampleFactor         = 1;
-            renderer.setPixelRatio( 1 );
             break;
         case "htcone":
             setQuality_TerrainResDependant( 10 );
             renderer.antialias      = false;
             controls.rotateSpeed    = 0.5;
             controls.zoomSpeed      = 0.5;
-            renderer.setPixelRatio( 1 / 2 );
+            subsampleFactor         = 2;
             break;
-
-            
     }
+
+    renderer.setPixelRatio( window.devicePixelRatio / subsampleFactor );
 }
 
 function setQuality_TerrainResDependant( terrainRes )
@@ -68,6 +61,7 @@ function setQuality_TerrainResDependant( terrainRes )
     }
 
     camera.far = Math.pow( 2, terrainRes + 1 );
+    camera.updateProjectionMatrix();
 
 	controls.maxDistance = Math.pow(2, terrainRes);
 	controls.update();
