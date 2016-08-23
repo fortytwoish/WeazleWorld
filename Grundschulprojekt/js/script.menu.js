@@ -54,7 +54,7 @@ optionEntries.push(new MenuEntry("menuQuality", '<input type="range" min="1" max
 	$("<h2>Qualität</h2>").insertBefore("#" + this.id);
 	$("#" + this.id).attr("value", getQuality());
 	$("#" + this.id).on("change", function () {
-		setQualityLevel(this.value);
+		setQuality(this.value);
 	});
 }));
 optionEntries.push(new MenuEntry("menuCredits", '<input type="button" value="Credits">', function () {
