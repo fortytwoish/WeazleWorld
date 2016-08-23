@@ -6,7 +6,7 @@ TERRAIN_RESOLUTION = 0;
 WATER_SCALE_FACTOR = 1;
 
 //  CONSTANTS
-const DEFAULT_QUALITY    = 3;
+const DEFAULT_QUALITY    = 2;
 const PAUSE_IN_MENU      = true;
 const WATERLEVEL         = 0;
 const WATERCOLOR         = 0x55AAAA;
@@ -118,7 +118,7 @@ function init()
     //------------------------------------------------------//
     //                  EVENT BINDING                       //
     //------------------------------------------------------//
-    document.addEventListener( 'mousedown' , onDocumentMouseDown , false );
+    document.addEventListener( 'click'     , onDocumentMouseClick, false );
     document.addEventListener( 'touchstart', onDocumentTouchStart, false );
     document.addEventListener( 'keydown'   , onkeydown           , false );
     window  .addEventListener( 'resize'    , onWindowResize      , false );
@@ -299,10 +299,10 @@ function onWeazleLoadingFinished()
 
 function initLighting()
 {
-    directionalLight = new THREE.DirectionalLight( 0xFFFFFF, LIGHTSTR );
+    directionalLight                        = new THREE.DirectionalLight( 0xFFFFFF, LIGHTSTR );
     directionalLight.position.set( SUN_POSITION.x * 20, SUN_POSITION.y * 20, SUN_POSITION.z * 20 );
-    directionalLight.castShadow = true;
-    var shadowCamDist = 10;
+    directionalLight.castShadow             = false;
+    var shadowCamDist                       = 10;
     directionalLight.shadowCameraRight      = shadowCamDist;
     directionalLight.shadowCameraLeft       = -shadowCamDist;
     directionalLight.shadowCameraTop        = shadowCamDist;
@@ -320,6 +320,8 @@ function initLighting()
 //  Caution: Mostly debug stuff still
 function animate()
 {
+    stats.begin();
+
     var camFieldX = Math.round( middle.x + camera.position.z );
     var camFieldY = Math.round( middle.y + camera.position.x );
 
@@ -339,7 +341,7 @@ function animate()
         controls.update();
     }
 
-    stats.begin();
+
 
     //var scaleMult = 1.15 + Math.sin(Date.now() / 1500) / 5;
 
@@ -388,10 +390,11 @@ function animate()
     }
 
     //controls.update(); // required if controls.enableDamping = true, or if controls.autoRotate = true
-    stats.update();
-    stats.end();
+    
     requestAnimationFrame(animate);
+    //stats.update();
     renderer.render(scene, camera);
+    stats.end();
 }
 
 //------------------------------------------------------//
@@ -474,11 +477,11 @@ function onDocumentTouchStart( event )
 
     event.clientX = event.touches[0].clientX;
     event.clientY = event.touches[0].clientY;
-    onDocumentMouseDown( event );
+    onDocumentMouseClick( event );
 
 }
 
-function onDocumentMouseDown( event )
+function onDocumentMouseClick( event )
 {
 
     if (preventRaycastOnce)
@@ -516,7 +519,7 @@ function onDocumentMouseDown( event )
         }
         else if ( arrayContains(test_statues, intersects[0].object) )
         {
-            $( "#exitStatueButton" ).show();
+            //$( "#exitStatueButton" ).show();
             setTimeout( function ()
             {
                 ShowStatue();
@@ -534,7 +537,6 @@ function onkeydown( event )
 
     if(event.key == "r")
     {
-        console.log( "Auto Rotate: " + controls.autoRotate + " speed: " + controls.autoRotateSpeed );
         if ( controls.autoRotate )
         {
             controls.autoRotate = false;
