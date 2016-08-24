@@ -1,5 +1,21 @@
-﻿<div id="minigame2">
-	<canvas style="border: 3px solid black" id="canvas" width="800" height="500"></canvas>
+﻿<style>
+	#minigame2{
+		width: 100%;
+		height: 100%;
+	}
+
+	/* testen 880 x 520 */
+
+	#minigame2 #canvas{
+		width: 100%;
+		height: 100%;
+		background-color: #AAA;
+	}
+</style>
+<div id="minigame2">
+	<button id="winMinigameButton" style="margin:auto">Win</button>
+	<button id="loseMinigameButton" style="margin: auto">Lose</button>
+	<canvas id="canvas"></canvas>
 </div>
 <script type="text/javascript" src="../Resources/jquery-2.2.4.min.js"></script>
 <script type="text/javascript" src="../Resources/preloadjs-0.6.2.min.js"></script>
@@ -10,22 +26,6 @@
 <button id="loseMinigameButton" style="margin:auto">Lose</button>
 
 <script>
-    $( "#exitMinigameButton" ).click( function ()
-    {
-        
-        exitMinigame();
-    } );
-    $( "#winMinigameButton" ).click( function ()
-    {
-        resetMinigame();
-        minigameWon( 2 );
-    } );
-    $( "#loseMinigameButton" ).click( function ()
-    {
-        resetMinigame();
-        minigameLost( 2 );
-    } );
-    function resetMinigame(){}
 	/*
 	*   CONST
 	*/
@@ -122,9 +122,10 @@
 
 	var gameFieldConvertToBitmap = function(gameField)
 	{
-		var x = 100;
-		var y = 100;
-		var pipeSize = 300 / gameField.length;
+		var orgImgSize = [200, 200];
+		var pipeSize = (window.innerHeight - 200) / gameField.length;
+		var x = (window.innerWidth / 2) - ((pipeSize * gameField.length) / 2);
+		var y = (window.innerHeight / 2) - ((pipeSize * gameField.length) / 2);
 		var bitmaps = new Array(gameField.length);
 
 		for (var i = 0; i < gameField.length; i++)
@@ -133,12 +134,12 @@
 			for (var j = 0; j < gameField[i].length; j++)
 			{
 				var bitmap = new createjs.Bitmap(gameField[i][j].getImage());
-				bitmap.x = x + (j * pipeSize) + 50;
-				bitmap.y = y + (i * pipeSize) + 50;
-				bitmap.regX = 100;
-				bitmap.regY = 100;
-				bitmap.scaleX = 0.5;
-				bitmap.scaleY = 0.5;
+				bitmap.x = x + (j * pipeSize) + orgImgSize[0] / 2;
+				bitmap.y = y + (i * pipeSize) + orgImgSize[1] / 2;
+				bitmap.regX = orgImgSize[0] / 2;
+				bitmap.regY = orgImgSize[1] / 2;
+				bitmap.scaleX = pipeSize / orgImgSize[0];
+				bitmap.scaleY = pipeSize / orgImgSize[1];
 				bitmap.rotation = gameField[i][j].getRotation();
 				bitmap.pipe = gameField[i][j];
 				bitmaps[i][j] = bitmap;
@@ -174,11 +175,18 @@
 			}
 	}
 
-	var appendBitmapsToStage = function(stage, bitmaps)
+	var addBitmapsToStage = function(stage, bitmaps)
 	{
 		for (var i = 0; i < bitmaps.length; i++)
 			for (var j = 0; j < bitmaps[i].length; j++)
 				stage.addChild(bitmaps[i][j]);
+	}
+
+	var removeBitmapsFromStage = function(stage, bitmaps)
+	{
+		for (var i = 0; i < bitmaps.length; i++)
+			for (var j = 0; j < bitmaps[i].length; j++)
+				stage.removeChild(bitmaps[i][j]);
 	}
 
 	var generateGameField = function(size)
@@ -311,19 +319,208 @@
 		return true;
 	}
 
+	var generateButton = function(text, name)
+	{
+		var messageButtonBackground = new createjs.Shape();
+		messageButtonBackground.graphics.beginFill("Red").drawRoundRect(0, 0, 100, 60, 10);
+
+		var messageButtonText = new createjs.Text(text, "bold 24px Arial", "#FFFFFF");
+		messageButtonText.textAlign = "center";
+		messageButtonText.textBaseline = "middle";
+		messageButtonText.x = 100 / 2;
+		messageButtonText.y = 60 / 2;
+
+		var messageButtonContainer = new createjs.Container();
+		messageButtonContainer.name = name;
+		messageButtonContainer.addChild(messageButtonBackground, messageButtonText);
+
+		return messageButtonContainer;
+	}
+
+	var popupMessage = function(text)
+	{
+		var messageBackground = new createjs.Shape();
+		messageBackground.graphics.beginFill("Blue").drawRoundRect(0, 0, 250, 400, 10);
+
+		var messageText = new createjs.Text(text, "bold 24px Arial", "#FFFFFF");
+		messageText.textAlign = "center";
+		messageText.textBaseline = "middle";
+		messageText.x = 250 / 2;
+		messageText.y = 200;
+
+		var messageContainer = new createjs.Container();
+		messageContainer.x = window.innerWidth / 2 - 250 / 2;
+		messageContainer.y = window.innerHeight / 2 - 400 / 2;
+
+		var messageButtonContainer = generateButton("O.K.", "button");
+		messageButtonContainer.x = 250 / 2 - 100 / 2;
+		messageButtonContainer.y = 400 - 100;
+
+		messageContainer.addChild(messageBackground, messageText, messageButtonContainer);
+
+		return messageContainer;
+	}
+
+	var questionMessage = function(text)
+	{
+		var messageBackground = new createjs.Shape();
+		messageBackground.graphics.beginFill("Blue").drawRoundRect(0, 0, 250, 400, 10);
+
+		var messageText = new createjs.Text(text, "bold 24px Arial", "#FFFFFF");
+		messageText.textAlign = "center";
+		messageText.textBaseline = "middle";
+		messageText.x = 250 / 2;
+		messageText.y = 200;
+
+		var messageContainer = new createjs.Container();
+		messageContainer.x = window.innerWidth / 2 - 250 / 2;
+		messageContainer.y = window.innerHeight / 2 - 400 / 2;
+
+		var yesButtonContainer = generateButton("Ja", "yes");
+		yesButtonContainer.x = 250 / 2 - 100 / 2;
+		yesButtonContainer.y = 400 - 200;
+
+		var noButtonContainer = generateButton("Nein", "no");
+		noButtonContainer.x = 250 / 2 - 100 / 2;
+		noButtonContainer.y = 400 - 100;
+
+		messageContainer.addChild(messageBackground, messageText, yesButtonContainer, noButtonContainer);
+
+		return messageContainer;
+	}
+
+	var addGameCourseToButton = function (button)
+	{
+		button.on("click", function () {
+			if (check(gameField)) {
+				winCounter++;
+
+				// Points
+				switch (currentDifficulty) {
+					case DIFFICULTIES.EASY:
+						points += 1;
+						break;
+					case DIFFICULTIES.MEDIUM:
+						points += 2;
+						break;
+					case DIFFICULTIES.HARD:
+						points += 3;
+						break;
+				}
+
+				// Schwirigkeit wählen
+				if (winCounter === 3) {
+					winCounter = 0;
+					switch (currentDifficulty) {
+						case DIFFICULTIES.EASY:
+							currentDifficulty = DIFFICULTIES.MEDIUM;
+							break;
+						case DIFFICULTIES.MEDIUM:
+							currentDifficulty = DIFFICULTIES.HARD;
+							break;
+						case DIFFICULTIES.HARD:
+							gameFinished = true;
+							break;
+					}
+				}
+
+				if (DEBUG >= DEBUG_LEVEL.DEBUG)
+					console.log("Level: " + currentDifficulty + " Counter: " + winCounter);
+
+				// Spiel zuende oder nicht
+				if (winCounter === 3 && currentDifficulty === DIFFICULTIES.HARD || gameFinished) {
+					// Popup Nachricht
+					var message = popupMessage("Richtig\nDu hast " + points + " Punkte gewonnen.");
+					stage.addChild(message);
+
+					message.getChildByName("button").on("click", function () {
+						resetMinigame();
+						minigameWon(2);
+						stage.removeChild(message);
+					});
+				} else {
+					// Popup Nachricht
+					var message = popupMessage("Gewonnen");
+					stage.addChild(message);
+
+					// Nach klick neuer level starten
+					message.getChildByName("button").on("click", function () {
+						// Pipes entfernen
+						removeBitmapsFromStage(stage, bitmaps);
+
+						// Neue daten Generieren
+						gameField = generateGameField(currentDifficulty);
+						bitmaps = gameFieldConvertToBitmap(gameField);
+
+						// Daten hinzufügen
+						setListenerToBitmap(bitmaps);
+						addBitmapsToStage(stage, bitmaps);
+						stage.removeChild(message);
+					});
+				}
+			} else {
+				gameFinished = true;
+				var message = questionMessage("Falsch\nDu hast " + points + " Punkte gewonnen.\nLevel trozdem nochmal versuchen?");
+				stage.addChild(message);
+				message.getChildByName("yes").on("click", function () {
+					stage.removeChild(message);
+				});
+				message.getChildByName("no").on("click", function () {
+					resetMinigame();
+					minigameLost(2);
+					stage.removeChild(message);
+				});
+			}
+		});
+	}
+
+	/*
+	*   VAR
+	*/
+
+	var currentDifficulty = DIFFICULTIES.TUT;
+
+	var gameField = generateGameField(currentDifficulty);
+	var bitmaps = gameFieldConvertToBitmap(gameField);
+
+	// Für den spielablauf
+	var winCounter = 0;
+	var gameFinished = false;
+	var points = 0;
+
 	/*
 	*   INIT
 	*/
 
 	$(function()
 	{
-		var gameField = generateGameField(DIFFICULTIES.TUT);
-		var bitmaps = gameFieldConvertToBitmap(gameField);
+
+
+		$("#winMinigameButton").click(function () {
+			minigameWon(2);
+		});
+		$("#loseMinigameButton").click(function () {
+			minigameLost(2);
+		});
+
 
 		var loadQueue = new createjs.LoadQueue(true);
 		loadQueue.loadFile(IMAGES.STRAIGHT);
 		loadQueue.loadFile(IMAGES.CURVE);
 		loadQueue.loadFile(IMAGES.ROTATE);
+
+		// Correct size
+		var canvas = document.getElementById("canvas");
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+		// Handle window resize
+		$(window).on("resize", function()
+		{
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+			if (DEBUG >= DEBUG_LEVEL.VERBOSE)
+				console.log("Window resized to: " + window.innerWidth + " x " + window.innerHeight);
+		});
 
 		// Ladeanzeige
 		var loadBar = new createjs.Shape();
@@ -344,11 +541,26 @@
 			createjs.Ticker.setFPS(40);
 
 			setListenerToBitmap(bitmaps);
-			appendBitmapsToStage(stage, bitmaps);
+			addBitmapsToStage(stage, bitmaps);
 		});
 
 		// Ladevorgang starten
 		loadQueue.load();
+
+		// Generate animated Background objects
+		for (var i = 0; i < 10; i++)
+		{
+			var background = new createjs.Shape();
+			background.graphics.beginFill("Grey").drawPolyStar(parseInt(300 - Math.random() * (window.innerWidth + 300)) + 300, parseInt(300 - Math.random() * (window.innerHeight + 300)) + 300, 600, 5, 0.2, parseInt(Math.random() * 360));
+			background.alpha = Math.random();
+			background.x = background.x + 600 / 2;
+			background.y = background.y + 600 / 2;
+			background.regX = 600 / 2;
+			background.regY = 600 / 2;
+			createjs.Tween.get(background, { loop: true })
+				.to({ rotation: 360 }, parseInt(Math.random() * 20000) + 40000);
+			stage.addChild(background);
+		}
 
 		// Generate animated Water objects
 		var water = new Array(100);
@@ -356,11 +568,46 @@
 		{
 			water[i] = new createjs.Shape();
 			// drawPolyStar ( x  y  radius  sides  pointSize  angle )
-			water[i].graphics.beginFill("DeepSkyBlue").drawPolyStar((parseInt(Math.random() * 150) + 550), parseInt(Math.random() * 500), 8, 5, 0.2, 10);
+			water[i].graphics.beginFill("DeepSkyBlue").drawPolyStar((window.innerWidth - parseInt(Math.random() * 150)), parseInt(Math.random() * window.innerHeight), 8, 5, 0.2, parseInt(Math.random() * 360));
 			createjs.Tween.get(water[i], { loop: true })
 				.to({ y: 500 }, parseInt(Math.random() * 100) + 1500);
 			stage.addChild(water[i]);
 		}
+
+		// Add buttons
+		var goButton = generateButton("Wasser marsch!", "goButton");
+		goButton.x = window.innerWidth / 2 - 250 / 2;
+		goButton.y = window.innerHeight - 60 * 1.5;
+		stage.addChild(goButton);
+
+		var exitButton = generateButton("Exit", "exitButton");
+		exitButton.x = window.innerWidth - 120;
+		exitButton.y = 20;
+		stage.addChild(exitButton);
+
+		// Exit action
+		exitButton.on("click", function () {
+			exitMinigame();
+		});
+
+		var tutButton = generateButton("Anleitung", "tutButton");
+		tutButton.x = 20;
+		tutButton.y = 20;
+		stage.addChild(tutButton);
+
+		// Tut Action
+		tutButton.on("click", function()
+		{
+			var message = popupMessage("Drehe die Rohre mit einem Klick um eine Verbindung zwischen dem Wasserfall und dem Dorf der Wazels zu bauen.");
+			stage.addChild(message);
+			message.getChildByName("button").on("click", function()
+			{
+				stage.removeChild(message);
+			});
+		});
+
+		// Add game course to button
+		addGameCourseToButton(goButton);
 
 		// Animation
 		function tick()
