@@ -12,16 +12,17 @@ const WATERLEVEL         = 0;
 const WATERCOLOR         = 0x55AAAA;
 const WINDOW_CLEAR_COLOR = 0x4FABEE;
 const FOG_COLOR          = 0x4FABFF;
-const SUN_POSITION       = new THREE.Vector3( 0.45, 1, 0.45 ).normalize();
-const LIGHTSTR           = 0.8;
-const OPPOSITE_LIGHTSTR  = 0.5;
-const OPPOSITE_LIGHTCOL  = 0xDDDDFF;
+const SUN_POSITION       = new THREE.Vector3( 0.4, 0.75, 0.5 ).normalize();
+const LIGHTSTR           = 0.95;
+const LIGHTCOL           = 0xFFEEFF;
+const OPPOSITE_LIGHTSTR  = 0.6;
+const OPPOSITE_LIGHTCOL  = 0xDDDDEE;
 const VILLAGE_DIMENSIONS = new THREE.Vector3( 20, 20, WATERLEVEL + 4 );
 const STATUE_DIMENSIONS  = new THREE.Vector3( 5, 5, 5 );
-const STATUE_GOLD_MAT    = new THREE.MeshPhongMaterial({color: 0xFF0000});
-const STATUE_SILVER_MAT  = new THREE.MeshPhongMaterial({color: 0x00FF00});
-const STATUE_BRONZE_MAT  = new THREE.MeshPhongMaterial({color: 0x0000FF});
-const STATUE_WOOD_MAT    = new THREE.MeshPhongMaterial({color: 0x666666});
+const STATUE_WOOD_MAT    = new THREE.MeshPhongMaterial( { color: 0x7F6343, shininess:   2,                     side: THREE.DoubleSide } );
+const STATUE_BRONZE_MAT  = new THREE.MeshPhongMaterial( { color: 0x70431C, shininess: 150, specular: 0x70431C, side: THREE.DoubleSide } );
+const STATUE_SILVER_MAT  = new THREE.MeshPhongMaterial( { color: 0x999999, shininess: 250, specular: 0x999999, side: THREE.DoubleSide } );
+const STATUE_GOLD_MAT    = new THREE.MeshPhongMaterial( { color: 0x9A7D31, shininess: 350, specular: 0x9A7D31, side: THREE.DoubleSide } );
 
 
 //  LOCALS
@@ -30,8 +31,17 @@ var camera,
     renderer,
     islandMesh,
     waterMesh,
-    test_statues = [],
-    subsampleFactor = 1;
+    test_statues                 = [],
+    subsampleFactor              = 1,
+    canClickObjects              = true,
+    minigame_rock                = null,
+    minigame_rock_outline        = null,
+    minigame_water               = null,
+    minigame_water_outline       = null,
+    minigame_palm                = null,
+    minigame_palm_leaves         = null,
+    minigame_palm_outline        = null,
+    minigame_palm_leaves_outline = null;
 
 clickable_objects = [];
 waterCreated = false;
@@ -44,6 +54,8 @@ function main()
 
 function init()
 {
+    clock = new THREE.Clock( true );
+
     //------------------------------------------------------//
     //                  RENDERER                            //
     //------------------------------------------------------//
@@ -92,9 +104,13 @@ function init()
 
     initIsland();
 
-    initMinigameNodes();
-
     //initWeazles();
+
+    initStatueSegments();
+
+    initStatueParticleSystem();
+
+    initMinigameNodes();
 
     initLighting();
 
@@ -102,6 +118,8 @@ function init()
     //                  -> SCENE                            //
     //------------------------------------------------------//
     scene.add( islandMesh );
+
+    scene.add( statueParticleSystem );
 
     scene.add( directionalLight );
     scene.add( directionalLight2 );
@@ -132,6 +150,7 @@ function initRenderer()
     renderer                    = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setClearColor( WINDOW_CLEAR_COLOR );
     renderer.shadowMap.enabled  = true;
+    renderer.shadowMap.Type     = THREE.BasicShadowMap;
 }
 
 function initWater()
@@ -177,115 +196,235 @@ function initIsland()
     islandMesh.receiveShadow    = true;
 }
 
-function initMinigameNodes()
-{
-    //test
-    //var material = new THREE.MeshNormalMaterial();
-
-    //var sphereGeometry = new THREE.SphereGeometry( 50, 32, 16 );
-    //var sphere = new THREE.Mesh( sphereGeometry, material );
-    //sphere.position.set( -60, 55, 0 );
-    //scene.add( sphere );
-
-    //var outlineMaterial1 = new THREE.MeshBasicMaterial( { color: 0xff0000, side: THREE.BackSide } );
-    //var outlineMesh1 = new THREE.Mesh( sphereGeometry, outlineMaterial1 );
-    //outlineMesh1.position.set( -60, 55, 0);
-    //outlineMesh1.scale.multiplyScalar( 1.05 );
-    //scene.add( outlineMesh1 );
-
-
-    var outlineMat       = new THREE.MeshPhongMaterial( { color: 0xFF0000, side: THREE.BackSide, emissive: 0xFF0000 } );
-    var outlineThickness = 1.1;
-
-    //  Init the models
-    //  1. Rock
-    var rock_dim          = new THREE.Vector3( 10, 8, 10 );
-
-    minigame_rock         = new THREE.Mesh( new THREE.CubeGeometry( rock_dim.x, rock_dim.y, rock_dim.z ),
-                                            new THREE.MeshPhongMaterial( { color: 0xBBBBBB } ) );
-    minigame_rock_outline = new THREE.Mesh( minigame_rock.geometry,
-                                            outlineMat );
-    minigame_rock_outline.scale.multiplyScalar( outlineThickness );
-
-    //  2. Water
-    var water_dim   = new THREE.Vector3( 10, 8, 10 );
-
-    minigame_water  = new THREE.Mesh( new THREE.CubeGeometry( water_dim.x, water_dim.y, water_dim.z ),
-                                      new THREE.MeshPhongMaterial( { color: 0x0000FF } ) );
-
-    minigame_water_outline = new THREE.Mesh( minigame_water.geometry,
-                                             outlineMat );
-    minigame_water_outline.scale.multiplyScalar( outlineThickness );
-    minigame_water_outline.visible = false;
-
-    //  3. Tree
-    var tree_dim    = new THREE.Vector3( 5, 20, 5 );
-    var leaves_dim  = new THREE.Vector3( 8, 8, 8 );
-
-    minigame_tree   = new THREE.Mesh( new THREE.CubeGeometry( tree_dim.x, tree_dim.y, tree_dim.z ),
-                                      new THREE.MeshPhongMaterial( { color: 0xAAAA22 } ) );
-    tree_leaves     = new THREE.Mesh( new THREE.CubeGeometry( leaves_dim.x, leaves_dim.y, leaves_dim.z ),
-                                      new THREE.MeshPhongMaterial( { color: 0x00FF00 } ) );
-
-    tree_leaves.position.y = tree_dim.y / 2 + leaves_dim.y / 2;
-
-    var outlineGeom =  minigame_tree.geometry;
-    minigame_tree.updateMatrix();
-    outlineGeom.merge( minigame_tree.geometry, minigame_tree.matrix );
-    tree_leaves.updateMatrix();
-    outlineGeom.merge(   tree_leaves.geometry,   tree_leaves.matrix );
-
-    minigame_tree.add( tree_leaves );
-
-    minigame_tree_outline = new THREE.Mesh( outlineGeom,
-                                            outlineMat );
-    minigame_tree_outline.scale.multiplyScalar( outlineThickness );
-    minigame_tree_outline.visible = false;
-
-    //  Generate map coordinates for each minigame
-    nodeCoordinates = [];
-    for ( var i = 0; i < 3; i++ )
-    {
-        do
-        {
-            var xpos = randBetween( -dim / 2, dim / 2 - 1 );
-            var zpos = randBetween( -dim / 2, dim / 2 - 1 );
-            var ypos = field[Math.round( middle.x + zpos )][Math.round( middle.y + xpos )];
-        }
-        while ( ypos < WATERLEVEL );
-
-        //TODO: Check for overlapping
-
-        nodeCoordinates.push( new THREE.Vector3( xpos, ypos, zpos ) );
-    }
-
-    minigame_rock.position.x  = minigame_rock_outline.position.x  = nodeCoordinates[0].x;
-    minigame_rock.position.y  = minigame_rock_outline.position.y  = nodeCoordinates[0].y + rock_dim.y  / 2 - 1;
-    minigame_rock.position.z  = minigame_rock_outline.position.z  = nodeCoordinates[0].z;
-
-    minigame_water.position.x = minigame_water_outline.position.x = nodeCoordinates[1].x;
-    minigame_water.position.y = minigame_water_outline.position.y = nodeCoordinates[1].y + water_dim.y / 2 - 1;
-    minigame_water.position.z = minigame_water_outline.position.z = nodeCoordinates[1].z;
-
-    minigame_tree.position.x  = minigame_tree_outline.position.x  = nodeCoordinates[2].x;
-    minigame_tree.position.y  = minigame_tree_outline.position.y  = nodeCoordinates[2].y + tree_dim.y  / 2 - 1;
-    minigame_tree.position.z  = minigame_tree_outline.position.z  = nodeCoordinates[2].z;
-
-    scene.add( minigame_rock );
-    scene.add( minigame_rock_outline );
-    scene.add( minigame_water );
-    scene.add( minigame_water_outline );
-    scene.add( minigame_tree );
-    scene.add( minigame_tree_outline );
-
-    OnMinigameAvailabilityChanged( 1, true );
-}
-
 function initWeazles()
 {
     Weazle_init();
 
     weazles = [];
+}
+
+function initStatueSegments()
+{
+    var loader = new THREE.OBJLoader();
+
+    loadStatueSegment( loader, 'Models/Statue_Bottom.obj', 1 );
+    loadStatueSegment( loader, 'Models/Statue_Mid.obj'   , 2 );
+    loadStatueSegment( loader, 'Models/Statue_Top.obj'   , 3 );
+}
+
+function loadStatueSegment( loader, path, index )
+{
+    loader.load( path, function ( object )
+    {
+        object.traverse( function ( child )
+        {
+            if ( child instanceof THREE.Mesh )
+            {
+                var mesh = new THREE.Mesh( child.geometry, new THREE.MeshBasicMaterial() );
+                mesh.scale.set( 1 / 20, 1 / 20, 1 / 20 );
+                mesh.position.y     = 4;
+                mesh.castShadow     = true;
+                mesh.receiveShadow  = true;
+                test_statues[index] = mesh;
+            }
+
+        } );
+
+    } );
+}
+
+function initStatueParticleSystem()
+{
+
+    // The number of particles in a particle system is not easily changed.
+    particleCount = 100;
+
+    // Particles are just individual vertices in a geometry
+    // Create the geometry that will hold all of the vertices
+    particles = new THREE.Geometry();
+
+    // Create the vertices and add them to the particles geometry
+    for ( var p = 0; p < particleCount; p++ )
+    {
+        //  Random point on the statue's circle
+        var angle = Math.random() * Math.PI * 2;
+        var x = Math.random() * Math.cos( angle ) * 5;
+        var y = 0;
+        var z = Math.random() * Math.sin( angle ) * 5;
+
+        // Create the vertex
+        var particle = new THREE.Vector3( x, y, z );
+
+        // Add the vertex to the geometry
+        particles.vertices.push( particle );
+    }
+
+    // Create the material that will be used to render each vertex of the geometry
+    particleMaterial = new THREE.PointsMaterial(
+            {
+                color: 0xffffff,
+                size:  5,
+                map: THREE.ImageUtils.loadTexture( "img/smoke_puff.png" ),
+                //blending: THREE.AdditiveBlending,
+                transparent: true,
+                alphaTest: 0.5
+            } );
+
+    // Create the particle system
+    statueParticleSystem = new THREE.Points( particles, particleMaterial );
+    //statueParticleSystem.sortParticles = true;
+}
+
+function resetParticles()
+{
+
+}
+
+function initMinigameNodes()
+{
+    var loader = new THREE.OBJLoader();
+
+    minigame_rock_geom                = new THREE.Mesh(),
+    minigame_rock_outline_geom        = new THREE.Mesh(),
+    minigame_water_geom               = new THREE.Mesh(),
+    minigame_water_outline_geom       = new THREE.Mesh(),
+    minigame_palm_geom                = new THREE.Mesh(),
+    minigame_palm_outline_geom        = new THREE.Mesh(),
+    minigame_palm_leaves_geom         = new THREE.Mesh(),
+    minigame_palm_leaves_outline_geom = new THREE.Mesh();
+
+    //  Init the models
+    //  1. Rock
+    loadNodeSegment( loader, 'Models/rock.obj',                minigame_rock_geom );
+    loadNodeSegment( loader, 'Models/rock_outline.obj',        minigame_rock_outline_geom );
+    //  2. Water
+    loadNodeSegment( loader, 'Models/rock.obj',                minigame_water_geom );
+    loadNodeSegment( loader, 'Models/rock_outline.obj',        minigame_water_outline_geom );
+    //  3. palm
+    loadNodeSegment( loader, 'Models/palm_trunk.obj',           minigame_palm_geom );
+    loadNodeSegment( loader, 'Models/palm_trunk_outline.obj',   minigame_palm_outline_geom );
+    loadNodeSegment( loader, 'Models/palm_leaves.obj',          minigame_palm_leaves_geom );
+    loadNodeSegment( loader, 'Models/palm_leaves_outline.obj',  minigame_palm_leaves_outline_geom );
+}
+
+function loadNodeSegment( loader, path, targetGeom )
+{
+    loader.load( path, function ( object )
+    {
+        object.traverse( function ( child )
+        {
+            if ( child instanceof THREE.Mesh )
+            {
+                targetGeom.geometry = child.geometry;
+                if ( targetGeom == minigame_palm_geom )
+                {
+                    targetGeom.material = child.material;
+
+                    new THREE.TextureLoader().load( 'img/palm_bark.png', function ( loadedTexture )
+                    {
+                        targetGeom.material.map = loadedTexture;
+                        nodeLoaded();
+                    } );
+                }
+                else if(targetGeom == minigame_palm_leaves_geom)
+                {
+                    targetGeom.material = child.material;
+
+                    new THREE.TextureLoader().load( 'img/palm leafs.png', function ( loadedTexture )
+                    {
+                        targetGeom.material.map = loadedTexture;
+                        nodeLoaded();
+                    } );
+                }
+                nodeLoaded();
+            }
+        } );
+    } );
+}
+
+var nodesLoaded = 0;
+var nodesToLoad = 10;
+function nodeLoaded()
+{
+    if ( ++nodesLoaded == nodesToLoad )
+    {
+        OnAllMinigameNodesLoaded();
+    }
+}
+
+function OnAllMinigameNodesLoaded()
+{
+    var outlineMat = new THREE.MeshBasicMaterial( { color: 0xFF0000 } );
+
+    //  Generate meshes
+    minigame_rock                        = new THREE.Mesh( minigame_rock_geom.geometry,                new THREE.MeshPhongMaterial( { color: 0x888888 } ) );
+    minigame_rock_outline                = new THREE.Mesh( minigame_rock_outline_geom.geometry,        outlineMat );
+                                         
+    minigame_water                       = new THREE.Mesh( minigame_water_geom.geometry,               new THREE.MeshPhongMaterial( { color: 0x0000FF } ) );
+    minigame_water_outline               = new THREE.Mesh( minigame_water_outline_geom.geometry,       outlineMat );
+                                         
+    minigame_palm                        = new THREE.Mesh( minigame_palm_geom.geometry,                minigame_palm_geom.material);//new THREE.MeshPhongMaterial( { color: 0x888811 } ) );
+    minigame_palm_leaves                 = new THREE.Mesh( minigame_palm_leaves_geom.geometry,         minigame_palm_leaves_geom.material);//new THREE.MeshPhongMaterial( { color: 0x00CC00 } ) );
+    minigame_palm_outline                = new THREE.Mesh( minigame_palm_outline_geom.geometry,        outlineMat );
+    minigame_palm_leaves_outline         = new THREE.Mesh( minigame_palm_leaves_outline_geom.geometry, outlineMat );
+
+    minigame_water_outline.visible       = false;
+    minigame_palm_outline.visible        = false;
+    minigame_palm_leaves_outline.visible = false;
+
+    placeMinigameNodes();
+
+}
+
+function placeMinigameNodes()
+{
+    
+    //  Generate map coordinates for each minigame
+    nodeCoordinates = [];
+    var halfDim = dim / 2;
+
+    for ( var i = 0; i < 3; i++ )
+    {
+        do
+        {
+            var xpos = randBetween( -halfDim * 0.5, (halfDim - 1) * 0.5 );
+            var zpos = randBetween( -halfDim * 0.5, (halfDim - 1) * 0.5 );
+            var ypos = field[Math.round( middle.x + zpos )][Math.round( middle.y + xpos )];
+        }
+        while ( ypos < WATERLEVEL || ypos > BEACH_HEIGHT || Math.abs( xpos * zpos ) < VILLAGE_DIMENSIONS.x * VILLAGE_DIMENSIONS.y );
+
+        //  TODO: Check for overlapping
+        //  TODO: Check for distance to middle and border
+
+        nodeCoordinates.push( new THREE.Vector3( xpos, ypos, zpos ) );
+    }
+
+    var rock_height  = 0;
+    var water_height = 0;
+    var palm_height  = -1;
+
+    minigame_rock.position.x  = minigame_rock_outline.position.x  = nodeCoordinates[0].x;
+    minigame_rock.position.y  = minigame_rock_outline.position.y  = nodeCoordinates[0].y + rock_height;
+    minigame_rock.position.z  = minigame_rock_outline.position.z  = nodeCoordinates[0].z;
+
+    minigame_water.position.x = minigame_water_outline.position.x = nodeCoordinates[1].x;
+    minigame_water.position.y = minigame_water_outline.position.y = nodeCoordinates[1].y + water_height;
+    minigame_water.position.z = minigame_water_outline.position.z = nodeCoordinates[1].z;
+
+    minigame_palm.position.x  = minigame_palm_outline.position.x  = minigame_palm_leaves.position.x = minigame_palm_leaves_outline.position.x = nodeCoordinates[2].x;
+    minigame_palm.position.y  = minigame_palm_outline.position.y  = minigame_palm_leaves.position.y = minigame_palm_leaves_outline.position.y = nodeCoordinates[2].y + palm_height;
+    minigame_palm.position.z  = minigame_palm_outline.position.z  = minigame_palm_leaves.position.z = minigame_palm_leaves_outline.position.z = nodeCoordinates[2].z;
+
+    scene.add( minigame_rock );
+    scene.add( minigame_rock_outline );
+    scene.add( minigame_water );
+    scene.add( minigame_water_outline );
+    scene.add( minigame_palm );
+    scene.add( minigame_palm_outline );
+    scene.add( minigame_palm_leaves );
+    scene.add( minigame_palm_leaves_outline );
+
+    OnMinigameAvailabilityChanged( 1, true );
 }
 
 function onWeazleLoadingFinished()
@@ -299,28 +438,29 @@ function onWeazleLoadingFinished()
 
 function initLighting()
 {
-    directionalLight                        = new THREE.DirectionalLight( 0xFFFFFF, LIGHTSTR );
-    directionalLight.position.set( SUN_POSITION.x * 20, SUN_POSITION.y * 20, SUN_POSITION.z * 20 );
-    directionalLight.castShadow             = false;
-    var shadowCamDist                       = 10;
-    directionalLight.shadowCameraRight      = shadowCamDist;
-    directionalLight.shadowCameraLeft       = -shadowCamDist;
-    directionalLight.shadowCameraTop        = shadowCamDist;
-    directionalLight.shadowCameraBottom     = -shadowCamDist;
-    directionalLight.shadowCameraFar        = shadowCamDist * 2;
-    //directionalLight.shadowMapHeight        =
-    //directionalLight.shadowMapWidth         = 8192;
-    //scene.add( new THREE.CameraHelper( directionalLight.shadow.camera ) );
+    directionalLight = new THREE.DirectionalLight( LIGHTCOL, LIGHTSTR );
+    directionalLight.position.set( SUN_POSITION.x * 11, SUN_POSITION.y * 11, SUN_POSITION.z * 11 );    
 
     //  Opposing sun light (fake light reflected from water to lighten shadows)
     directionalLight2 = new THREE.DirectionalLight( OPPOSITE_LIGHTCOL, OPPOSITE_LIGHTSTR );
     directionalLight2.position.set( -SUN_POSITION.x, SUN_POSITION.y, -SUN_POSITION.z );
+
+    directionalLight.shadowCameraRight    = 6;
+    directionalLight.shadowCameraLeft     = -6;
+    directionalLight.shadowCameraTop      = 12;
+    directionalLight.shadowCameraBottom   = 2;
+    directionalLight.shadowCameraFar      = 16;
+    directionalLight.shadowCameraNear     = -2.5;
+    directionalLight.castShadow           = true;
+    //scene.add( new THREE.CameraHelper( directionalLight.shadow.camera ) );
 }
 
 //  Caution: Mostly debug stuff still
 function animate()
 {
     stats.begin();
+
+    deltaTime = clock.getDelta();
 
     var camFieldX = Math.round( middle.x + camera.position.z );
     var camFieldY = Math.round( middle.y + camera.position.x );
@@ -341,38 +481,28 @@ function animate()
         controls.update();
     }
 
+    var col = Math.round( 255 * ( Math.sin( Date.now() / 250 ) / 4 + 0.75 ) );
 
-
-    //var scaleMult = 1.15 + Math.sin(Date.now() / 1500) / 5;
-
-    //if(minigame_rock_outline.visible)
-    //{
-    //    minigame_rock_outline.scale.set( scaleMult, scaleMult, scaleMult );
-    //}
-    //if(minigame_water_outline.visible)
-    //{
-    //    minigame_water_outline.scale.set( scaleMult, scaleMult, scaleMult );
-    //}
-    //if(minigame_tree_outline.visible)
-    //{
-    //    minigame_tree_outline.scale.set( scaleMult, scaleMult, scaleMult );
-    //}
+    if ( minigame_rock_outline && minigame_rock_outline.visible )
+    {
+        minigame_rock_outline.material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
+    }
+    if ( minigame_water_outline && minigame_water_outline.visible )
+    {
+        minigame_water_outline.material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
+    }
+    if ( minigame_palm_outline && minigame_palm_outline.visible )
+    {
+        minigame_palm_outline.material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
+    }
+    if ( minigame_palm_leaves_outline && minigame_palm_leaves_outline.visible )
+    {
+        minigame_palm_leaves_outline.material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
+    }
 
     if (!isInMenu)
     {
-        //controls.autoRotate = false;    //Todo: Better way to handle autorotating while in menu
-        /*  UPDATE SCENE HERE */
-
-        //for ( var i = 0; i < weazles.length; i++ )
-        //{
-        //    weazles[i].moveRandomly();
-
-        //}
         
-        
-
-        //camera.updateProjectionMatrix();
-
     }
     else
     {
@@ -384,15 +514,11 @@ function animate()
 
     if ( waterCreated )
     {
-        //waterPlane.position.y = WATERLEVEL - Math.sin( Date.now() / 1500 );
         water.material.uniforms.time.value += 0.005;
         water.render();
     }
-
-    //controls.update(); // required if controls.enableDamping = true, or if controls.autoRotate = true
     
     requestAnimationFrame(animate);
-    //stats.update();
     renderer.render(scene, camera);
     stats.end();
 }
@@ -483,14 +609,13 @@ function onDocumentTouchStart( event )
 
 function onDocumentMouseClick( event )
 {
-
     if (preventRaycastOnce)
     {
         preventRaycastOnce = false;
         return;
     }
 
-    if ( !controls.enabled )
+    if ( !controls.enabled || !canClickObjects )
     {
         return;
     }
@@ -513,7 +638,7 @@ function onDocumentMouseClick( event )
         {
             startMinigame( 2 );
         }
-        else if ( intersects[0].object == minigame_tree || intersects[0].object == tree_leaves  )
+        else if ( intersects[0].object == minigame_palm || intersects[0].object == minigame_palm_leaves  )
         {
             startMinigame( 3 );
         }
@@ -534,7 +659,6 @@ function onDocumentMouseClick( event )
 
 function onkeydown( event )
 {
-
     if(event.key == "r")
     {
         if ( controls.autoRotate )
@@ -582,6 +706,76 @@ function onkeydown( event )
         subsampleFactor = 16;
 	    onWindowResize();
     }
+    else if ( event.key == "ArrowUp" )
+    {
+        minigame_palm_outline.position.z += 0.1;
+        //directionalLight.shadow.camera.top++;
+        //directionalLight.shadow.camera.updateProjectionMatrix();
+    }
+    else if ( event.key == "ArrowLeft" )
+    {
+        minigame_palm_outline.position.x -= 0.1;
+        //directionalLight.shadow.camera.right--;
+        //directionalLight.shadow.camera.updateProjectionMatrix();
+    }
+    else if ( event.key == "ArrowDown" )
+    {
+        minigame_palm_outline.position.z -= 0.1;
+        //directionalLight.shadow.camera.top--;
+        //directionalLight.shadow.camera.updateProjectionMatrix();
+    }
+    else if ( event.key == "ArrowRight" )
+    {
+        minigame_palm_outline.position.x += 0.1;
+        //directionalLight.shadow.camera.right++;
+        //directionalLight.shadow.camera.updateProjectionMatrix();
+    }
+    else if ( event.key == "+" )
+    {
+        directionalLight.shadow.camera.far++;
+        directionalLight.shadow.camera.updateProjectionMatrix();
+    }
+    else if ( event.key == "-" )
+    {
+        directionalLight.shadow.camera.far--;
+        directionalLight.shadow.camera.updateProjectionMatrix();
+    }
+    else if ( event.key == "8" )
+    {
+        directionalLight.shadow.camera.bottom--;
+        directionalLight.shadow.camera.updateProjectionMatrix();
+    }
+    else if ( event.key == "4" )
+    {
+        directionalLight.shadow.camera.left++;
+        directionalLight.shadow.camera.updateProjectionMatrix();
+    }
+    else if ( event.key == "5" )
+    {
+        directionalLight.shadow.camera.bottom++;
+        directionalLight.shadow.camera.updateProjectionMatrix();
+    }
+    else if ( event.key == "6" )
+    {
+        directionalLight.shadow.camera.left--;
+        directionalLight.shadow.camera.updateProjectionMatrix();
+    }
+    else if ( event.key == "ü" )
+    {
+        directionalLight.shadow.camera.near--;
+        directionalLight.shadow.camera.updateProjectionMatrix();
+    }
+    else if ( event.key == "ä" )
+    {
+        directionalLight.shadow.camera.near++;
+        directionalLight.shadow.camera.updateProjectionMatrix();
+    }
+
+    //  directionalLight.shadow.camera.right    = 10;
+    //  directionalLight.shadow.camera.left = -10;
+    //  directionalLight.shadow.camera.top = 20;
+    //  directionalLight.shadow.camera.bottom = -5;
+    //  directionalLight.shadow.camera.far = 30;
 }
 
 //------------------------------------------------------//
@@ -589,31 +783,20 @@ function onkeydown( event )
 //------------------------------------------------------//
 function OnStatueModelChanged( minigameID )
 {
-    //  1. Remove existing statue segment at that position
-    if ( test_statues[minigameID] != null )
-    {
-        var oldSegmentMesh = test_statues[minigameID];
-    }
+    //  Prevent clicking of any additional minigames
+    canClickObjects = false;
 
-    //  2. Create new statue segment
-    var segmentGeom    = new THREE.BoxGeometry( STATUE_DIMENSIONS.x / minigameID, STATUE_DIMENSIONS.y, STATUE_DIMENSIONS.z / minigameID );
-
+    //  Change existing statue segment's material
     var minigameWon    = getMinigameState( minigameID, 2 );
     var minigamePlayed = getMinigameState( minigameID, 1 );
 
     var segmentMat     = minigameWon == 1
-                       ? STATUE_WOOD_MAT
-                       : minigameWon == 2
-                       ? STATUE_BRONZE_MAT
-                       : minigameWon == 3
-                       ? STATUE_SILVER_MAT
-                       : STATUE_GOLD_MAT;
-
-    var segmentMesh            = new THREE.Mesh( segmentGeom, segmentMat );
-        segmentMesh.castShadow = true;
-        segmentMesh.position.y = STATUE_DIMENSIONS.z * ( minigameID - 1 ) + field[middle.x][middle.y];
-
-    test_statues[minigameID]   = segmentMesh;
+                        ? STATUE_WOOD_MAT
+                        : minigameWon == 2
+                        ? STATUE_BRONZE_MAT
+                        : minigameWon == 3
+                        ? STATUE_SILVER_MAT
+                        : STATUE_GOLD_MAT;
 
     //  Show message
     if ( showTutorials )
@@ -623,35 +806,28 @@ function OnStatueModelChanged( minigameID )
             case 1:
                 showMessageBox( getFirstSegmentBuiltText( minigameID ),
                                 segmentBuiltEndText,
-                                function () { changeStatueModel( oldSegmentMesh, segmentMesh ) } );
+                                function () { changeStatueModel( test_statues[minigameID], segmentMat ) } );
                 break;
             case 4:
                 showMessageBox( getLastSegmentBuiltText( minigameID ),
                                 segmentBuiltEndText,
-                                function () { changeStatueModel( oldSegmentMesh, segmentMesh ) } );
+                                function () { changeStatueModel( test_statues[minigameID], segmentMat ) } );
                 break;
             default:
                 showMessageBox( getNextSegmentBuiltText( minigameID ),
                                 segmentBuiltEndText,
-                                function () { changeStatueModel( oldSegmentMesh, segmentMesh ) } );
+                                function () { changeStatueModel( test_statues[minigameID], segmentMat ) } );
                 break;
         }
     }
     else
     {
-        changeStatueModel( oldSegmentMesh, segmentMesh );
+        changeStatueModel( test_statues[minigameID], segmentMat );
     }
-    
-
-    //  Move camera to statue
-    //TODO: Animation
-
-    //  Add statue segment
-    //TODO: Animation
 
 }
 
-function changeStatueModel( oldSegmentMesh, mesh )
+function changeStatueModel( mesh, segmentMat )
 {
     controls.enabled     = false;
 
@@ -661,25 +837,106 @@ function changeStatueModel( oldSegmentMesh, mesh )
     targetRad        = 30;
     targetRotateSpd  = 5;
     zoomInTime       = 1500;
-    zoomOutTime      = 1000;
+    zoomOutTime      = 2000;
     segmentBuildTime = 2000;
     timeUntilZoomOut = 2000;
+    particleTime     = 5000;
 
     controls.autoRotate  = true;
 
-    ShowStatue(function()
+    ShowStatue( function()
     {
-        // > Segment build animation here <
+        var verts = statueParticleSystem.geometry.vertices;
+
+        // (Re-)set the particles for the segment to be built
+        particleMaterial.opacity = 1;
+        if( mesh == test_statues[1] )
+        {
+            for ( var i = 0; i < particleCount; i++ )
+            {
+                //  Random point on the statue's circle
+                var angle  = Math.random() * Math.PI * 2;
+                verts[i].x = Math.random() * Math.cos( angle ) * 6;
+                verts[i].y = -16 + Math.random() * 2;
+                verts[i].z = Math.random() * Math.sin( angle ) * 6;
+            }
+        }
+        else if ( mesh == test_statues[2] )
+        {
+            for ( var i = 0; i < particleCount; i++ )
+            {
+                //  Random point on the statue's circle
+                var angle  = Math.random() * Math.PI * 2;
+                verts[i].x = Math.random() * Math.cos( angle ) * 3;
+                verts[i].y = -14 + Math.random() * 6;
+                verts[i].z = Math.random() * Math.sin( angle ) * 3;
+            }
+        }
+        else if ( mesh == test_statues[3] )
+        {
+            for ( var i = 0; i < particleCount; i++ )
+            {
+                //  Random point on the statue's circle
+                var angle  = Math.random() * Math.PI * 2;
+                verts[i].x = Math.random() * Math.cos( angle ) * 2;
+                verts[i].y = -8 + Math.random() * 6;
+                verts[i].z = Math.random() * Math.sin( angle ) * 2;
+            }
+        }
+        statueParticleSystem.geometry.verticesNeedUpdate = true;
+
+        //----------------------//
+        //1. BUILD UP PARTICLES //
+        //----------------------//
+        var alreadyDone = 0;
+        $( { n: 0 } ).animate( { n: particleCount }, {
+            duration: zoomInTime + segmentBuildTime,
+            step: function ( now, fx )
+            {
+                for ( var i = alreadyDone; i < now; i++ )
+                {
+                    verts[i].y += 20;
+                }
+                alreadyDone = i;
+
+                statueParticleSystem.geometry.verticesNeedUpdate = true;
+            }
+        } );
 
         setTimeout( function ()
         {
-            if ( oldSegmentMesh )
+            //----------------------//
+            // 2. RELEASE PARTICLES //
+            //----------------------//
+            var directions = [];
+            for ( var i = 0; i < particleCount; i++ )
             {
-                clickable_objects.splice( oldSegmentMesh );
-                scene.remove( oldSegmentMesh );
+                directions.push( new THREE.Vector2( randBetween( -1, 1 ), randBetween( -1, 1 ) ).normalize() );
             }
-            clickable_objects.push( mesh );
-            scene.add( mesh );
+            $( { n: 1 } ).animate( { n: 10 }, {
+                duration: particleTime,
+                step: function ( now, fx )
+                {
+                    for ( var i = 0; i < particleCount; i++ )
+                    {
+                        verts[i].x += (directions[i].x / Math.pow( 2, now ));
+                        verts[i].z += (directions[i].y / Math.pow( 2, now ));
+                    }
+                    particleMaterial.opacity = 1 / now;
+
+                    statueParticleSystem.geometry.verticesNeedUpdate = true;
+                }
+            } );
+            //----------------------//
+            //   2. BUILD SEGMENT   //
+            //----------------------//
+            if ( segmentMat == STATUE_WOOD_MAT )
+            {
+                scene.add( mesh );
+                clickable_objects.push( mesh );
+            }
+            mesh.material = segmentMat;
+            
         }, segmentBuildTime );
     } );
 
@@ -720,6 +977,7 @@ function changeStatueModel( oldSegmentMesh, mesh )
                 controls.autoRotateSpeed = oldRotateSpeed;
                 controls.autoRotate      = false;
                 controls.enabled         = true;
+                canClickObjects          = true;
             }
         } );
     }, (zoomInTime + segmentBuildTime + timeUntilZoomOut ) );
@@ -825,15 +1083,17 @@ function OnMinigameAvailabilityChanged( minigameID, isAvailable )
         {
             case 1:
                 clickable_objects.push( minigame_rock );
-                minigame_rock_outline.visible = true;
+                minigame_rock_outline.visible  = true;
                 break;
             case 2:
                 clickable_objects.push( minigame_water );
                 minigame_water_outline.visible = true;
                 break;
             case 3:
-                clickable_objects.push( minigame_tree );
-                minigame_tree_outline.visible = true;
+                clickable_objects.push( minigame_palm );
+                clickable_objects.push( minigame_palm_leaves );
+                minigame_palm_outline.visible        = true;
+                minigame_palm_leaves_outline.visible = true;
                 break;
         }
     }
@@ -844,15 +1104,17 @@ function OnMinigameAvailabilityChanged( minigameID, isAvailable )
         {
             case 1:
                 clickable_objects.splice( minigame_rock, 1 );
-                minigame_rock_outline.visible = false;
+                minigame_rock_outline.visible  = false;
                 break;
             case 2:
                 clickable_objects.splice( minigame_water, 1 );
                 minigame_water_outline.visible = false;
                 break;
             case 3:
-                clickable_objects.splice( minigame_tree, 1 );
-                minigame_tree_outline.visible = false;
+                clickable_objects.splice( minigame_palm );
+                clickable_objects.splice( minigame_palm_leaves_outline );
+                minigame_palm_outline.visible        = false;
+                minigame_palm_leaves_outline.visible = false;
                 break;
         }
     }

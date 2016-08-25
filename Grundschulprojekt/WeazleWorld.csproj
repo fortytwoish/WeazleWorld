@@ -84,6 +84,7 @@
     <Content Include="img\rahmen.gif" />
     <Content Include="img\rahmen_klein.gif" />
     <Content Include="img\sand.jpg" />
+    <Content Include="img\smoke_puff.png" />
     <Content Include="img\treeGame\transparent.png" />
     <Content Include="img\treeGame\tree2.png" />
     <Content Include="img\treeGame\tree3.png" />
@@ -107,6 +108,8 @@
     <Content Include="js\script.menu.js" />
     <Content Include="js\script.splashScreen.js" />
     <Content Include="js\Weazle.js" />
+    <Content Include="img\palm leafs.png" />
+    <Content Include="img\palm_bark.png" />
     <Content Include="Resources\easeljs-0.8.2.min.js" />
     <Content Include="Resources\OBJLoader.js" />
     <Content Include="Resources\preloadjs-0.6.2.min.js" />
@@ -126,6 +129,19 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="img\waterGame\Pipe.psd" />
+    <Content Include="Models\Statue_Bottom.obj" />
+    <Content Include="Models\Statue_Mid.obj" />
+    <Content Include="Models\Statue_Top.obj" />
+    <Content Include="Models\tree_leaves.obj" />
+    <Content Include="Models\tree_trunk.obj" />
+    <Content Include="Models\tree_leaves_outline.obj" />
+    <Content Include="Models\tree_trunk_outline.obj" />
+    <Content Include="Models\rock.obj" />
+    <Content Include="Models\rock_outline.obj" />
+    <Content Include="Models\palm_leaves.obj" />
+    <Content Include="Models\palm_leaves_outline.obj" />
+    <Content Include="Models\palm_trunk.obj" />
+    <Content Include="Models\palm_trunk_outline.obj" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -495,20 +495,21 @@ function GenerateMaterial( geometry, sunPosition )
                 if ( geometry.attributes.position.array[j + 1] <= randBetween( TREE_HEIGHT, TREE_HEIGHT * 1.5 ) && upAngle <= TREE_SLOPE && Math.random() < ( TREE_DENSITY / 100 ) )
                 {
                     //  Don't generate trees in the play area
-                    if (   Math.abs( dim / 2 - fieldX ) > VILLAGE_DIMENSIONS.x
-                        || Math.abs( dim / 2 - fieldY ) > VILLAGE_DIMENSIONS.y )
-                    {                    
-                        /***********************************
-                        *              + TREE              *
-                        ***********************************/
-                        geometry.attributes.position.array[j + 1] += randBetween( TREE_HEIGHT_MIN, TREE_HEIGHT_MAX );
 
-                        shadeInv *= randBetween( 0.7, 0.9 );
+                    //if (   Math.abs( dim / 2 - fieldX ) > VILLAGE_DIMENSIONS.x
+                    //    || Math.abs( dim / 2 - fieldY ) > VILLAGE_DIMENSIONS.y )
+                    //{                    
+                    //    /***********************************
+                    //    *              + TREE              *
+                    //    ***********************************/
+                    //    geometry.attributes.position.array[j + 1] += randBetween( TREE_HEIGHT_MIN, TREE_HEIGHT_MAX );
 
-                        imageData[i]     =   shadeInv                    .clamp8Bit( CLAMP_GRASS );
-                        imageData[i + 1] = ( shadeInv * ( 2 - upAngle ) ).clamp8Bit( CLAMP_GRASS );
-                        imageData[i + 2] =   shadeInv                    .clamp8Bit( CLAMP_GRASS );
-                    }
+                    //    shadeInv *= randBetween( 0.7, 0.9 );
+
+                    //    imageData[i]     =   shadeInv                    .clamp8Bit( CLAMP_GRASS );
+                    //    imageData[i + 1] = ( shadeInv * ( 2 - upAngle ) ).clamp8Bit( CLAMP_GRASS );
+                    //    imageData[i + 2] =   shadeInv                    .clamp8Bit( CLAMP_GRASS );
+                    //}
                 }
 
             }

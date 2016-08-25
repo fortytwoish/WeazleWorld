@@ -108,6 +108,8 @@ function continueMainGame()
                 var islandMat     = new THREE.MeshPhongMaterial({ map: GenerateMaterial(islandGeom, SUN_POSITION) });
                 islandMat.shading = THREE.FlatShading;
 
+                placeMinigameNodes();
+
                 scene.remove(islandMesh);
                 islandMesh        = new THREE.Mesh(islandGeom, islandMat);
                 scene.add(   islandMesh);
@@ -295,6 +297,7 @@ function continueMainGame()
         //      2. The previous minigame has been played at least once (if there is a previous)
         function mgPossible( minigameID )
         {
+            return true;
                       //   Possible                       //   Played
             return    getMinigameState( minigameID, 0 ) > getMinigameState( minigameID, 1 ) 
                    && (minigameID == 1 || getMinigameState( minigameID - 1, 2 ) > 0);
