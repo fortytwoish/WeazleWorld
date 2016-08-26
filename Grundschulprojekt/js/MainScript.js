@@ -237,7 +237,7 @@ function initStatueParticleSystem()
 {
 
     // The number of particles in a particle system is not easily changed.
-    particleCount = 100;
+    particleCount = 500;
 
     // Particles are just individual vertices in a geometry
     // Create the geometry that will hold all of the vertices
@@ -263,7 +263,7 @@ function initStatueParticleSystem()
     particleMaterial = new THREE.PointsMaterial(
             {
                 color: 0xffffff,
-                size:  5,
+                size:  7,
                 map: THREE.ImageUtils.loadTexture( "img/smoke_puff.png" ),
                 //blending: THREE.AdditiveBlending,
                 transparent: true,
@@ -273,11 +273,6 @@ function initStatueParticleSystem()
     // Create the particle system
     statueParticleSystem = new THREE.Points( particles, particleMaterial );
     //statueParticleSystem.sortParticles = true;
-}
-
-function resetParticles()
-{
-
 }
 
 function initMinigameNodes()
@@ -840,7 +835,8 @@ function changeStatueModel( mesh, segmentMat )
     zoomOutTime      = 2000;
     segmentBuildTime = 2000;
     timeUntilZoomOut = 2000;
-    particleTime     = 5000;
+    particleTime     = 2500;
+    particleSpd      = 4;
 
     controls.autoRotate  = true;
 
@@ -909,9 +905,11 @@ function changeStatueModel( mesh, segmentMat )
             // 2. RELEASE PARTICLES //
             //----------------------//
             var directions = [];
+            var initSize   = particleMaterial.size;
+            var sizeDelta  = initSize * 10 - initSize;
             for ( var i = 0; i < particleCount; i++ )
             {
-                directions.push( new THREE.Vector2( randBetween( -1, 1 ), randBetween( -1, 1 ) ).normalize() );
+                directions.push( new THREE.Vector3( randBetween( -1, 1 ), randBetween( -0.25, 0.25 ), randBetween( -1, 1 ) ).normalize() );
             }
             $( { n: 1 } ).animate( { n: 10 }, {
                 duration: particleTime,
@@ -919,10 +917,11 @@ function changeStatueModel( mesh, segmentMat )
                 {
                     for ( var i = 0; i < particleCount; i++ )
                     {
-                        verts[i].x += (directions[i].x / Math.pow( 2, now ));
-                        verts[i].z += (directions[i].y / Math.pow( 2, now ));
+                        verts[i].x += ( directions[i].x / Math.pow( 2, now ) * particleSpd );
+                        verts[i].y += ( directions[i].y / Math.pow( 2, now ) * particleSpd );
+                        verts[i].z += ( directions[i].z / Math.pow( 2, now ) * particleSpd );
                     }
-                    particleMaterial.opacity = 1 / now;
+                    particleMaterial.opacity = (10 - now) / 10;
 
                     statueParticleSystem.geometry.verticesNeedUpdate = true;
                 }
