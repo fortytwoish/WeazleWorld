@@ -6,10 +6,11 @@ TERRAIN_RESOLUTION = 0;
 WATER_SCALE_FACTOR = 1;
 
 //  CONSTANTS
-const DEFAULT_QUALITY    = 2;
+const DEFAULT_QUALITY    = 1;
 const PAUSE_IN_MENU      = true;
 const WATERLEVEL         = 0;
 const WATERCOLOR         = 0x55AAAA;
+const WATERCOLOR_LOW     = 0x228888;
 const WINDOW_CLEAR_COLOR = 0x4FABEE;
 const FOG_COLOR          = 0x4FABFF;
 const SUN_POSITION       = new THREE.Vector3( 0.4, 0.75, 0.5 ).normalize();
@@ -41,7 +42,8 @@ var camera,
     minigame_palm                = null,
     minigame_palm_leaves         = null,
     minigame_palm_outline        = null,
-    minigame_palm_leaves_outline = null;
+    //minigame_palm_leaves_outline = null;
+    placedMinigameNodes          = false
 
 clickable_objects = [];
 waterCreated = false;
@@ -70,7 +72,7 @@ function init()
     //------------------------------------------------------//
     //                  CAMERA                              //
     //------------------------------------------------------//
-    camera            = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 3000000 );
+    camera            = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 3000000 );
     camera.position.x = 0;
     camera.position.y = 10;
     camera.position.z = 35;
@@ -103,6 +105,8 @@ function init()
     initWater();
 
     initIsland();
+
+    initIslandDecoration();
 
     //initWeazles();
 
@@ -155,30 +159,43 @@ function initRenderer()
 
 function initWater()
 {
+    var planeGeom         = new THREE.PlaneBufferGeometry( 128 * WATER_SCALE_FACTOR, 128 * WATER_SCALE_FACTOR, 1, 1 );
+    waterMesh2            = new THREE.Mesh( planeGeom, new THREE.MeshPhongMaterial( { color: WATERCOLOR_LOW, transparent: false, shininess: 150} ) );
+    waterMesh2.rotation.x = -Math.PI * 0.5;
+
+    //  Add to the scene even if renderWater is enabled, so that there is at least some water while the texture loads
+    scene.add( waterMesh2 );
+
     var textureLoader = new THREE.TextureLoader();
 
     textureLoader.load( 'img/waternormals.jpg', function ( loadedTexture ) //Called when the texture has finished loading
     {
-        loadedTexture.wrapS = loadedTexture.wrapT = THREE.RepeatWrapping;
+        waterTexture       = loadedTexture;
+        waterTexture.wrapS = waterTexture.wrapT = THREE.RepeatWrapping;
+        waterTexture.repeat.set( 4, 4 );
+
+        waterMesh2.material.normalMap = waterTexture;
 
         water = new THREE.Water( renderer, camera, scene,
         {
             //  Optional Parameters
             textureWidth: 1024,
             textureHeight: 1024,
-            waterNormals: loadedTexture,
+            waterNormals: waterTexture,
             alpha: 0.9,
             waterColor: WATERCOLOR,
             distortionScale: 15
         } );
 
-        var planeGeom = new THREE.PlaneBufferGeometry( 128 * WATER_SCALE_FACTOR, 128 * WATER_SCALE_FACTOR, 1, 1 );
-
         waterMesh = new THREE.Mesh( planeGeom, water.material );
         waterMesh.rotation.x = -Math.PI * 0.5;
         waterMesh.add( water );
 
-        scene.add( waterMesh );
+        if ( renderWater )
+        {
+            scene.remove( waterMesh2 );
+            scene.add( waterMesh );
+        }
 
         waterCreated = true;
     } );
@@ -194,6 +211,90 @@ function initIsland()
     islandMat.shading           = THREE.FlatShading;
     islandMesh                  = new THREE.Mesh( islandGeom, islandMat );
     islandMesh.receiveShadow    = true;
+}
+
+function initIslandDecoration()
+{
+    differentSpriteCount = 5;
+
+    grassCount = grass_positions.length;
+    
+    decorationSprites = [];
+    for ( var i = 0; i < differentSpriteCount; i++ )
+    {
+        decorationSprites[i] = new THREE.Geometry();
+    }
+    
+    grassMaterials = [
+        new THREE.PointsMaterial(
+        {
+            color: 0xBBBBBB,
+            size: 4,
+            map: THREE.ImageUtils.loadTexture( "img/grass.png" ),
+            transparent: true,
+            alphaTest: 0.5
+        } ),
+        new THREE.PointsMaterial(
+        {
+            color: 0x999999,
+            size: 4,
+            map: THREE.ImageUtils.loadTexture( "img/grass.png" ),
+            transparent: true,
+            alphaTest: 0.5
+        } ),
+        new THREE.PointsMaterial(
+        {
+            color: 0x777777,
+            size: 4,
+            map: THREE.ImageUtils.loadTexture( "img/grass.png" ),
+            transparent: true,
+            alphaTest: 0.5
+        } ),
+        new THREE.PointsMaterial(
+        {
+            color: 0x779977,
+            size: 4,
+            map: THREE.ImageUtils.loadTexture( "img/grass.png" ),
+            transparent: true,
+            alphaTest: 0.5
+        } ),
+        new THREE.PointsMaterial(
+        {
+            color: 0x77BB77,
+            size: 4,
+            map: THREE.ImageUtils.loadTexture( "img/grass.png" ),
+            transparent: true,
+            alphaTest: 0.5
+        } )
+    ]
+
+    for ( var i = 0; i < differentSpriteCount; i++ )
+    {
+        for ( j = 0; j < grassCount; j += differentSpriteCount )
+        {
+            if( grass_positions[i + j] )
+            {
+                for ( var k = 0; k < 5; k++ )
+                {
+                    var coord = new THREE.Vector3();
+                    coord.x = grass_positions[i + j].x + randBetween( -1, 1 );
+                    coord.y = grass_positions[i + j].y + randBetween( -1, 1 );
+                    coord.z = grass_positions[i + j].z + randBetween( -0.1, 0.1 );
+                    decorationSprites[i].vertices.push( coord );
+                }
+            }
+        }
+    }
+
+    // Create the particle system
+    decorationSpriteMeshes = [];
+
+    for ( var i = 0; i < differentSpriteCount; i++ )
+    {
+        decorationSpriteMeshes[i] = new THREE.Points( decorationSprites[i], grassMaterials[i] );
+        decorationSpriteMeshes[i].rotation.x = Math.PI / 2;
+        scene.add( decorationSpriteMeshes[i] );
+    }
 }
 
 function initWeazles()
@@ -235,7 +336,6 @@ function loadStatueSegment( loader, path, index )
 
 function initStatueParticleSystem()
 {
-
     // The number of particles in a particle system is not easily changed.
     particleCount = 500;
 
@@ -272,12 +372,11 @@ function initStatueParticleSystem()
 
     // Create the particle system
     statueParticleSystem = new THREE.Points( particles, particleMaterial );
-    //statueParticleSystem.sortParticles = true;
 }
 
 function initMinigameNodes()
 {
-    var loader = new THREE.OBJLoader();
+    var loader                        = new THREE.OBJLoader();
 
     minigame_rock_geom                = new THREE.Mesh(),
     minigame_rock_outline_geom        = new THREE.Mesh(),
@@ -286,7 +385,7 @@ function initMinigameNodes()
     minigame_palm_geom                = new THREE.Mesh(),
     minigame_palm_outline_geom        = new THREE.Mesh(),
     minigame_palm_leaves_geom         = new THREE.Mesh(),
-    minigame_palm_leaves_outline_geom = new THREE.Mesh();
+    //minigame_palm_leaves_outline_geom = new THREE.Mesh();
 
     //  Init the models
     //  1. Rock
@@ -296,10 +395,10 @@ function initMinigameNodes()
     loadNodeSegment( loader, 'Models/rock.obj',                minigame_water_geom );
     loadNodeSegment( loader, 'Models/rock_outline.obj',        minigame_water_outline_geom );
     //  3. palm
-    loadNodeSegment( loader, 'Models/palm_trunk.obj',           minigame_palm_geom );
-    loadNodeSegment( loader, 'Models/palm_trunk_outline.obj',   minigame_palm_outline_geom );
-    loadNodeSegment( loader, 'Models/palm_leaves.obj',          minigame_palm_leaves_geom );
-    loadNodeSegment( loader, 'Models/palm_leaves_outline.obj',  minigame_palm_leaves_outline_geom );
+    loadNodeSegment( loader, 'Models/palm_trunk.obj',          minigame_palm_geom );
+    loadNodeSegment( loader, 'Models/palm_trunk_outline.obj',  minigame_palm_outline_geom );
+    loadNodeSegment( loader, 'Models/palm_leaves_low.obj',         minigame_palm_leaves_geom );
+    //loadNodeSegment( loader, 'Models/palm_leaves_outline_low.obj', minigame_palm_leaves_outline_geom );
 }
 
 function loadNodeSegment( loader, path, targetGeom )
@@ -311,10 +410,10 @@ function loadNodeSegment( loader, path, targetGeom )
             if ( child instanceof THREE.Mesh )
             {
                 targetGeom.geometry = child.geometry;
+                targetGeom.material = new THREE.MeshPhongMaterial();
+
                 if ( targetGeom == minigame_palm_geom )
                 {
-                    targetGeom.material = child.material;
-
                     new THREE.TextureLoader().load( 'img/palm_bark.png', function ( loadedTexture )
                     {
                         targetGeom.material.map = loadedTexture;
@@ -323,22 +422,33 @@ function loadNodeSegment( loader, path, targetGeom )
                 }
                 else if(targetGeom == minigame_palm_leaves_geom)
                 {
-                    targetGeom.material = child.material;
-
-                    new THREE.TextureLoader().load( 'img/palm leafs.png', function ( loadedTexture )
+                    new THREE.TextureLoader().load( 'img/palm leafs_low.png', function ( loadedTexture )
+                    {
+                        targetGeom.material.map = loadedTexture;
+                        targetGeom.material.transparent = true;
+                        targetGeom.material.alphaTest = 0.5;
+                        nodeLoaded();
+                    } );
+                }
+                else if ( targetGeom == minigame_rock_geom )
+                {
+                    new THREE.TextureLoader().load( 'img/rockTexture.png', function ( loadedTexture )
                     {
                         targetGeom.material.map = loadedTexture;
                         nodeLoaded();
                     } );
                 }
-                nodeLoaded();
+                else
+                {
+                    nodeLoaded();
+                }
             }
         } );
     } );
 }
 
 var nodesLoaded = 0;
-var nodesToLoad = 10;
+var nodesToLoad = 7;
 function nodeLoaded()
 {
     if ( ++nodesLoaded == nodesToLoad )
@@ -351,21 +461,36 @@ function OnAllMinigameNodesLoaded()
 {
     var outlineMat = new THREE.MeshBasicMaterial( { color: 0xFF0000 } );
 
-    //  Generate meshes
-    minigame_rock                        = new THREE.Mesh( minigame_rock_geom.geometry,                new THREE.MeshPhongMaterial( { color: 0x888888 } ) );
-    minigame_rock_outline                = new THREE.Mesh( minigame_rock_outline_geom.geometry,        outlineMat );
-                                         
-    minigame_water                       = new THREE.Mesh( minigame_water_geom.geometry,               new THREE.MeshPhongMaterial( { color: 0x0000FF } ) );
-    minigame_water_outline               = new THREE.Mesh( minigame_water_outline_geom.geometry,       outlineMat );
-                                         
-    minigame_palm                        = new THREE.Mesh( minigame_palm_geom.geometry,                minigame_palm_geom.material);//new THREE.MeshPhongMaterial( { color: 0x888811 } ) );
-    minigame_palm_leaves                 = new THREE.Mesh( minigame_palm_leaves_geom.geometry,         minigame_palm_leaves_geom.material);//new THREE.MeshPhongMaterial( { color: 0x00CC00 } ) );
-    minigame_palm_outline                = new THREE.Mesh( minigame_palm_outline_geom.geometry,        outlineMat );
-    minigame_palm_leaves_outline         = new THREE.Mesh( minigame_palm_leaves_outline_geom.geometry, outlineMat );
+    minigame_rock                               = [];
+    minigame_rock_outline                       = [];
+                                                 
+    minigame_water                              = [];
+    minigame_water_outline                      = [];
+                                                 
+    minigame_palm                               = [];
+    minigame_palm_leaves                        = [];
+    minigame_palm_outline                       = [];
+    //minigame_palm_leaves_outline                = [];
 
-    minigame_water_outline.visible       = false;
-    minigame_palm_outline.visible        = false;
-    minigame_palm_leaves_outline.visible = false;
+    for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
+    {
+        //  Generate meshes
+        minigame_rock[i]                        = new THREE.Mesh( minigame_rock_geom         .geometry,       minigame_rock_geom.material );
+        minigame_rock_outline[i]                = new THREE.Mesh( minigame_rock_outline_geom .geometry,       outlineMat );
+                                         
+        minigame_water[i]                       = new THREE.Mesh( minigame_water_geom        .geometry,       new THREE.MeshPhongMaterial( { color: 0x0000FF } ) );
+        minigame_water_outline[i]               = new THREE.Mesh( minigame_water_outline_geom.geometry,       outlineMat );
+                                         
+        minigame_palm[i]                        = new THREE.Mesh( minigame_palm_geom         .geometry,       minigame_palm_geom       .material);
+        minigame_palm_leaves[i]                 = new THREE.Mesh( minigame_palm_leaves_geom  .geometry,       minigame_palm_leaves_geom.material);
+        minigame_palm_outline[i]                = new THREE.Mesh( minigame_palm_outline_geom .geometry,       outlineMat );
+        //minigame_palm_leaves_outline[i]         = new THREE.Mesh( minigame_palm_leaves_outline_geom.geometry, outlineMat );
+
+        minigame_water_outline[i].visible       = false;
+        minigame_palm_outline[i].visible        = false;
+        //minigame_palm_leaves_outline[i].visible = false;
+
+    }
 
     placeMinigameNodes();
 
@@ -378,15 +503,29 @@ function placeMinigameNodes()
     nodeCoordinates = [];
     var halfDim = dim / 2;
 
-    for ( var i = 0; i < 3; i++ )
+    var validDistance = 50;
+    //---------------------------------------------------------------//
+    //  Valid placement criteria:                                    //
+    //                                                               //
+    //  - Above water                                                //
+    //  - Below the mountain line (Beach or Grass)                   //
+    //  - Outside the village                                        //
+    //  - Less than x% away from the center (follows from the RNG)   //
+    //  - Sufficiently far away (validDistance) from any             //
+    //     other minigame node                                       //
+    //---------------------------------------------------------------//
+    for ( var i = 0; i < 3 * TRIES_PER_MINIGAME; i++ )
     {
         do
         {
-            var xpos = randBetween( -halfDim * 0.5, (halfDim - 1) * 0.5 );
-            var zpos = randBetween( -halfDim * 0.5, (halfDim - 1) * 0.5 );
+            var xpos = randBetween( -halfDim * 0.65, (halfDim - 1) * 0.65 );
+            var zpos = randBetween( -halfDim * 0.65, (halfDim - 1) * 0.65 );
             var ypos = field[Math.round( middle.x + zpos )][Math.round( middle.y + xpos )];
         }
-        while ( ypos < WATERLEVEL || ypos > BEACH_HEIGHT || Math.abs( xpos * zpos ) < VILLAGE_DIMENSIONS.x * VILLAGE_DIMENSIONS.y );
+        while (    ypos < WATERLEVEL
+                || ypos > TREE_HEIGHT
+                || distanceSquared(new Point(xpos, zpos), new Point(0, 0)) < VILLAGE_DIMENSIONS.x * VILLAGE_DIMENSIONS.y
+                || isAnyCoordinateCloserThan2D( nodeCoordinates, xpos, zpos, 10 ) );
 
         //  TODO: Check for overlapping
         //  TODO: Check for distance to middle and border
@@ -398,28 +537,61 @@ function placeMinigameNodes()
     var water_height = 0;
     var palm_height  = -1;
 
-    minigame_rock.position.x  = minigame_rock_outline.position.x  = nodeCoordinates[0].x;
-    minigame_rock.position.y  = minigame_rock_outline.position.y  = nodeCoordinates[0].y + rock_height;
-    minigame_rock.position.z  = minigame_rock_outline.position.z  = nodeCoordinates[0].z;
+    for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
+    {
+        //  Rock
+        minigame_rock[i].position.x        = minigame_rock_outline[i].position.x        = nodeCoordinates[i * 3].x;
+        minigame_rock[i].position.y        = minigame_rock_outline[i].position.y        = nodeCoordinates[i * 3].y + rock_height;
+        minigame_rock[i].position.z        = minigame_rock_outline[i].position.z        = nodeCoordinates[i * 3].z;
+        var randScl = randBetween(0.6, 1);
+        minigame_rock[i].scale.set( randScl, randScl, randScl );
+        minigame_rock_outline[i].scale.set( randScl, randScl, randScl );
+        //  Water
+        minigame_water[i].position.x       = minigame_water_outline[i].position.x       = nodeCoordinates[i * 3 + 1].x;
+        minigame_water[i].position.y       = minigame_water_outline[i].position.y       = nodeCoordinates[i * 3 + 1].y + water_height;
+        minigame_water[i].position.z       = minigame_water_outline[i].position.z       = nodeCoordinates[i * 3 + 1].z;
+        //  Palm
+        minigame_palm[i].position.x        = minigame_palm_outline[i].position.x        =
+        minigame_palm_leaves[i].position.x = /*minigame_palm_leaves_outline[i].position.x =*/ nodeCoordinates[i * 3 + 2].x;
+        minigame_palm[i].position.y        = minigame_palm_outline[i].position.y        =
+        minigame_palm_leaves[i].position.y = /*minigame_palm_leaves_outline[i].position.y =*/ nodeCoordinates[i * 3 + 2].y + palm_height;
+        minigame_palm[i].position.z        = minigame_palm_outline[i].position.z        =
+        minigame_palm_leaves[i].position.z = /*minigame_palm_leaves_outline[i].position.z =*/ nodeCoordinates[i * 3 + 2].z;
+        var randScl = randBetween( 0.8, 1.2 );
+        minigame_palm[i].scale.set( randScl, randScl, randScl );
+        minigame_palm_leaves[i].scale.set( randScl, randScl, randScl );
+        minigame_palm_outline[i].scale.set( randScl, randScl, randScl );
+        //minigame_palm_leaves_outline[i].scale.set( randScl, randScl, randScl );
+        //  Rotation
+        minigame_rock[i] .rotation.y       = minigame_rock_outline[i] .rotation.y       = Math.random() * Math.PI * 2;
+        minigame_water[i].rotation.y       = minigame_water_outline[i].rotation.y       = Math.random() * Math.PI * 2;
+        minigame_palm[i] .rotation.y       = minigame_palm_outline[i] .rotation.y       =
+        minigame_palm_leaves[i].rotation.y = /*minigame_palm_leaves_outline[i].rotation.y =*/ Math.random() * Math.PI * 2;
 
-    minigame_water.position.x = minigame_water_outline.position.x = nodeCoordinates[1].x;
-    minigame_water.position.y = minigame_water_outline.position.y = nodeCoordinates[1].y + water_height;
-    minigame_water.position.z = minigame_water_outline.position.z = nodeCoordinates[1].z;
+        scene.add( minigame_rock[i] );
+        scene.add( minigame_rock_outline[i] );
+        scene.add( minigame_water[i] );
+        scene.add( minigame_water_outline[i] );
+        scene.add( minigame_palm[i] );
+        scene.add( minigame_palm_outline[i] );
+        scene.add( minigame_palm_leaves[i] );
+        //scene.add( minigame_palm_leaves_outline[i] );
+    }
 
-    minigame_palm.position.x  = minigame_palm_outline.position.x  = minigame_palm_leaves.position.x = minigame_palm_leaves_outline.position.x = nodeCoordinates[2].x;
-    minigame_palm.position.y  = minigame_palm_outline.position.y  = minigame_palm_leaves.position.y = minigame_palm_leaves_outline.position.y = nodeCoordinates[2].y + palm_height;
-    minigame_palm.position.z  = minigame_palm_outline.position.z  = minigame_palm_leaves.position.z = minigame_palm_leaves_outline.position.z = nodeCoordinates[2].z;
-
-    scene.add( minigame_rock );
-    scene.add( minigame_rock_outline );
-    scene.add( minigame_water );
-    scene.add( minigame_water_outline );
-    scene.add( minigame_palm );
-    scene.add( minigame_palm_outline );
-    scene.add( minigame_palm_leaves );
-    scene.add( minigame_palm_leaves_outline );
-
+    placedMinigameNodes = true;
     OnMinigameAvailabilityChanged( 1, true );
+}
+
+function isAnyCoordinateCloserThan2D( coordinates, xCoord, zCoord, distance )
+{
+    for(var i = 0; i < coordinates.length; i++)
+    {
+        if(distanceSquared(new Point(xCoord, zCoord), new Point(coordinates[i].x, coordinates[i].z)) < distance * distance )
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 function onWeazleLoadingFinished()
@@ -450,9 +622,26 @@ function initLighting()
     //scene.add( new THREE.CameraHelper( directionalLight.shadow.camera ) );
 }
 
+function pauseRendering()
+{
+    pauseRender = true;
+}
+
+function resumeRendering()
+{
+    pauseRender = false;
+    animate();
+}
+
+var pauseRender = false;
 //  Caution: Mostly debug stuff still
 function animate()
 {
+    if ( pauseRender )
+    {
+        return;
+    }
+
     stats.begin();
 
     deltaTime = clock.getDelta();
@@ -476,24 +665,30 @@ function animate()
         controls.update();
     }
 
-    var col = Math.round( 255 * ( Math.sin( Date.now() / 250 ) / 4 + 0.75 ) );
+    //  Pulsing minigame outlines
+    if ( placedMinigameNodes )
+    {
+        var col = Math.round( 255 * ( Math.sin( Date.now() / 500 ) / 4 + 0.75 ) );
 
-    if ( minigame_rock_outline && minigame_rock_outline.visible )
-    {
-        minigame_rock_outline.material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
+        for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
+        {
+            if ( minigame_rock_outline[i] && minigame_rock_outline[i].visible )
+            {
+                minigame_rock_outline[i].material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
+            }
+            if ( minigame_water_outline[i] && minigame_water_outline[i].visible )
+            {
+                minigame_water_outline[i].material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
+            }
+            if ( minigame_palm_outline[i] && minigame_palm_outline[i].visible )
+            {
+                minigame_palm_outline[i].material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
+            }
+        }
     }
-    if ( minigame_water_outline && minigame_water_outline.visible )
-    {
-        minigame_water_outline.material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
-    }
-    if ( minigame_palm_outline && minigame_palm_outline.visible )
-    {
-        minigame_palm_outline.material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
-    }
-    if ( minigame_palm_leaves_outline && minigame_palm_leaves_outline.visible )
-    {
-        minigame_palm_leaves_outline.material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
-    }
+
+    
+    
 
     if (!isInMenu)
     {
@@ -509,14 +704,24 @@ function animate()
 
     if ( waterCreated )
     {
-        water.material.uniforms.time.value += 0.005;
-        water.render();
+        if ( renderWater )
+        {
+            water.material.uniforms.time.value += 0.005;
+            water.render();
+        }
+        else
+        {
+            waterTexture.offset.x = Math.cos(Date.now() / 200000);
+            waterTexture.offset.y = Math.sin(Date.now() / 200000);
+        }
     }
     
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
     stats.end();
 }
+
+renderWater = true;
 
 //------------------------------------------------------//
 //                  EVENT HANDLING                      //
@@ -610,7 +815,7 @@ function onDocumentMouseClick( event )
         return;
     }
 
-    if ( !controls.enabled || !canClickObjects )
+    if ( !controls.enabled || pauseRender || !canClickObjects )
     {
         return;
     }
@@ -625,15 +830,15 @@ function onDocumentMouseClick( event )
 
     if ( intersects.length > 0 )
     {
-        if ( intersects[0].object == minigame_rock )
+        if ( arrayContains( minigame_rock, intersects[0].object ) )
         {
             startMinigame( 1 );
         }
-        else if ( intersects[0].object == minigame_water )
+        else if ( arrayContains( minigame_water, intersects[0].object ) )
         {
             startMinigame( 2 );
         }
-        else if ( intersects[0].object == minigame_palm || intersects[0].object == minigame_palm_leaves  )
+        else if ( arrayContains( minigame_palm, intersects[0].object ) || arrayContains( minigame_palm_leaves, intersects[0].object ) )
         {
             startMinigame( 3 );
         }
@@ -651,7 +856,7 @@ function onDocumentMouseClick( event )
     }
 
 }
-
+var minigamesVis = true;
 function onkeydown( event )
 {
     if(event.key == "r")
@@ -675,6 +880,55 @@ function onkeydown( event )
         {
             directionalLight.castShadow = true;
         }
+    }
+    else if ( event.key == "w" )
+    {
+        if ( renderWater )
+        {
+            renderWater = false;
+            scene.remove( waterMesh );
+            scene.add( waterMesh2 );
+        }
+        else
+        {
+            renderWater = true;
+            scene.remove( waterMesh2 );
+            scene.add( waterMesh );
+        }
+    }
+    else if( event.key == "m")
+    {
+        if ( minigamesVis )
+        {
+            for ( var i = 0; i < minigame_rock.length; i++ )
+            {
+                minigame_rock_outline[i].visible = false;
+                minigame_water_outline[i].visible = false;
+                minigame_palm_outline[i].visible = false;
+                //minigame_palm_leaves_outline[i].visible = false;
+                minigame_rock[i].visible = false;
+                minigame_water[i].visible = false;
+                minigame_palm[i].visible = false;
+                minigame_palm_leaves[i].visible = false;
+            }
+            minigamesVis = false;
+        }
+        else
+        {
+            for ( var i = 0; i < minigame_rock.length; i++ )
+            {
+                minigame_rock_outline[i].visible = true;
+                minigame_water_outline[i].visible = true;
+                minigame_palm_outline[i].visible = true;
+                //minigame_palm_leaves_outline[i].visible = true;
+                minigame_rock[i].visible = true;
+                minigame_water[i].visible = true;
+                minigame_palm[i].visible = true;
+                minigame_palm_leaves[i].visible = true;
+            }
+            minigamesVis = true;
+        }
+
     }
     else if ( event.key == "1" )
     {
@@ -701,39 +955,13 @@ function onkeydown( event )
         subsampleFactor = 16;
 	    onWindowResize();
     }
-    else if ( event.key == "ArrowUp" )
-    {
-        minigame_palm_outline.position.z += 0.1;
-        //directionalLight.shadow.camera.top++;
-        //directionalLight.shadow.camera.updateProjectionMatrix();
-    }
-    else if ( event.key == "ArrowLeft" )
-    {
-        minigame_palm_outline.position.x -= 0.1;
-        //directionalLight.shadow.camera.right--;
-        //directionalLight.shadow.camera.updateProjectionMatrix();
-    }
-    else if ( event.key == "ArrowDown" )
-    {
-        minigame_palm_outline.position.z -= 0.1;
-        //directionalLight.shadow.camera.top--;
-        //directionalLight.shadow.camera.updateProjectionMatrix();
-    }
-    else if ( event.key == "ArrowRight" )
-    {
-        minigame_palm_outline.position.x += 0.1;
-        //directionalLight.shadow.camera.right++;
-        //directionalLight.shadow.camera.updateProjectionMatrix();
-    }
     else if ( event.key == "+" )
     {
-        directionalLight.shadow.camera.far++;
-        directionalLight.shadow.camera.updateProjectionMatrix();
+        decorationSpritesMesh.rotation.z+=0.1;
     }
     else if ( event.key == "-" )
     {
-        directionalLight.shadow.camera.far--;
-        directionalLight.shadow.camera.updateProjectionMatrix();
+        decorationSpritesMesh.rotation.z-=0.1;
     }
     else if ( event.key == "8" )
     {
@@ -836,7 +1064,7 @@ function changeStatueModel( mesh, segmentMat )
     segmentBuildTime = 2000;
     timeUntilZoomOut = 2000;
     particleTime     = 2500;
-    particleSpd      = 4;
+    particleSpd      = 1;
 
     controls.autoRotate  = true;
 
@@ -1081,18 +1309,27 @@ function OnMinigameAvailabilityChanged( minigameID, isAvailable )
         switch ( minigameID )
         {
             case 1:
-                clickable_objects.push( minigame_rock );
-                minigame_rock_outline.visible  = true;
+                for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
+                {
+                    clickable_objects.push( minigame_rock[i] );
+                    minigame_rock_outline[i].visible = true;
+                }
                 break;
             case 2:
-                clickable_objects.push( minigame_water );
-                minigame_water_outline.visible = true;
+                for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
+                {
+                    clickable_objects.push( minigame_water[i] );
+                    minigame_water_outline[i].visible = true;
+                }
                 break;
             case 3:
-                clickable_objects.push( minigame_palm );
-                clickable_objects.push( minigame_palm_leaves );
-                minigame_palm_outline.visible        = true;
-                minigame_palm_leaves_outline.visible = true;
+                for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
+                {
+                    clickable_objects.push( minigame_palm[i] );
+                    clickable_objects.push( minigame_palm_leaves[i] );
+                    minigame_palm_outline[i].visible = true;
+                    //minigame_palm_leaves_outline[i].visible = true;
+                }
                 break;
         }
     }
@@ -1102,18 +1339,27 @@ function OnMinigameAvailabilityChanged( minigameID, isAvailable )
         switch ( minigameID )
         {
             case 1:
-                clickable_objects.splice( minigame_rock, 1 );
-                minigame_rock_outline.visible  = false;
+                for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
+                {
+                    clickable_objects.splice( minigame_rock[i] );
+                    minigame_rock_outline[i].visible = false;
+                }
                 break;
             case 2:
-                clickable_objects.splice( minigame_water, 1 );
-                minigame_water_outline.visible = false;
+                for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
+                {
+                    clickable_objects.splice( minigame_water[i] );
+                    minigame_water_outline[i].visible = false;
+                }
                 break;
             case 3:
-                clickable_objects.splice( minigame_palm );
-                clickable_objects.splice( minigame_palm_leaves_outline );
-                minigame_palm_outline.visible        = false;
-                minigame_palm_leaves_outline.visible = false;
+                for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
+                {
+                    clickable_objects.splice( minigame_palm[i] );
+                    clickable_objects.splice( minigame_palm_leaves[i] );
+                    minigame_palm_outline[i].visible = false;
+                    //minigame_palm_leaves_outline[i].visible = false;
+                }
                 break;
         }
     }

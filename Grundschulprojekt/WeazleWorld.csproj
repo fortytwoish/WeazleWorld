@@ -79,11 +79,14 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="html\Outline effect %28Three.js%29.html" />
+    <Content Include="img\grass.png" />
     <Content Include="img\head.png" />
     <Content Include="img\logo.png" />
+    <Content Include="img\palm leafs_low.png" />
+    <Content Include="img\palm leafs_opacity_low.png" />
     <Content Include="img\rahmen.gif" />
     <Content Include="img\rahmen_klein.gif" />
-    <Content Include="img\sand.jpg" />
+    <Content Include="img\rockTexture.png" />
     <Content Include="img\smoke_puff.png" />
     <Content Include="img\treeGame\transparent.png" />
     <Content Include="img\treeGame\tree2.png" />
@@ -101,6 +104,7 @@
     <Content Include="img\treeGame\tree1.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="obj\Debug\TempPE\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
@@ -108,8 +112,10 @@
     <Content Include="js\script.menu.js" />
     <Content Include="js\script.splashScreen.js" />
     <Content Include="js\Weazle.js" />
-    <Content Include="img\palm leafs.png" />
     <Content Include="img\palm_bark.png" />
+    <Content Include="obj\Debug\Grundschulprojekt.dll" />
+    <Content Include="obj\Debug\Grundschulprojekt.pdb" />
+    <Content Include="obj\Debug\WeazleWorld.csproj.FileListAbsolute.txt" />
     <Content Include="Resources\easeljs-0.8.2.min.js" />
     <Content Include="Resources\OBJLoader.js" />
     <Content Include="Resources\preloadjs-0.6.2.min.js" />
@@ -132,22 +138,25 @@
     <Content Include="Models\Statue_Bottom.obj" />
     <Content Include="Models\Statue_Mid.obj" />
     <Content Include="Models\Statue_Top.obj" />
-    <Content Include="Models\tree_leaves.obj" />
-    <Content Include="Models\tree_trunk.obj" />
-    <Content Include="Models\tree_leaves_outline.obj" />
-    <Content Include="Models\tree_trunk_outline.obj" />
     <Content Include="Models\rock.obj" />
     <Content Include="Models\rock_outline.obj" />
-    <Content Include="Models\palm_leaves.obj" />
-    <Content Include="Models\palm_leaves_outline.obj" />
-    <Content Include="Models\palm_trunk.obj" />
-    <Content Include="Models\palm_trunk_outline.obj" />
+    <Content Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
+    <Content Include="obj\Debug\WeazleWorld.csprojResolveAssemblyReference.cache" />
+    <Content Include="Models\palm_leaves_low.obj" />
+    <Content Include="Models\palm_leaves_outline_low.obj" />
+    <Content Include="Models\palm_trunk_low.obj" />
+    <Content Include="Models\palm_trunk_outline_low.obj" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -56,7 +56,8 @@ function setQuality_TerrainResDependant( terrainRes )
     WATER_SCALE_FACTOR = Math.pow( 2, ( terrainRes - 7 ) + 1 );
     if ( waterMesh != null )
     {
-        scene.remove( waterMesh );
+        scene.remove( waterMesh  );
+        scene.remove( waterMesh2 );
         initWater();
     }
 

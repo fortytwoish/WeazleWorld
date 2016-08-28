@@ -2,7 +2,7 @@
 const CLAMP_ROCK        = [30, 150];
 const CLAMP_GRASS       = [30, 200];
 const CLAMP_WATER       = [0, 255];
-const TEXTUREBRIGHTNESS = 0.5;
+const TEXTUREBRIGHTNESS = 0.45;
 
 
 //  "Biome" borders (upper limits)
@@ -10,16 +10,17 @@ const BEACH_HEIGHT      = 3.25;
 const BEACH_SLOPE       = 0.75;
 const GRASS_HEIGHT      = 150;
 const GRASS_SLOPE       = 0.65;
-const TREE_HEIGHT       = 100;
-const TREE_SLOPE        = 0.45;
+const TREE_HEIGHT       = 5;
+const TREE_SLOPE        = 1;
 const SNOW_HEIGHT       = 750;
 
 //  Chance of a fitting vertex being changed to a tree, in percent
-const TREE_DENSITY      = 15;
+const TREE_DENSITY      = 50;
 const TREE_HEIGHT_MIN   = 2;
 const TREE_HEIGHT_MAX   = 4;
 
 island_peaks = [0, 0, 0];
+grass_positions = [];
 
 function GenerateIsland( size, waterLevel )
 {
@@ -474,7 +475,7 @@ function GenerateMaterial( geometry, sunPosition )
             if ( geometry.attributes.position.array[j + 1] <= BEACH_HEIGHT && upAngle <= BEACH_SLOPE )
             {
                 shadeInv /= 7;
-                imageData[i]     = ( shadeInv * ( geometry.attributes.position.array[j + 1] + 20 ) * 0.85 ).clamp8Bit( CLAMP_GRASS );
+                imageData[i]     = ( shadeInv * ( geometry.attributes.position.array[j + 1] + 20 ) * 0.875 ).clamp8Bit( CLAMP_GRASS );
                 imageData[i + 1] = ( shadeInv * ( geometry.attributes.position.array[j + 1] + 20 ) * 0.8 ) .clamp8Bit( CLAMP_GRASS );
                 imageData[i + 2] = ( shadeInv * 13 ).clamp8Bit( CLAMP_GRASS );
             }
@@ -489,7 +490,7 @@ function GenerateMaterial( geometry, sunPosition )
                 *               GRASS              *
                 ***********************************/
                 imageData[i]     = ( shadeInv * 0.9 ).clamp8Bit( CLAMP_GRASS );
-                imageData[i + 1] = ( shadeInv * 1.5 ).clamp8Bit( CLAMP_GRASS );
+                imageData[i + 1] = ( shadeInv * 1.65 ).clamp8Bit( CLAMP_GRASS );
                 imageData[i + 2] = ( shadeInv * 0.8 ).clamp8Bit( CLAMP_GRASS );
 
                 if ( geometry.attributes.position.array[j + 1] <= randBetween( TREE_HEIGHT, TREE_HEIGHT * 1.5 ) && upAngle <= TREE_SLOPE && Math.random() < ( TREE_DENSITY / 100 ) )
@@ -508,8 +509,12 @@ function GenerateMaterial( geometry, sunPosition )
 
                     //    imageData[i]     =   shadeInv                    .clamp8Bit( CLAMP_GRASS );
                     //    imageData[i + 1] = ( shadeInv * ( 2 - upAngle ) ).clamp8Bit( CLAMP_GRASS );
-                    //    imageData[i + 2] =   shadeInv                    .clamp8Bit( CLAMP_GRASS );
+                        //    imageData[i + 2] =   shadeInv                    .clamp8Bit( CLAMP_GRASS );
+                        grass_positions.push( new THREE.Vector3( geometry.attributes.position.array[j] + Math.random() / 2, geometry.attributes.position.array[j + 2] + Math.random() / 2, -( geometry.attributes.position.array[j + 1] + 0.5 ) ) );
                     //}
+
+                    
+
                 }
 
             }

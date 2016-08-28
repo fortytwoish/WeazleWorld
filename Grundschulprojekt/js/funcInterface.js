@@ -3,6 +3,8 @@
 /////DO NOT MODIFY|DO NOT MODIFY|DO NOT MODIFY|DO NOT MODIFY|DO NOT MODIFY|DO NOT MODIFY/////
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 
+const TRIES_PER_MINIGAME = 4;
+
 username = "[Username not set]";
 showTutorials = true;
 
@@ -82,6 +84,7 @@ showTutorials = true;
 function continueMainGame()
 {
     isInMenu = false;
+    resumeRendering();
     hideMenu();
     $( ".hiddenInMenu" ).css( "visibility", "visible" );
     $( "#messageBox" ).css( "visibility", "visible" );
@@ -101,24 +104,34 @@ function continueMainGame()
                 setQuality_TerrainResDependant(terrainRes);
                 controls.update(); //Necessary to bring the camera into bounds
 
-                //      ISLAND
-                var islandGeom = GenerateIsland(terrainRes, WATERLEVEL);
+                //  Reset necessary objects
+                scene.remove( islandMesh );
+                for ( var i = 0; i < differentSpriteCount; i++ )
+                {
+                    scene.remove( decorationSpriteMeshes[i] );
+                }
+                grass_positions = [];
 
-                /* texture test */
+                //  Create new objects
+
+                //      ISLAND
+                var islandGeom    = GenerateIsland(terrainRes, WATERLEVEL);
+
                 var islandMat     = new THREE.MeshPhongMaterial({ map: GenerateMaterial(islandGeom, SUN_POSITION) });
                 islandMat.shading = THREE.FlatShading;
 
+                initIslandDecoration();
                 placeMinigameNodes();
-
-                scene.remove(islandMesh);
+                
                 islandMesh        = new THREE.Mesh(islandGeom, islandMat);
-                scene.add(   islandMesh);
+                scene.add(    islandMesh );
             }
         } //to be moved to menu
 
         function openMenu()
         {
-	        isInMenu = true;
+            isInMenu = true;
+            pauseRendering();
 	        showMenu();
 
             hideButtons();
