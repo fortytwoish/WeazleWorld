@@ -1,40 +1,251 @@
 ﻿<style>
 	#minigame2{
+		display: block;
+		position: relative;
 		width: 100%;
 		height: 100%;
 	}
 
 	/* testen 880 x 520 */
 
+	#minigame2 #gameFieldAll{
+		position: absolute;
+	}
+
+	#minigame2 #start{
+		position: absolute;
+		top: 0;
+		right: 0;
+	}
+
+	#minigame2 #target{
+		position: absolute;
+		bottom: 0;
+		left: 0;
+	}
+
+	#minigame2 #gameField{
+		display: block;
+		position: absolute;
+		border-collapse: collapse;
+	}
+
+	#minigame2 #gameField tr{
+		display: block;
+	}
+
+	#minigame2 #gameField td{
+		display: inline-block;
+		padding: 0;
+		position: relative;
+	}
+
+	#minigame2 #gameField img{
+		display: block;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+
+	#minigame2 #gameField #rotater{
+		top: 25%;
+		left: 25%;
+		width: 50%;
+		height: 50%;
+	}
+
+	#minigame2 #goButton{
+		position: absolute;
+		bottom: 20px;
+	}
+
+	#minigame2 #tutButton{
+		position: absolute;
+		top: 20px;
+		left: 20px;
+	}
+
+	#minigame2 #exitButton{
+		position: absolute;
+		top: 20px;
+		right: 20px;
+	}
+
 	#minigame2 #canvas{
+		position: absolute;
 		width: 100%;
 		height: 100%;
 		background-color: #AAA;
 	}
+
+	#minigame2 #tutMessage, #minigame2 #exitMessage, #minigame2 #goMessage{
+		position: absolute;
+		text-align: center;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		visibility: hidden;
+		-ms-opacity: 0;
+		opacity: 0;
+		background-color: #000000;
+		background-color: rgba(0, 0, 0, 0.3);
+	}
+
+	#minigame2 #tutMessage div, #minigame2 #exitMessage div, #minigame2 #goMessage div{
+		font-size: 20pt;
+		position: relative;
+		margin: 15% 25% auto 25%;
+		padding: 30px 30px 0 30px;
+		text-align: center;
+		border: #FFF 2px solid;
+		color: #FFF;
+		background-color: #000;
+		background-color: rgba(0, 0, 0, 0.8);
+		-ms-border-radius: 20px;
+		border-radius: 20px;
+	}
+
+	#minigame2 #tutOkButton{
+		display: inline-block;
+		width: 40%;
+		margin-bottom: 30px;
+	}
+
+	#minigame2 #exitYesButton{
+		display: inline-block;
+		width: 25%;
+		margin-bottom: 30px;
+	}
+
+	#minigame2 #exitNoButton{
+		display: inline-block;
+		width: 25%;
+		margin: 0 30px 30px 30px;
+	}
+
+	#minigame2 #goYesButton{
+		display: inline-block;
+		width: 250px;
+		margin: auto;
+		margin-bottom: 30px;
+	}
+
+	#minigame2 #goNoButton{
+		display: inline-block;
+		width: 250px;
+		margin: 0 30px 30px 30px;
+	}
+
+	#minigame2 input{
+		width: 250px;
+		display: block;
+		font-family: 'Calibri';
+		letter-spacing: 2px;
+		font-weight: bold;
+		background-color: #298AF4;
+		border: none;
+		border-radius: 10px;
+		font-size: 20pt;
+		color: #BFFFFF;
+		padding: 5px;
+	}
+	#minigame2 input:hover
+	{
+		background-color: #BFFFFF;
+		color: #298AF4;
+		cursor: pointer;
+	}
 </style>
 <div id="minigame2">
-	<button id="winMinigameButton" style="margin:auto">Win</button>
-	<button id="loseMinigameButton" style="margin: auto">Lose</button>
 	<canvas id="canvas"></canvas>
+	<div id="gameFieldAll">
+		<img id="start" alt="Der Start">
+		<table id="gameField"></table>
+		<img id="target" alt="Das Ziel">
+	</div>
+	<input id="goButton" type="button" value="Wasser marsch!">
+	<input id="tutButton" type="button" value="Anleitung">
+	<input id="exitButton" type="button" value="Zurück zur Insel">
+	<div id="tutMessage">
+		<div>
+			<p>Drehe die Rohre mit einem Klick um eine Verbindung zwischen dem Startrohr und Zielrohr zu bauen, damit die Wazels Wasser bekommen.</p>
+			<input id="tutOkButton" type="button" value="O.K.">
+		</div>
+	</div>
+	<div id="exitMessage">
+		<div>
+			<p>Minispiel wirklich verlassen?</p>
+			<input id="exitNoButton" type="button" value="Nein">
+			<input id="exitYesButton" type="button" value="Ja">
+		</div>
+	</div>
+	<div id="goMessage">
+		<div>
+			<p></p>
+			<input id="goNoButton" type="button" value="Weiter spielen">
+			<input id="goYesButton" type="button" value="Zurück zur Insel">
+		</div>
+	</div>
 </div>
 <script type="text/javascript" src="../Resources/jquery-2.2.4.min.js"></script>
 <script type="text/javascript" src="../Resources/preloadjs-0.6.2.min.js"></script>
 <script type="text/javascript" src="../Resources/easeljs-0.8.2.min.js"></script>
 <script type="text/javascript" src="../Resources/tweenjs-0.6.2.min.js"></script>
-<button id="exitMinigameButton" style="margin:auto">Exit</button>
-<button id="winMinigameButton" style="margin:auto">Win</button>
-<button id="loseMinigameButton" style="margin:auto">Lose</button>
-
+<script type="text/javascript" src="../Resources/jquery.rotate.js"></script>
 <script>
 	/*
 	*   CONST
 	*/
 
-	var DIFFICULTIES = {
-		TUT: [3, 3],
-		EASY: [4, 4],
-		MEDIUM: [5, 4],
-		HARD: [7, 5]
+	var TUTLEVEL = new Array();
+	TUTLEVEL.push(
+		[[6, 4, 0],
+		[4, 2, 6],
+		[2, 6, 7]]
+	);
+
+	var EASYLEVEL = new Array();
+	EASYLEVEL.push(
+		[[7, 6, 6, 4],
+		[6, 7, 6, 1],
+		[6, 7, 6, 1],
+		[0, 0, 0, 2]]
+	);
+	EASYLEVEL.push(
+		[[6, 6, 4, 0],
+		[4, 3, 1, 7],
+		[1, 1, 1, 6],
+		[2, 5, 2, 7]]
+	);
+	EASYLEVEL.push(
+		[[4, 3, 4, 0],
+		[1, 5, 2, 6],
+		[1, 6, 6, 6],
+		[2, 7, 6, 7]]
+	);
+	EASYLEVEL.push(
+		[[7, 7, 4, 0],
+		[7, 4, 2, 7],
+		[4, 2, 7, 6],
+		[2, 7, 7, 7]]
+	);
+	EASYLEVEL.push(
+		[[7, 6, 6, 4],
+		[6, 4, 3, 1],
+		[6, 1, 5, 2],
+		[0, 2, 6, 6]]
+	);
+
+	var MEDIUMLEVEL = new Array();
+
+	var HARDLEVEL = new Array();
+
+	var LEVELS = {
+		TUT: TUTLEVEL,
+		EASY: EASYLEVEL,
+		MEDIUM: MEDIUMLEVEL,
+		HARD: HARDLEVEL
 	};
 
 	var DEBUG_LEVEL = {
@@ -46,16 +257,44 @@
 		STRAIGHT: 1,
 		CURVE: 2
 	};
+	var PIPES = {
+		UPDOWN: 0,
+		UPLEFT: 1,
+		UPRIGHT: 2,
+		RIGHTDOWN: 3,
+		RIGHTLEFT: 4,
+		RIGHTUP: 5
+	};
 	var IMAGES = {
 		STRAIGHT: "/img/waterGame/STRAIGHT.png",
 		CURVE: "/img/waterGame/CURVE.png",
+		START: "/img/waterGame/start.png",
+		TARGET: "/img/waterGame/target.png",
 		ROTATE: "/img/waterGame/rotate.gif"
 	};
-
+	var AUDIOFILES = {
+		BACKGROUND: "/audio/waterGame/background.mp3",
+		CLICK: "/audio/waterGame/click.mp3",
+		FINISH: "/audio/waterGame/finish.mp3",
+		ROTATE1: "/audio/waterGame/rotate1.wav",
+		ROTATE2: "/audio/waterGame/rotate2.mp3",
+		ROTATE3: "/audio/waterGame/rotate3.mp3"
+	};
 	var DEBUG = DEBUG_LEVEL.VERBOSE;
+	var LEVEL = LEVELS.TUT;
+	var FPS = 30;
 
-	var stage = new createjs.Stage("canvas");
-	stage.enableMouseOver(10);
+	/*
+	*   VAR
+	*/
+
+	var backgroundMusic;
+	var click;
+	var rotateSound;
+	var finishSound;
+	var gameField;
+	var hasWon = false;
+	var gameFinished = false;
 
 	/*
 	*   OBJECTS
@@ -64,12 +303,47 @@
 	var Pipe = function(type, targetRotation)
 	{
 		var typeLocal = type;
-		var currentRotationLocal = (parseInt(Math.random() * 4) * 90);
+		var currentRotationLocal = (parseInt(Math.random() * 4) * 90 + 90);
 		var targetRotationLocal = targetRotation;
+
+		while (currentRotationLocal === targetRotationLocal)
+			currentRotationLocal = (parseInt(Math.random() * 4) * 90 + 90);
 
 		this.getType = function()
 		{
 			return typeLocal;
+		}
+
+		this.getPipeType = function()
+		{
+			switch (typeLocal)
+			{
+				case PIPE_TYPES.CURVE:
+					switch (targetRotationLocal)
+					{
+						case 90:
+							return PIPES.RIGHTUP;
+						case 180:
+							return PIPES.RIGHTDOWN;
+						case 270:
+							break;
+						case 360:
+							return PIPES.UPLEFT;
+					}
+				case PIPE_TYPES.STRAIGHT:
+					switch (targetRotationLocal)
+					{
+						case 90:
+							return PIPES.RIGHTLEFT;
+						case 180:
+							return PIPES.UPDOWN;
+						case 270:
+							return PIPES.RIGHTLEFT;
+						case 360:
+							return PIPES.UPDOWN;
+					}
+			}
+			return -1;
 		}
 
 		this.getImage = function()
@@ -91,212 +365,518 @@
 
 		this.isInCorrectPosition = function()
 		{
-			if (currentRotationLocal === targetRotationLocal ||
-				targetRotationLocal === -1 ||
-				typeLocal === PIPE_TYPES.STRAIGHT && currentRotationLocal === targetRotationLocal + 180)
+			if (currentRotationLocal === targetRotationLocal || targetRotationLocal === -1 || typeLocal === PIPE_TYPES.STRAIGHT && currentRotationLocal === targetRotationLocal + 180)
 				return true;
 			return false;
 		}
 
 		this.turn = function()
 		{
-			if (currentRotationLocal < 270)
-				currentRotationLocal += 90;
+			if (currentRotationLocal === 360)
+				currentRotationLocal = 90;
 			else
-				currentRotationLocal = 0;
+				currentRotationLocal += 90;
 			if (DEBUG >= DEBUG_LEVEL.VERBOSE)
 				console.log("Rotate to: " + currentRotationLocal);
 		}
 	}
 
-	var PIPES = {
-		UPDOWN: new Pipe(PIPE_TYPES.STRAIGHT, 0),
-		UPLEFT: new Pipe(PIPE_TYPES.CURVE, 0),
-		RIGHTDOWN: new Pipe(PIPE_TYPES.CURVE, 180),
-		RIGHTLEFT: new Pipe(PIPE_TYPES.STRAIGHT, 90)
-	};
+	/*
+	*   GLOBAL FUNCTIONS
+	*/
+
+	/*
+	minigame2Start = function()
+	{
+		button.on("click", function()
+		{
+			if (check(gameField))
+			{
+				winCounter++;
+
+				// Points
+				switch (currentDifficulty)
+				{
+					case DIFFICULTIES.EASY:
+						points += 1;
+						break;
+					case DIFFICULTIES.MEDIUM:
+						points += 2;
+						break;
+					case DIFFICULTIES.HARD:
+						points += 3;
+						break;
+				}
+
+				// Schwirigkeit wählen
+				if (winCounter === 3)
+				{
+					winCounter = 0;
+					switch (currentDifficulty)
+					{
+						case DIFFICULTIES.EASY:
+							currentDifficulty = DIFFICULTIES.MEDIUM;
+							break;
+						case DIFFICULTIES.MEDIUM:
+							currentDifficulty = DIFFICULTIES.HARD;
+							break;
+						case DIFFICULTIES.HARD:
+							gameFinished = true;
+							break;
+					}
+				}
+
+				if (DEBUG >= DEBUG_LEVEL.DEBUG)
+					console.log("Level: " + currentDifficulty + " Counter: " + winCounter);
+
+				// Spiel zuende oder nicht
+				if (winCounter === 3 && currentDifficulty === DIFFICULTIES.HARD || gameFinished)
+				{
+					// Popup Nachricht
+					var message = popupMessage("Richtig\nDu hast " + points + " Punkte gewonnen.");
+					stage.addChild(message);
+
+					message.getChildByName("button").on("click", function()
+					{
+						resetMinigame();
+						minigameWon(2);
+						stage.removeChild(message);
+					});
+				} else
+				{
+					// Popup Nachricht
+					var message = popupMessage("Gewonnen");
+					stage.addChild(message);
+
+					// Nach klick neuer level starten
+					message.getChildByName("button").on("click", function()
+					{
+						// Pipes entfernen
+						removeBitmapsFromStage(stage, bitmaps);
+
+						// Neue daten Generieren
+						gameField = generateGameField(currentDifficulty);
+						bitmaps = gameFieldConvertToBitmap(gameField);
+
+						// Daten hinzufügen
+						setListenerToBitmap(bitmaps);
+						addBitmapsToStage(stage, bitmaps);
+						stage.removeChild(message);
+					});
+				}
+			} else
+			{
+				gameFinished = true;
+				var message = questionMessage("Falsch\nDu hast " + points + " Punkte gewonnen.\nLevel trozdem nochmal versuchen?");
+				stage.addChild(message);
+				message.getChildByName("yes").on("click", function()
+				{
+					stage.removeChild(message);
+				});
+				message.getChildByName("no").on("click", function()
+				{
+					resetMinigame();
+					minigameLost(2);
+					stage.removeChild(message);
+				});
+			}
+		});
+	}
+	*/
+
+	minigame2Start = function (level) {
+		switch (level)
+		{
+			case 0:
+				LEVEL = LEVELS.TUT;
+				break;
+			case 1:
+				LEVEL = LEVELS.EASY;
+				break;
+			case 2:
+				LEVEL = LEVELS.MEDIUM;
+				break;
+			case 3:
+				LEVEL = LEVELS.HARD;
+				break;
+		}
+
+		var stage = new createjs.Stage("canvas");
+
+		var loadQueue = new createjs.LoadQueue(true);
+		loadQueue.loadFile(IMAGES.STRAIGHT);
+		loadQueue.loadFile(IMAGES.CURVE);
+		loadQueue.loadFile(IMAGES.START);
+		loadQueue.loadFile(IMAGES.TARGET);
+		loadQueue.loadFile(IMAGES.ROTATE);
+		loadQueue.loadFile(AUDIOFILES.BACKGROUND);
+		loadQueue.loadFile(AUDIOFILES.CLICK);
+		loadQueue.loadFile(AUDIOFILES.FINISH);
+		loadQueue.loadFile(AUDIOFILES.ROTATE1);
+		loadQueue.loadFile(AUDIOFILES.ROTATE2);
+		loadQueue.loadFile(AUDIOFILES.ROTATE3);
+
+		// Handle window resize
+		$(window).on("resize", function () {
+			resize();
+		});
+
+		// Ladeanzeige
+		var loadBar = new createjs.Shape();
+		loadBar.graphics.beginFill("Grey").drawRect(250, 250, 0, 20);
+		stage.addChild(loadBar);
+		loadQueue.on("progress", function (e) {
+			loadBar.graphics.beginFill("Grey").drawRect(250, 250, e.progress * 200, 20);
+			if (e.progress === 1)
+				stage.removeChild(loadBar);
+		});
+
+		// Fertig geladen
+		loadQueue.on("complete", function () {
+			createjs.Ticker.addEventListener("tick", tick);
+			createjs.Ticker.setFPS(FPS);
+
+			gameField = generateGameField(LEVEL);
+			addGameFieldToTable(gameField);
+			$("#start").attr("src", IMAGES.START);
+			$("#target").attr("src", IMAGES.TARGET);
+			setTimeout(function () {
+				resize();
+			}, 10);
+
+			backgroundMusic = new Audio(AUDIOFILES.BACKGROUND);
+			backgroundMusic.autoplay = true;
+			backgroundMusic.loop = true;
+
+			click = new Audio(AUDIOFILES.CLICK);
+			finishSound = new Audio(AUDIOFILES.FINISH);
+			rotateSound = new Array(3);
+			rotateSound[0] = new Audio(AUDIOFILES.ROTATE1);
+			rotateSound[1] = new Audio(AUDIOFILES.ROTATE2);
+			rotateSound[2] = new Audio(AUDIOFILES.ROTATE3);
+
+			/*
+			backgroundMusic.volume = getVolume() / 100;
+			click.volume = getVolume() / 100;
+			backgroundMusic.volume = getVolume() / 100;
+			rotateSound[0].volume = getVolume() / 100;
+			rotateSound[1].volume = getVolume() / 100;
+			rotateSound[2].volume = getVolume() / 100;
+			*/
+		});
+
+		// Ladevorgang starten
+		loadQueue.load();
+
+		// Generate animated Background objects
+		for (var i = 0; i < 10; i++) {
+			var background = new createjs.Shape();
+			background.graphics.beginFill("Grey").drawPolyStar(parseInt(300 - Math.random() * (window.innerWidth + 300)) + 300, parseInt(300 - Math.random() * (window.innerHeight + 300)) + 300, 600, 5, 0.2, parseInt(Math.random() * 360));
+			background.alpha = Math.random();
+			background.x = background.x + 600 / 2;
+			background.y = background.y + 600 / 2;
+			background.regX = 600 / 2;
+			background.regY = 600 / 2;
+			createjs.Tween.get(background, { loop: true })
+				.to({ rotation: 360 }, parseInt(Math.random() * 20000) + 40000);
+			stage.addChild(background);
+		}
+
+		// Water particles
+		var waterParticles = 40;
+		var waterTimer = 2;
+
+		// Animation
+		function tick() {
+			if (waterParticles > 0 && waterTimer === 0) {
+				var waterParticle = new createjs.Shape();
+				// drawPolyStar ( x  y  radius  sides  pointSize  angle )
+				waterParticle.graphics.beginFill("DeepSkyBlue").drawPolyStar(window.innerWidth - parseInt(Math.random() * (window.innerWidth / 10)), 0, 8, 5, 0.2, parseInt(Math.random() * 360));
+				createjs.Tween.get(waterParticle, { loop: true })
+					.to({ y: window.innerHeight }, parseInt(Math.random() * 1000) + 2000);
+				stage.addChild(waterParticle);
+				waterParticles--;
+				waterTimer = 2;
+			}
+			waterTimer--;
+
+			// Update Stage
+			stage.update();
+		}
+
+		// JQuery
+
+		$("#exitButton").on("click", function () {
+			click.play();
+			$("#exitMessage").css("visibility", "visible");
+			$("#exitMessage").animate(
+			{
+					opacity: 1
+			}, 200);
+			$("#exitMessage div").animate(
+			{
+					top: 20
+			}, 200);
+		});
+
+		$("#exitNoButton").on("click", function () {
+			click.play();
+			$("#exitMessage").animate(
+			{
+				opacity: 0
+			}, 200);
+			$("#exitMessage div").animate(
+			{
+				top: 0
+			}, 200, function()
+			{
+				$("#exitMessage").css("visibility", "hidden");
+			});
+		});
+
+		$("#exitYesButton").on("click", function () {
+			click.play();
+			backgroundMusic.pause();
+			if (hasWon) {
+				minigameWon(2);
+			}
+			else {
+				minigameLost(2);
+			}
+		});
+
+		$("#tutButton").on("click", function () {
+			click.play();
+			$("#tutMessage").css("visibility", "visible");
+			$("#tutMessage").animate(
+			{
+				opacity: 1
+			}, 200);
+			$("#tutMessage div").animate(
+			{
+				top: 20
+			}, 200);
+		});
+
+		$("#tutOkButton").on("click", function () {
+			click.play();
+			$("#tutMessage").animate(
+			{
+				opacity: 0
+			}, 200);
+			$("#tutMessage div").animate(
+			{
+				top: 0
+			}, 200, function () {
+				$("#tutMessage").css("visibility", "hidden");
+			});
+		});
+
+		$("#goButton").on("click", function () {
+			click.play();
+			finishSound.play();
+			if (!gameFinished)
+			{
+				if (check(gameField)) {
+					$("#goMessage p").text("Du hast gewonnen!");
+					hasWon = true;
+					gameFinished = true;
+				}
+				else {
+					$("#goMessage p").text("Du hast verloren!");
+					hasWon = false;
+					gameFinished = true;
+				}
+			} else
+			{
+				if (hasWon) {
+					$("#goMessage p").text("Du hast schon gewonnen!");
+				}
+				else {
+					$("#goMessage p").text("Du hast leider schon verloren!");
+				}
+			}
+			$("#goMessage").css("visibility", "visible");
+			$("#goMessage").animate(
+			{
+				opacity: 1
+			}, 200);
+			$("#goMessage div").animate(
+			{
+				top: 20
+			}, 200);
+		});
+
+		$("#goNoButton").on("click", function () {
+			click.play();
+			$("#goMessage").animate(
+			{
+				opacity: 0
+			}, 200);
+			$("#goMessage div").animate(
+			{
+				top: 0
+			}, 200, function () {
+				$("#goMessage").css("visibility", "hidden");
+			});
+		});
+
+		$("#goYesButton").on("click", function () {
+			click.play();
+			backgroundMusic.pause();
+			if (hasWon) {
+				minigameWon(2);
+			}
+			else {
+				minigameLost(2);
+			}
+		});
+	}
 
 	/*
 	*   LOCAL FUNCTIONS
 	*/
 
-	var gameFieldConvertToBitmap = function(gameField)
+	var resize = function()
 	{
-		var orgImgSize = [200, 200];
-		var pipeSize = (window.innerHeight - 200) / gameField.length;
-		var x = (window.innerWidth / 2) - ((pipeSize * gameField.length) / 2);
-		var y = (window.innerHeight / 2) - ((pipeSize * gameField.length) / 2);
-		var bitmaps = new Array(gameField.length);
+		$("#canvas").attr({
+			width: window.innerWidth,
+			height: window.innerHeight
+		});
+
+		$("#gameField td").css({
+			width: parseInt(($("#minigame2").height() - 200) / gameField.length),
+			height: parseInt(($("#minigame2").height() - 200) / gameField.length)
+		});
+
+		$("#start").css({
+			width: parseInt(($("#minigame2").height() - 200) / gameField.length),
+			height: parseInt(($("#minigame2").height() - 200) / gameField.length)
+		});
+
+		$("#target").css({
+			width: parseInt(($("#minigame2").height() - 200) / gameField.length),
+			height: parseInt(($("#minigame2").height() - 200) / gameField.length)
+		});
+
+		$("#gameField tr").css({
+			height: parseInt(($("#minigame2").height() - 200) / gameField.length)
+		});
+
+		$("#gameField").css(
+		{
+			left: parseInt(($("#minigame2").height() - 200) / gameField.length)
+		});
+
+		$("#gameFieldAll").css(
+		{
+			width: parseInt(($("#minigame2").height() - 200) / gameField.length) * (gameField[0].length + 2),
+			height: parseInt(($("#minigame2").height() - 200) / gameField.length) * gameField.length,
+			top: $("#minigame2").height() / 2 - parseInt(($("#minigame2").height() - 200) / gameField.length) * gameField.length / 2,
+			left: $("#minigame2").width() / 2 - parseInt(($("#minigame2").height() - 200) / gameField.length) * (gameField[0].length + 2) / 2
+		});
+
+		$("#goButton").css("left", parseInt($("#minigame2").width() / 2 - $("#goButton").width() / 2));
+	}
+
+	var addGameFieldToTable = function(gameFieldLocal)
+	{
+		for (var i = 0; i < gameFieldLocal.length; i++)
+		{
+			var row = '<tr>';
+			for (var j = 0; j < gameFieldLocal[i].length; j++)
+				row = row + '<td><img style="transform: rotate(' + gameFieldLocal[i][j].getRotation() + 'deg);" src="' + gameFieldLocal[i][j].getImage() + '" alt="Ein Rohr" ></td>'
+			$("#gameField").append(row + '</tr>');
+		}
+
+		$("td").on("click", function()
+		{
+			click.play();
+			rotateSound[Math.floor(Math.random() * 3)].play();
+
+			// row = zeile
+			var row = $(this).closest('tr').index();
+			var col = $(this).closest('td').index();
+
+			gameField[row][col].turn();
+
+			$(this).children("img").not("#rotater").animate({ rotate: gameFieldLocal[row][col].getRotation() },{ duration: 200 }, 'linear');
+
+		});
+
+		$("#gameField td").on("mouseenter", function()
+		{
+			$(this).append('<img id="rotater" src="' + IMAGES.ROTATE + '" alt="Rotations anzeige Pfeil" >');
+			$(this).css("cursor", "pointer");
+
+		});
+
+		$("#gameField td").on("mouseleave", function()
+		{
+			$("#rotater").remove();
+			$(this).css("cursor", "");
+		});
+	}
+
+	var generateGameField = function(levels)
+	{
+		var index = Math.floor(Math.random() * levels.length);
+		var gameField = levels[index];
 
 		for (var i = 0; i < gameField.length; i++)
-		{
-			bitmaps[i] = new Array(gameField[i]);
 			for (var j = 0; j < gameField[i].length; j++)
-			{
-				var bitmap = new createjs.Bitmap(gameField[i][j].getImage());
-				bitmap.x = x + (j * pipeSize) + orgImgSize[0] / 2;
-				bitmap.y = y + (i * pipeSize) + orgImgSize[1] / 2;
-				bitmap.regX = orgImgSize[0] / 2;
-				bitmap.regY = orgImgSize[1] / 2;
-				bitmap.scaleX = pipeSize / orgImgSize[0];
-				bitmap.scaleY = pipeSize / orgImgSize[1];
-				bitmap.rotation = gameField[i][j].getRotation();
-				bitmap.pipe = gameField[i][j];
-				bitmaps[i][j] = bitmap;
-			}
-		}
-		return bitmaps;
-	}
-
-	var rotater = new createjs.Bitmap(IMAGES.ROTATE);
-	var setListenerToBitmap = function(bitmaps)
-	{
-		for (var i = 0; i < bitmaps.length; i++)
-			for (var j = 0; j < bitmaps[i].length; j++)
-			{
-				bitmaps[i][j].on("click", function()
+				switch (gameField[i][j])
 				{
-					this.pipe.turn();
-				});
-				bitmaps[i][j].on("mouseover", function()
-				{
-					this.alpha = 0.5;
-					rotater.x = this.x - 50;
-					rotater.y = this.y - 50;
-					rotater.scaleX = 0.1;
-					rotater.scaleY = 0.1;
-					stage.addChild(rotater);
-				});
-				bitmaps[i][j].on("mouseout", function(e)
-				{
-					this.alpha = 1;
-					stage.removeChild(rotater);
-				});
-			}
-	}
-
-	var addBitmapsToStage = function(stage, bitmaps)
-	{
-		for (var i = 0; i < bitmaps.length; i++)
-			for (var j = 0; j < bitmaps[i].length; j++)
-				stage.addChild(bitmaps[i][j]);
-	}
-
-	var removeBitmapsFromStage = function(stage, bitmaps)
-	{
-		for (var i = 0; i < bitmaps.length; i++)
-			for (var j = 0; j < bitmaps[i].length; j++)
-				stage.removeChild(bitmaps[i][j]);
-	}
-
-	var generateGameField = function(size)
-	{
-		// Baut das Array auf
-		var gameField = new Array(size[1]);
-		for (var i = 0; i < gameField.length; i++)
-		{
-			gameField[i] = new Array(size[0]);
-			for (var j = 0; j < gameField[i].length; j++)
-				if (parseInt(Math.random() * 2) === 0)
-					gameField[i][j] = new Pipe(PIPE_TYPES.CURVE, -1);
-				else
-					gameField[i][j] = new Pipe(PIPE_TYPES.STRAIGHT, -1);
-		}
-
-		if (DEBUG >= DEBUG_LEVEL.DEBUG)
-			console.log("Array aufgebaut");
-
-		// Zufälliger Weg
-		if (parseInt(Math.random() * 2) === 0)
-		{
-			gameField[0][size[0] - 1] = PIPES.RIGHTDOWN;
-			if (DEBUG >= DEBUG_LEVEL.VERBOSE)
-				console.log("RIGHTDOWN " + 0 + " " + (size[0] - 1));
-		} else
-		{
-			gameField[0][size[0] - 1] = PIPES.RIGHTLEFT;
-			if (DEBUG >= DEBUG_LEVEL.VERBOSE)
-				console.log("RIGHTLEFT " + 0 + " " + (size[0] - 1));
-		}
-
-		for (var i = 0, j = size[0] - 1; i < gameField.length - 1 || j > 0;)
-			switch (gameField[i][j])
-			{
-				case PIPES.UPDOWN:
-					if (i < gameField.length - 2)
-						if (parseInt(Math.random() * 2) === 0)
-							gameField[++i][j] = PIPES.UPDOWN;
-						else
-							gameField[++i][j] = PIPES.UPLEFT;
-					else
-						gameField[++i][j] = PIPES.UPLEFT;
-					if (DEBUG >= DEBUG_LEVEL.VERBOSE)
-						console.log("UPDOWN " + i + " " + j);
-					break;
-				case PIPES.UPLEFT:
-					if (j > 0)
-						if (parseInt(Math.random() * 2) === 0)
-							gameField[i][--j] = PIPES.RIGHTDOWN;
-						else
-							gameField[i][--j] = PIPES.RIGHTLEFT;
-					else
-						gameField[i][--j] = PIPES.RIGHTLEFT;
-					if (DEBUG >= DEBUG_LEVEL.VERBOSE)
-						console.log("UPLEFT " + i + " " + j);
-					break;
-				case PIPES.RIGHTDOWN:
-					if (i < gameField.length - 1)
-						if (parseInt(Math.random() * 2) === 0)
-							gameField[++i][j] = PIPES.UPDOWN;
-						else
-							gameField[++i][j] = PIPES.UPLEFT;
-					else
-					{
-						console.log("Vor: " + i);
-						gameField[++i][j] = PIPES.UPDOWN;
-						console.log("Nach: " + i);
-					}
-					if (DEBUG >= DEBUG_LEVEL.VERBOSE)
-						console.log("RIGHTDOWN " + i + " " + j);
-					break;
-				case PIPES.RIGHTLEFT:
-					if (j > 1)
-						if (parseInt(Math.random() * 2) === 0)
-							gameField[i][--j] = PIPES.RIGHTLEFT;
-						else
-							gameField[i][--j] = PIPES.RIGHTDOWN;
-					else
-						gameField[i][--j] = PIPES.RIGHTDOWN;
-					if (DEBUG >= DEBUG_LEVEL.VERBOSE)
-						console.log("RIGHTLEFT " + i + " " + j);
-					break;
-			}
-
-		if (DEBUG >= DEBUG_LEVEL.DEBUG)
-			console.log("Weg erzeugt");
+					case 0:
+						gameField[i][j] = new Pipe(PIPE_TYPES.STRAIGHT, 90);
+						break;
+					case 1:
+						gameField[i][j] = new Pipe(PIPE_TYPES.STRAIGHT, 180);
+						break;
+					case 2:
+						gameField[i][j] = new Pipe(PIPE_TYPES.CURVE, 360);
+						break;
+					case 3:
+						gameField[i][j] = new Pipe(PIPE_TYPES.CURVE, 270);
+						break;
+					case 4:
+						gameField[i][j] = new Pipe(PIPE_TYPES.CURVE, 180);
+						break;
+					case 5:
+						gameField[i][j] = new Pipe(PIPE_TYPES.CURVE, 90);
+						break;
+					case 6:
+						gameField[i][j] = new Pipe(PIPE_TYPES.STRAIGHT, -1);
+						break;
+					case 7:
+						gameField[i][j] = new Pipe(PIPE_TYPES.CURVE, -1);
+						break;
+				}
 
 		// Testausgabe row = zeile
-		if (DEBUG >= DEBUG_LEVEL.VERBOSE)
-		{
+		if (DEBUG >= DEBUG_LEVEL.DEBUG) {
 			console.log("Lösung");
-			gameField.forEach(function(row)
-			{
+			gameField.forEach(function (row) {
 				var s = '[';
-				row.forEach(function(col)
-				{
-					switch (col)
-					{
+				row.forEach(function (col) {
+					switch (col.getPipeType()) {
 						case PIPES.UPDOWN:
 							s = s + ' ' + "|";
 							break;
 						case PIPES.UPLEFT:
 							s = s + ' ' + "L";
 							break;
+						case PIPES.UPRIGHT:
+							s = s + ' ' + "R";
+							break;
 						case PIPES.RIGHTDOWN:
 							s = s + ' ' + "D";
 							break;
 						case PIPES.RIGHTLEFT:
 							s = s + ' ' + "-";
+							break;
+						case PIPES.RIGHTUP:
+							s = s + ' ' + "U";
 							break;
 						default:
 							s = s + ' ' + " ";
@@ -314,179 +894,14 @@
 	{
 		for (var i = 0; i < gameField.length; i++)
 			for (var j = 0; j < gameField[i].length; j++)
+			{
+				if (DEBUG >= DEBUG_LEVEL.VERBOSE)
+					console.log(i + " " + j + " " + gameField[i][j].isInCorrectPosition() + " " + gameField[i][j].getRotation());
 				if (!gameField[i][j].isInCorrectPosition())
 					return false;
+			}
 		return true;
 	}
-
-	var generateButton = function(text, name)
-	{
-		var messageButtonBackground = new createjs.Shape();
-		messageButtonBackground.graphics.beginFill("Red").drawRoundRect(0, 0, 100, 60, 10);
-
-		var messageButtonText = new createjs.Text(text, "bold 24px Arial", "#FFFFFF");
-		messageButtonText.textAlign = "center";
-		messageButtonText.textBaseline = "middle";
-		messageButtonText.x = 100 / 2;
-		messageButtonText.y = 60 / 2;
-
-		var messageButtonContainer = new createjs.Container();
-		messageButtonContainer.name = name;
-		messageButtonContainer.addChild(messageButtonBackground, messageButtonText);
-
-		return messageButtonContainer;
-	}
-
-	var popupMessage = function(text)
-	{
-		var messageBackground = new createjs.Shape();
-		messageBackground.graphics.beginFill("Blue").drawRoundRect(0, 0, 250, 400, 10);
-
-		var messageText = new createjs.Text(text, "bold 24px Arial", "#FFFFFF");
-		messageText.textAlign = "center";
-		messageText.textBaseline = "middle";
-		messageText.x = 250 / 2;
-		messageText.y = 200;
-
-		var messageContainer = new createjs.Container();
-		messageContainer.x = window.innerWidth / 2 - 250 / 2;
-		messageContainer.y = window.innerHeight / 2 - 400 / 2;
-
-		var messageButtonContainer = generateButton("O.K.", "button");
-		messageButtonContainer.x = 250 / 2 - 100 / 2;
-		messageButtonContainer.y = 400 - 100;
-
-		messageContainer.addChild(messageBackground, messageText, messageButtonContainer);
-
-		return messageContainer;
-	}
-
-	var questionMessage = function(text)
-	{
-		var messageBackground = new createjs.Shape();
-		messageBackground.graphics.beginFill("Blue").drawRoundRect(0, 0, 250, 400, 10);
-
-		var messageText = new createjs.Text(text, "bold 24px Arial", "#FFFFFF");
-		messageText.textAlign = "center";
-		messageText.textBaseline = "middle";
-		messageText.x = 250 / 2;
-		messageText.y = 200;
-
-		var messageContainer = new createjs.Container();
-		messageContainer.x = window.innerWidth / 2 - 250 / 2;
-		messageContainer.y = window.innerHeight / 2 - 400 / 2;
-
-		var yesButtonContainer = generateButton("Ja", "yes");
-		yesButtonContainer.x = 250 / 2 - 100 / 2;
-		yesButtonContainer.y = 400 - 200;
-
-		var noButtonContainer = generateButton("Nein", "no");
-		noButtonContainer.x = 250 / 2 - 100 / 2;
-		noButtonContainer.y = 400 - 100;
-
-		messageContainer.addChild(messageBackground, messageText, yesButtonContainer, noButtonContainer);
-
-		return messageContainer;
-	}
-
-	var addGameCourseToButton = function (button)
-	{
-		button.on("click", function () {
-			if (check(gameField)) {
-				winCounter++;
-
-				// Points
-				switch (currentDifficulty) {
-					case DIFFICULTIES.EASY:
-						points += 1;
-						break;
-					case DIFFICULTIES.MEDIUM:
-						points += 2;
-						break;
-					case DIFFICULTIES.HARD:
-						points += 3;
-						break;
-				}
-
-				// Schwirigkeit wählen
-				if (winCounter === 3) {
-					winCounter = 0;
-					switch (currentDifficulty) {
-						case DIFFICULTIES.EASY:
-							currentDifficulty = DIFFICULTIES.MEDIUM;
-							break;
-						case DIFFICULTIES.MEDIUM:
-							currentDifficulty = DIFFICULTIES.HARD;
-							break;
-						case DIFFICULTIES.HARD:
-							gameFinished = true;
-							break;
-					}
-				}
-
-				if (DEBUG >= DEBUG_LEVEL.DEBUG)
-					console.log("Level: " + currentDifficulty + " Counter: " + winCounter);
-
-				// Spiel zuende oder nicht
-				if (winCounter === 3 && currentDifficulty === DIFFICULTIES.HARD || gameFinished) {
-					// Popup Nachricht
-					var message = popupMessage("Richtig\nDu hast " + points + " Punkte gewonnen.");
-					stage.addChild(message);
-
-					message.getChildByName("button").on("click", function () {
-						resetMinigame();
-						minigameWon(2);
-						stage.removeChild(message);
-					});
-				} else {
-					// Popup Nachricht
-					var message = popupMessage("Gewonnen");
-					stage.addChild(message);
-
-					// Nach klick neuer level starten
-					message.getChildByName("button").on("click", function () {
-						// Pipes entfernen
-						removeBitmapsFromStage(stage, bitmaps);
-
-						// Neue daten Generieren
-						gameField = generateGameField(currentDifficulty);
-						bitmaps = gameFieldConvertToBitmap(gameField);
-
-						// Daten hinzufügen
-						setListenerToBitmap(bitmaps);
-						addBitmapsToStage(stage, bitmaps);
-						stage.removeChild(message);
-					});
-				}
-			} else {
-				gameFinished = true;
-				var message = questionMessage("Falsch\nDu hast " + points + " Punkte gewonnen.\nLevel trozdem nochmal versuchen?");
-				stage.addChild(message);
-				message.getChildByName("yes").on("click", function () {
-					stage.removeChild(message);
-				});
-				message.getChildByName("no").on("click", function () {
-					resetMinigame();
-					minigameLost(2);
-					stage.removeChild(message);
-				});
-			}
-		});
-	}
-
-	/*
-	*   VAR
-	*/
-
-	var currentDifficulty = DIFFICULTIES.TUT;
-
-	var gameField = generateGameField(currentDifficulty);
-	var bitmaps = gameFieldConvertToBitmap(gameField);
-
-	// Für den spielablauf
-	var winCounter = 0;
-	var gameFinished = false;
-	var points = 0;
 
 	/*
 	*   INIT
@@ -494,135 +909,6 @@
 
 	$(function()
 	{
-
-
-		$("#winMinigameButton").click(function () {
-			minigameWon(2);
-		});
-		$("#loseMinigameButton").click(function () {
-			minigameLost(2);
-		});
-
-
-		var loadQueue = new createjs.LoadQueue(true);
-		loadQueue.loadFile(IMAGES.STRAIGHT);
-		loadQueue.loadFile(IMAGES.CURVE);
-		loadQueue.loadFile(IMAGES.ROTATE);
-
-		// Correct size
-		var canvas = document.getElementById("canvas");
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
-		// Handle window resize
-		$(window).on("resize", function()
-		{
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerHeight;
-			if (DEBUG >= DEBUG_LEVEL.VERBOSE)
-				console.log("Window resized to: " + window.innerWidth + " x " + window.innerHeight);
-		});
-
-		// Ladeanzeige
-		var loadBar = new createjs.Shape();
-		loadBar.graphics.beginFill("Grey").drawRect(250, 250, 0, 20);
-		stage.addChild(loadBar);
-
-		loadQueue.on("progress", function(e)
-		{
-			loadBar.graphics.beginFill("Grey").drawRect(250, 250, e.progress * 200, 20);
-			if (e.progress === 1)
-				stage.removeChild(loadBar);
-		});
-
-		// Starte die Animation
-		loadQueue.on("complete", function()
-		{
-			createjs.Ticker.addEventListener("tick", tick);
-			createjs.Ticker.setFPS(40);
-
-			setListenerToBitmap(bitmaps);
-			addBitmapsToStage(stage, bitmaps);
-		});
-
-		// Ladevorgang starten
-		loadQueue.load();
-
-		// Generate animated Background objects
-		for (var i = 0; i < 10; i++)
-		{
-			var background = new createjs.Shape();
-			background.graphics.beginFill("Grey").drawPolyStar(parseInt(300 - Math.random() * (window.innerWidth + 300)) + 300, parseInt(300 - Math.random() * (window.innerHeight + 300)) + 300, 600, 5, 0.2, parseInt(Math.random() * 360));
-			background.alpha = Math.random();
-			background.x = background.x + 600 / 2;
-			background.y = background.y + 600 / 2;
-			background.regX = 600 / 2;
-			background.regY = 600 / 2;
-			createjs.Tween.get(background, { loop: true })
-				.to({ rotation: 360 }, parseInt(Math.random() * 20000) + 40000);
-			stage.addChild(background);
-		}
-
-		// Generate animated Water objects
-		var water = new Array(100);
-		for (var i = 0; i < water.length; i++)
-		{
-			water[i] = new createjs.Shape();
-			// drawPolyStar ( x  y  radius  sides  pointSize  angle )
-			water[i].graphics.beginFill("DeepSkyBlue").drawPolyStar((window.innerWidth - parseInt(Math.random() * 150)), parseInt(Math.random() * window.innerHeight), 8, 5, 0.2, parseInt(Math.random() * 360));
-			createjs.Tween.get(water[i], { loop: true })
-				.to({ y: 500 }, parseInt(Math.random() * 100) + 1500);
-			stage.addChild(water[i]);
-		}
-
-		// Add buttons
-		var goButton = generateButton("Wasser marsch!", "goButton");
-		goButton.x = window.innerWidth / 2 - 250 / 2;
-		goButton.y = window.innerHeight - 60 * 1.5;
-		stage.addChild(goButton);
-
-		var exitButton = generateButton("Exit", "exitButton");
-		exitButton.x = window.innerWidth - 120;
-		exitButton.y = 20;
-		stage.addChild(exitButton);
-
-		// Exit action
-		exitButton.on("click", function () {
-			exitMinigame();
-		});
-
-		var tutButton = generateButton("Anleitung", "tutButton");
-		tutButton.x = 20;
-		tutButton.y = 20;
-		stage.addChild(tutButton);
-
-		// Tut Action
-		tutButton.on("click", function()
-		{
-			var message = popupMessage("Drehe die Rohre mit einem Klick um eine Verbindung zwischen dem Wasserfall und dem Dorf der Wazels zu bauen.");
-			stage.addChild(message);
-			message.getChildByName("button").on("click", function()
-			{
-				stage.removeChild(message);
-			});
-		});
-
-		// Add game course to button
-		addGameCourseToButton(goButton);
-
-		// Animation
-		function tick()
-		{
-			// Pipe Animation
-			for (var i = 0; i < bitmaps.length; i++)
-				for (var j = 0; j < bitmaps[i].length; j++)
-					if (bitmaps[i][j].pipe.getRotation() !== bitmaps[i][j].rotation)
-					{
-						bitmaps[i][j].rotation = bitmaps[i][j].rotation + 10;
-						if (bitmaps[i][j].rotation === 360)
-							bitmaps[i][j].rotation = 0;
-					}
-			// Update Stage
-			stage.update();
-		}
+		minigame2Start(1);
 	});
 </script>
