@@ -6,6 +6,10 @@
 		height: 100%;
 	}
 
+	#minigame2 p{
+		margin-bottom: 50px;
+	}
+
 	/* testen 880 x 520 */
 
 	#minigame2 #gameFieldAll{
@@ -555,14 +559,12 @@
 			rotateSound[1] = new Audio(AUDIOFILES.ROTATE2);
 			rotateSound[2] = new Audio(AUDIOFILES.ROTATE3);
 
-			/*
 			backgroundMusic.volume = getVolume() / 100;
 			click.volume = getVolume() / 100;
 			backgroundMusic.volume = getVolume() / 100;
 			rotateSound[0].volume = getVolume() / 100;
 			rotateSound[1].volume = getVolume() / 100;
 			rotateSound[2].volume = getVolume() / 100;
-			*/
 		});
 
 		// Ladevorgang starten
@@ -637,6 +639,16 @@
 		$("#exitYesButton").on("click", function () {
 			click.play();
 			backgroundMusic.pause();
+			$("#exitMessage").animate(
+			{
+				opacity: 0
+			}, 200);
+			$("#exitMessage div").animate(
+			{
+				top: 0
+			}, 200, function () {
+				$("#exitMessage").css("visibility", "hidden");
+			});
 			if (hasWon) {
 				minigameWon(2);
 			}
@@ -730,6 +742,16 @@
 			else {
 				minigameLost(2);
 			}
+			$("#goMessage").animate(
+			{
+				opacity: 0
+			}, 200);
+			$("#goMessage div").animate(
+			{
+				top: 0
+			}, 200, function () {
+				$("#goMessage").css("visibility", "hidden");
+			});
 		});
 	}
 
