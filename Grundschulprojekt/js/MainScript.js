@@ -857,6 +857,7 @@ function onDocumentMouseClick( event )
 
 }
 var minigamesVis = true;
+var decorationVis = true;
 function onkeydown( event )
 {
     if(event.key == "r")
@@ -879,6 +880,25 @@ function onkeydown( event )
         else
         {
             directionalLight.castShadow = true;
+        }
+    }
+    else if ( event.key == "g" )
+    {
+        if ( decorationVis )
+        {
+            for ( var i = 0; i < differentSpriteCount; i++ )
+            {
+                decorationSpriteMeshes[i].visible = false;
+            }
+            decorationVis = false;
+        }
+        else
+        {
+            for ( var i = 0; i < differentSpriteCount; i++ )
+            {
+                decorationSpriteMeshes[i].visible = true;
+            }
+            decorationVis = true;
         }
     }
     else if ( event.key == "w" )
