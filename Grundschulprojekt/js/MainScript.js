@@ -395,8 +395,8 @@ function initMinigameNodes()
     loadNodeSegment( loader, 'Models/rock.obj',                minigame_water_geom );
     loadNodeSegment( loader, 'Models/rock_outline.obj',        minigame_water_outline_geom );
     //  3. palm
-    loadNodeSegment( loader, 'Models/palm_trunk.obj',          minigame_palm_geom );
-    loadNodeSegment( loader, 'Models/palm_trunk_outline.obj',  minigame_palm_outline_geom );
+    loadNodeSegment( loader, 'Models/palm_trunk_low.obj',          minigame_palm_geom );
+    loadNodeSegment( loader, 'Models/palm_trunk_outline_low.obj',  minigame_palm_outline_geom );
     loadNodeSegment( loader, 'Models/palm_leaves_low.obj',         minigame_palm_leaves_geom );
     //loadNodeSegment( loader, 'Models/palm_leaves_outline_low.obj', minigame_palm_leaves_outline_geom );
 }
