@@ -10,12 +10,12 @@ const BEACH_HEIGHT      = 3.25;
 const BEACH_SLOPE       = 0.75;
 const GRASS_HEIGHT      = 150;
 const GRASS_SLOPE       = 0.65;
-const TREE_HEIGHT       = 5;
+const TREE_HEIGHT       = 4;
 const TREE_SLOPE        = 1;
 const SNOW_HEIGHT       = 750;
 
 //  Chance of a fitting vertex being changed to a tree, in percent
-const TREE_DENSITY      = 50;
+const TREE_DENSITY      = 35;
 const TREE_HEIGHT_MIN   = 2;
 const TREE_HEIGHT_MAX   = 4;
 

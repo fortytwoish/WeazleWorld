@@ -48,6 +48,8 @@
     renderer.setPixelRatio( window.devicePixelRatio / subsampleFactor );
 }
 
+const global_fog_scale = 0.9;
+
 function setQuality_TerrainResDependant( terrainRes )
 {
     TERRAIN_RESOLUTION = terrainRes;
@@ -64,33 +66,33 @@ function setQuality_TerrainResDependant( terrainRes )
     camera.far = Math.pow( 2, terrainRes + 1 );
     camera.updateProjectionMatrix();
 
-	controls.maxDistance = Math.pow(2, terrainRes + 1);
+	controls.maxDistance = Math.pow(2, terrainRes - 1);
 	controls.update();
 
     switch ( terrainRes )
     {
         case 7:
-            scene.fog.density = 0.003;
+            scene.fog.density = 0.003 * global_fog_scale;
 		    TERRAIN_OFFSET = 50;
             break;
         case 8:
-            scene.fog.density = 0.002;
+            scene.fog.density = 0.002 * global_fog_scale;
 			TERRAIN_OFFSET = 100;
             break;
         case 9:
-            scene.fog.density = 0.001;
+            scene.fog.density = 0.001 * global_fog_scale;
 			TERRAIN_OFFSET = 200;
             break;
         case 10:
-            scene.fog.density = 0.0008;
+            scene.fog.density = 0.0008 * global_fog_scale;
             TERRAIN_OFFSET = 400;
             break;
         case 11:
-            scene.fog.density = 0.0005;
+            scene.fog.density = 0.0005 * global_fog_scale;
             TERRAIN_OFFSET = 800;
             break;
         case 12:
-            scene.fog.density = 0.0002;
+            scene.fog.density = 0.0002 * global_fog_scale;
             TERRAIN_OFFSET = 1200;
             break;
     }

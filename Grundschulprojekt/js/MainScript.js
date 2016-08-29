@@ -24,6 +24,7 @@ const STATUE_WOOD_MAT    = new THREE.MeshPhongMaterial( { color: 0x7F6343, shini
 const STATUE_BRONZE_MAT  = new THREE.MeshPhongMaterial( { color: 0x70431C, shininess: 150, specular: 0x70431C, side: THREE.DoubleSide } );
 const STATUE_SILVER_MAT  = new THREE.MeshPhongMaterial( { color: 0x999999, shininess: 250, specular: 0x999999, side: THREE.DoubleSide } );
 const STATUE_GOLD_MAT    = new THREE.MeshPhongMaterial( { color: 0x9A7D31, shininess: 350, specular: 0x9A7D31, side: THREE.DoubleSide } );
+const WEAZLE_AMOUNT      = 8;
 
 
 //  LOCALS
@@ -91,7 +92,7 @@ function init()
 
     controls.enableDamping   = false; //TODO: Enable this for touchscreens
 
-    controls.enablePan       = true;
+    controls.enablePan       = false;
 
     controls.rotateSpeed     = 1;
     controls.autoRotateSpeed = 1;
@@ -108,7 +109,7 @@ function init()
 
     initIslandDecoration();
 
-    //initWeazles();
+    initWeazles();
 
     initStatueSegments();
 
@@ -302,6 +303,15 @@ function initWeazles()
     Weazle_init();
 
     weazles = [];
+}
+
+function onWeazleLoadingFinished()
+{
+    for ( var i = 0; i < WEAZLE_AMOUNT; i++ )
+    {
+        weazles[i] = new Weazle();
+        scene.add( weazles[i].mesh );
+    }
 }
 
 function initStatueSegments()
@@ -594,15 +604,6 @@ function isAnyCoordinateCloserThan2D( coordinates, xCoord, zCoord, distance )
     return false;
 }
 
-function onWeazleLoadingFinished()
-{
-    for ( var i = 0; i < 10; i++ )
-    {
-        weazles[i] = new Weazle();
-        scene.add( weazles[i].mesh );
-    }
-}
-
 function initLighting()
 {
     directionalLight = new THREE.DirectionalLight( LIGHTCOL, LIGHTSTR );
@@ -645,6 +646,11 @@ function animate()
     stats.begin();
 
     deltaTime = clock.getDelta();
+    for ( var i = 0; i < weazles.length; i++ )
+    {
+        weazles[i].update( deltaTime );
+    }
+
 
     var camFieldX = Math.round( middle.x + camera.position.z );
     var camFieldY = Math.round( middle.y + camera.position.x );

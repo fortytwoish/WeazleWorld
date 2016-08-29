@@ -113,9 +113,11 @@
     <Content Include="js\script.splashScreen.js" />
     <Content Include="js\Weazle.js" />
     <Content Include="img\palm_bark.png" />
+    <Content Include="Models\otter.js" />
     <Content Include="obj\Debug\Grundschulprojekt.dll" />
     <Content Include="obj\Debug\Grundschulprojekt.pdb" />
     <Content Include="obj\Debug\WeazleWorld.csproj.FileListAbsolute.txt" />
+    <Content Include="Resources\Animation\JDLoader.min.js" />
     <Content Include="Resources\easeljs-0.8.2.min.js" />
     <Content Include="Resources\OBJLoader.js" />
     <Content Include="Resources\preloadjs-0.6.2.min.js" />
@@ -129,9 +131,6 @@
     <Content Include="spielstart.html" />
     <Content Include="Web.config" />
     <Content Include="Models\bird.obj">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Models\Otter.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="img\waterGame\Pipe.psd" />
