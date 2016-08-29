@@ -1,27 +1,29 @@
 ﻿<h1>minigame1</h1>
-<button id="exitMinigameButton" style="margin:auto">Exit</button>
-<button id="winMinigameButton"  style="margin:auto">Win</button>
-<button id="loseMinigameButton" style="margin:auto">Lose</button>
+<button id="exitMinigameButton" style="margin: auto">Exit</button>
+<button id="winMinigameButton" style="margin: auto">Win</button>
+<button id="loseMinigameButton" style="margin: auto">Lose</button>
 <script>
-        $(function () {
-            $("#exitMinigameButton").click(function () {
-                resetMinigame();
-                exitMinigame( );
-            } );
-            $( "#winMinigameButton" ).click( function ()
-            {
-                resetMinigame();
-                minigameWon( 1 );
-            } );
-            $( "#loseMinigameButton" ).click( function ()
-            {
-                resetMinigame();
-                minigameLost( 1 );
-            } );
+	$(function()
+	{
+		$("#exitMinigameButton").on("click touchstart", function()
+		{
+			resetMinigame();
+			exitMinigame();
+		});
+		$("#winMinigameButton").on("click touchstart", function()
+		{
+			resetMinigame();
+			minigameWon(1);
+		});
+		$("#loseMinigameButton").on("click touchstart", function()
+		{
+			resetMinigame();
+			minigameLost(1);
+		});
 
-            function resetMinigame()
-            {
-                //TODO
-            }
-        });
+		function resetMinigame()
+		{
+			//TODO
+		}
+	});
 </script>

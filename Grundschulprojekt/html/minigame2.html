@@ -270,19 +270,19 @@
 		RIGHTUP: 5
 	};
 	var IMAGES = {
-		STRAIGHT: "/img/waterGame/STRAIGHT.png",
-		CURVE: "/img/waterGame/CURVE.png",
-		START: "/img/waterGame/start.png",
-		TARGET: "/img/waterGame/target.png",
-		ROTATE: "/img/waterGame/rotate.gif"
+		STRAIGHT: "img/waterGame/STRAIGHT.png",
+		CURVE: "img/waterGame/CURVE.png",
+		START: "img/waterGame/start.png",
+		TARGET: "img/waterGame/target.png",
+		ROTATE: "img/waterGame/rotate.gif"
 	};
 	var AUDIOFILES = {
-		BACKGROUND: "/audio/waterGame/background.mp3",
-		CLICK: "/audio/waterGame/click.mp3",
-		FINISH: "/audio/waterGame/finish.mp3",
-		ROTATE1: "/audio/waterGame/rotate1.wav",
-		ROTATE2: "/audio/waterGame/rotate2.mp3",
-		ROTATE3: "/audio/waterGame/rotate3.mp3"
+		BACKGROUND: "audio/waterGame/background.mp3",
+		CLICK: "audio/waterGame/click.mp3",
+		FINISH: "audio/waterGame/finish.mp3",
+		ROTATE1: "audio/waterGame/rotate1.wav",
+		ROTATE2: "audio/waterGame/rotate2.mp3",
+		ROTATE3: "audio/waterGame/rotate3.mp3"
 	};
 	var DEBUG = DEBUG_LEVEL.VERBOSE;
 	var LEVEL = LEVELS.TUT;
@@ -493,6 +493,11 @@
 		{
 			case 0:
 				LEVEL = LEVELS.TUT;
+				$("#tutMessage").css(
+				{
+					visibility: "visible",
+					opacity: 1
+				});
 				break;
 			case 1:
 				LEVEL = LEVELS.EASY;
@@ -559,12 +564,31 @@
 			rotateSound[1] = new Audio(AUDIOFILES.ROTATE2);
 			rotateSound[2] = new Audio(AUDIOFILES.ROTATE3);
 
-			backgroundMusic.volume = getVolume() / 100;
-			click.volume = getVolume() / 100;
-			backgroundMusic.volume = getVolume() / 100;
-			rotateSound[0].volume = getVolume() / 100;
-			rotateSound[1].volume = getVolume() / 100;
-			rotateSound[2].volume = getVolume() / 100;
+			var mute = function ()
+			{
+				this.muted = true;
+			}
+
+			var volume = function()
+			{
+				this.volume = getVolume() / 100;
+			}
+
+			click.onloadeddata = volume;
+			finishSound.onloadeddata = volume;
+			backgroundMusic.onloadeddata = volume;
+			rotateSound[0].onloadeddata = volume;
+			rotateSound[1].onloadeddata = volume;
+			rotateSound[2].onloadeddata = volume;
+
+			/*
+			click.onloadeddata = mute;
+			finishSound.onloadeddata = mute;
+			backgroundMusic.onloadeddata = mute;
+			rotateSound[0].onloadeddata = mute;
+			rotateSound[1].onloadeddata = mute;
+			rotateSound[2].onloadeddata = mute;
+			*/
 		});
 
 		// Ladevorgang starten
@@ -931,6 +955,6 @@
 
 	$(function()
 	{
-		minigame2Start(1);
+		minigame2Start(0);
 	});
 </script>

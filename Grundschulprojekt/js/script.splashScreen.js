@@ -7,7 +7,7 @@ $(function () {
     $(menu).hide();
     $(appendToo + " *").remove();
     $(appendToo).append('<img src="' + logo + '" alt="Das Logo">');
-    $(appendToo).append('<h1>Press Key or Mouse</h1>');
+    $(appendToo).append('<h1>Start</h1>');
 
     resizeSplashScreen();
 

@@ -28,7 +28,7 @@ var MenuEntry = function(id, html, init) {
 var mainMenuEntries = new Array();
 mainMenuEntries.push(new MenuEntry("menuNewGame", '<input type="button" value="Neues Spiel">', function ()
 {
-	$("#" + this.id).on("click", function ()
+	$("#" + this.id).on("click touchstart", function ()
 	{
 		continueMainGame();
 	});
@@ -37,7 +37,7 @@ mainMenuEntries.push(new MenuEntry("menuContinue", '<input type="button" value="
 	$("#" + this.id).attr("disabled", true);
 }));
 mainMenuEntries.push(new MenuEntry("menuOptions", '<input type="button" value="Optionen">', function () {
-	$("#" + this.id).on("click", function () {
+	$("#" + this.id).on("click touchstart", function () {
 		drawMenu(optionMenu);
 	});
 }));
@@ -61,7 +61,7 @@ optionEntries.push(new MenuEntry("menuCredits", '<input type="button" value="Cre
 
 }));
 optionEntries.push(new MenuEntry("menuBack", '<input type="button" value="Zurück">', function () {
-	$("#" + this.id).on("click", function () {
+	$("#" + this.id).on("click touchstart", function () {
 		drawMenu(mainMenu);
 	});
 }));
