@@ -33,6 +33,63 @@ function midpoint( pointA, pointB, pointC, pointD )
     return new Point(( ( pointA.x + pointB.x + pointC.x + pointD.x ) / 4 ), ( ( pointA.y + pointB.y + pointC.y + pointD.y ) / 4 ) );
 }
 
+function intersectsLine (top, left, width, height, p1, p2) {
+    var minX = p1.x;
+    var maxX = p2.x;
+
+    if (p1.x > p2.x)
+    {
+        minX = p2.x;
+        maxX = p1.x;
+    }
+
+    if (maxX > left + width)
+        maxX = left + width;
+
+    if (minX < left)
+        minX = left;
+
+    if (minX > maxX)
+        return false;
+
+    var minY = p1.y;
+    var maxY = p2.y;
+
+    var dx = p2.x - p1.x;
+
+    if (Math.abs(dx) > 0.0000001)
+    {
+        var a = (p2.y - p1.y) / dx;
+        var b = p1.y - a * p1.x;
+        minY = a * minX + b;
+        maxY = a * maxX + b;
+    }
+
+    if (minY > maxY)
+    {
+        var tmp = maxY;
+        maxY = minY;
+        minY = tmp;
+    }
+
+    if (maxY > top + height)
+    {
+        maxY = top + height;
+    }
+
+    if (minY < top)
+    {
+        minY = top;
+    }
+
+    if (minY > maxY)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 /*  VECTOR 3D ARITHMETICS */
 
 function dotProduct( vector3D_A, vector3D_B )

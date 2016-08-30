@@ -12,7 +12,22 @@ function Weazle_init()
                 weazleMat = data.materials[0];
 
                 onWeazleLoadingFinished();
-            } );
+            });
+
+    var boxes = [new THREE.Mesh(new THREE.CubeGeometry(1, 1, 1, 1), new THREE.MeshPhongMaterial({ color: 0xFF0000 })),
+                        new THREE.Mesh(new THREE.CubeGeometry(1, 1, 1, 1), new THREE.MeshPhongMaterial({ color: 0xFF0000 })),
+                        new THREE.Mesh(new THREE.CubeGeometry(1, 1, 1, 1), new THREE.MeshPhongMaterial({ color: 0xFF0000 })),
+                        new THREE.Mesh(new THREE.CubeGeometry(1, 1, 1, 1), new THREE.MeshPhongMaterial({ color: 0xFF0000 })), ];
+
+    boxes[0].position.set(-dist, VILLAGE_DIMENSIONS.z, -dist);
+    boxes[1].position.set(dist, VILLAGE_DIMENSIONS.z, -dist);
+    boxes[2].position.set(-dist, VILLAGE_DIMENSIONS.z, dist);
+    boxes[3].position.set(dist, VILLAGE_DIMENSIONS.z, dist);
+
+    scene.add(boxes[0]);
+    scene.add(boxes[1]);
+    scene.add(boxes[2]);
+    scene.add(boxes[3]);
 }
 
 var states = {
@@ -22,7 +37,13 @@ var states = {
     BUILD:      4
 }
 
+const dist = 4;
+
+const islandRadius = 21;
+
 const idleToWalkChance = 0.01;
+
+const speed = 2.5;
 
 class Weazle
 {
@@ -63,7 +84,7 @@ class Weazle
                 case states.WALK:
 
                     this.walkTowards( targetCoords, deltaTime );
-                    if ( distanceBelowThreshold( this.mesh.position, targetCoords, 5 ) )
+                    if (distanceBelowThreshold(this.mesh.position, targetCoords, 5))
                     {
                         //  TODO: Blend to idle animation
                         mixer.clipAction( weazleGeom.animations[0] ).stop();
@@ -108,22 +129,26 @@ class Weazle
         this.walkTowards = function ( coordinates, deltaTime )
         {
             this.mesh.lookAt( targetCoords );
-            this.mesh.translateZ( deltaTime * 2.5 );
+            this.mesh.translateZ( deltaTime * speed );
         }
 
         this.setRandomCoords = function()
         {
-            var angle = Math.random() * Math.PI * 2;
-            targetCoords.x = Math.random() * Math.cos( angle ) * 20;
-            targetCoords.z = Math.random() * Math.sin( angle ) * 20;
+            do {
+                var angle      = Math.random() * Math.PI * 2;
+                targetCoords.x = Math.random() * Math.cos(angle) * islandRadius;
+                targetCoords.z = Math.random() * Math.sin(angle) * islandRadius;
+            }
+            while ( intersectsLine( -dist, -dist, dist * 2, dist * 2, new Point(this.mesh.position.x, this.mesh.position.z), new Point(targetCoords.x, targetCoords.z)));
         }
 
         //  Mesh
         var weazlemesh        = new THREE.SkinnedMesh( weazleGeom, weazleMat );
         weazlemesh.castShadow = true;
-        weazlemesh.position.x = 0;
+        var angle             = Math.random() * Math.PI * 2;
+        weazlemesh.position.x = Math.cos(angle) * islandRadius;
         weazlemesh.position.y = VILLAGE_DIMENSIONS.z;
-        weazlemesh.position.z = 0;
+        weazlemesh.position.z = Math.sin(angle) * islandRadius;
         weazlemesh.scale.set( 0.075, 0.075, 0.075 );
 
         //weazlemesh.material = new THREE.MeshPhongMaterial();

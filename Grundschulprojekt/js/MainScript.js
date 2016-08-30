@@ -804,13 +804,11 @@ var mouse     = new THREE.Vector2();
 
 function onDocumentTouchStart( event )
 {
-
     event.preventDefault();
 
     event.clientX = event.touches[0].clientX;
     event.clientY = event.touches[0].clientY;
     onDocumentMouseClick( event );
-
 }
 
 function onDocumentMouseClick( event )
