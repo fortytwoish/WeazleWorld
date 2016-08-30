@@ -14,20 +14,6 @@ function Weazle_init()
                 onWeazleLoadingFinished();
             });
 
-    var boxes = [new THREE.Mesh(new THREE.CubeGeometry(1, 1, 1, 1), new THREE.MeshPhongMaterial({ color: 0xFF0000 })),
-                        new THREE.Mesh(new THREE.CubeGeometry(1, 1, 1, 1), new THREE.MeshPhongMaterial({ color: 0xFF0000 })),
-                        new THREE.Mesh(new THREE.CubeGeometry(1, 1, 1, 1), new THREE.MeshPhongMaterial({ color: 0xFF0000 })),
-                        new THREE.Mesh(new THREE.CubeGeometry(1, 1, 1, 1), new THREE.MeshPhongMaterial({ color: 0xFF0000 })), ];
-
-    boxes[0].position.set(-dist, VILLAGE_DIMENSIONS.z, -dist);
-    boxes[1].position.set(dist, VILLAGE_DIMENSIONS.z, -dist);
-    boxes[2].position.set(-dist, VILLAGE_DIMENSIONS.z, dist);
-    boxes[3].position.set(dist, VILLAGE_DIMENSIONS.z, dist);
-
-    scene.add(boxes[0]);
-    scene.add(boxes[1]);
-    scene.add(boxes[2]);
-    scene.add(boxes[3]);
 }
 
 var states = {
@@ -37,13 +23,13 @@ var states = {
     BUILD:      4
 }
 
-const dist = 4;
+const STATUE_DIST = 4;
 
 const islandRadius = 21;
 
-const idleToWalkChance = 0.01;
+const idleToWalkChance = 0.005;
 
-const speed = 2.5;
+const startSpd = 2.5;
 
 class Weazle
 {
@@ -52,6 +38,8 @@ class Weazle
 
         var targetCoords = new THREE.Vector3;
         targetCoords.y   = VILLAGE_DIMENSIONS.z;
+
+        this.speed = startSpd;
 
         //===========================//
         //      STATE MACHINE        //
@@ -69,12 +57,7 @@ class Weazle
 
                     if ( Math.random() <= idleToWalkChance )
                     {
-                        //  TODO: Blend to walking animation
-                        mixer.clipAction( weazleGeom.animations[0] ).play();
-
-                        this.setRandomCoords();
-                        this.mesh.lookAt( targetCoords );
-                        this.state = states.WALK;
+                        this.startWalking();
                     }
                     break;
 
@@ -100,8 +83,9 @@ class Weazle
                 case states.BUILD_INIT:
 
                     this.walkTowards( targetCoords, deltaTime );
-                    if ( false /*finished*/)
+                    if ( distanceSquared(new Point(this.mesh.position.x, this.mesh.position.z), new Point(0,0)) < (STATUE_DIST * STATUE_DIST * STATUE_DIST) )
                     {
+                        console.log("Distance reached");
                         //  TODO: Blend to building animation
                         mixer.clipAction( weazleGeom.animations[0] ).stop();
                         //  TODO: Make hammer visible
@@ -118,51 +102,72 @@ class Weazle
                     if ( false /*finished*/ )
                     {
                         //  TODO: Blend to idle animation
-                        mixer.clipAction( weazleGeom.animations[0] ).pause();
+                        //mixer.clipAction( weazleGeom.animations[0] ).pause();
 
-                        this.state = states.IDLE;
+                        // state transisition happens from outside
+                        //this.state = states.IDLE;
                     }
                     break;
             }
         }
 
-        this.walkTowards = function ( coordinates, deltaTime )
+        this.walkTowards     = function ( coordinates, deltaTime )
         {
             this.mesh.lookAt( targetCoords );
-            this.mesh.translateZ( deltaTime * speed );
+            this.mesh.translateZ( deltaTime * this.speed );
         }
 
         this.setRandomCoords = function()
         {
             do {
-                var angle      = Math.random() * Math.PI * 2;
+                var angle      = Math.random() * Math.PI         * 2;
                 targetCoords.x = Math.random() * Math.cos(angle) * islandRadius;
                 targetCoords.z = Math.random() * Math.sin(angle) * islandRadius;
             }
-            while ( intersectsLine( -dist, -dist, dist * 2, dist * 2, new Point(this.mesh.position.x, this.mesh.position.z), new Point(targetCoords.x, targetCoords.z)));
+            while (intersectsLine( -STATUE_DIST,
+                                   -STATUE_DIST,
+                                    STATUE_DIST * 2,
+                                    STATUE_DIST * 2,
+                                    new Point(this.mesh.position.x, this.mesh.position.z),
+                                    new Point(targetCoords.x, targetCoords.z))          );
+        }
+
+        this.initBuilding    = function()
+        {
+            this.speed *= 2;
+
+            targetCoords.x = targetCoords.z = 0;
+
+            mixer.clipAction(weazleGeom.animations[0]).play();
+
+            this.state = states.BUILD_INIT;
+        }
+
+        this.startWalking = function()
+        {
+            //  TODO: Blend to walking animation
+            mixer.clipAction(weazleGeom.animations[0]).play();
+
+            this.setRandomCoords();
+            this.mesh.lookAt(targetCoords);
+            this.state = states.WALK;
         }
 
         //  Mesh
-        var weazlemesh        = new THREE.SkinnedMesh( weazleGeom, weazleMat );
-        weazlemesh.castShadow = true;
-        var angle             = Math.random() * Math.PI * 2;
-        weazlemesh.position.x = Math.cos(angle) * islandRadius;
-        weazlemesh.position.y = VILLAGE_DIMENSIONS.z;
-        weazlemesh.position.z = Math.sin(angle) * islandRadius;
-        weazlemesh.scale.set( 0.075, 0.075, 0.075 );
-
-        //weazlemesh.material = new THREE.MeshPhongMaterial();
-        //weazlemesh.material.color.setHex( Math.round( 0xFFFFFF * Math.random() ) );
-
-
-        this.mesh = weazlemesh;
+        var angle            = Math.random() * Math.PI * 2;
+        this.mesh            = new THREE.SkinnedMesh(weazleGeom, weazleMat);
+        this.mesh.castShadow = true;
+        this.mesh.position.x = randBetween(0.5, 1) * Math.cos(angle) * islandRadius;
+        this.mesh.position.y = VILLAGE_DIMENSIONS.z;
+        this.mesh.rotation.y = Math.random() * Math.PI;
+        this.mesh.position.z = randBetween(0.5, 1) * Math.sin(angle) * islandRadius;
+        this.mesh.scale.set(0.075, 0.075, 0.075);
 
         // Animation
-        var mixer = new THREE.AnimationMixer( weazlemesh );
+        var mixer = new THREE.AnimationMixer(this.mesh);
         
         this.state = states.IDLE;
     }
-
 
 }
 

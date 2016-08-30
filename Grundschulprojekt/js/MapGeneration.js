@@ -497,9 +497,9 @@ function GenerateMaterial( geometry, sunPosition )
                 {
                     //  Don't generate trees in the play area
 
-                    //if (   Math.abs( dim / 2 - fieldX ) > VILLAGE_DIMENSIONS.x
-                    //    || Math.abs( dim / 2 - fieldY ) > VILLAGE_DIMENSIONS.y )
-                    //{                    
+                    if (   Math.abs( dim / 2 - fieldX ) > STATUE_DIST
+                        || Math.abs( dim / 2 - fieldY ) > STATUE_DIST )
+                    {                    
                     //    /***********************************
                     //    *              + TREE              *
                     //    ***********************************/
@@ -511,7 +511,7 @@ function GenerateMaterial( geometry, sunPosition )
                     //    imageData[i + 1] = ( shadeInv * ( 2 - upAngle ) ).clamp8Bit( CLAMP_GRASS );
                         //    imageData[i + 2] =   shadeInv                    .clamp8Bit( CLAMP_GRASS );
                         grass_positions.push( new THREE.Vector3( geometry.attributes.position.array[j] + Math.random() / 2, geometry.attributes.position.array[j + 2] + Math.random() / 2, -( geometry.attributes.position.array[j + 1] + 0.5 ) ) );
-                    //}
+                    }
 
                     
 

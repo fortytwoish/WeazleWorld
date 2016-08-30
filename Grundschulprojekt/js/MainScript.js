@@ -320,7 +320,25 @@ function initStatueSegments()
 
     loadStatueSegment( loader, 'Models/Statue_Bottom.obj', 1 );
     loadStatueSegment( loader, 'Models/Statue_Mid.obj'   , 2 );
-    loadStatueSegment( loader, 'Models/Statue_Top.obj'   , 3 );
+    loadStatueSegment( loader, 'Models/Statue_Top.obj'   , 3);
+
+    //Statue boundaries 
+    var geom = new THREE.CubeGeometry(0.25, 2, 0.25);
+
+    var boxes = [new THREE.Mesh(geom, STATUE_WOOD_MAT),
+                  new THREE.Mesh(geom, STATUE_WOOD_MAT),
+                  new THREE.Mesh(geom, STATUE_WOOD_MAT),
+                  new THREE.Mesh(geom, STATUE_WOOD_MAT)];
+
+    boxes[0].position.set(-STATUE_DIST, VILLAGE_DIMENSIONS.z, -STATUE_DIST);
+    boxes[1].position.set(STATUE_DIST, VILLAGE_DIMENSIONS.z, -STATUE_DIST);
+    boxes[2].position.set(-STATUE_DIST, VILLAGE_DIMENSIONS.z, STATUE_DIST);
+    boxes[3].position.set(STATUE_DIST, VILLAGE_DIMENSIONS.z, STATUE_DIST);
+
+    scene.add(boxes[0]);
+    scene.add(boxes[1]);
+    scene.add(boxes[2]);
+    scene.add(boxes[3]);
 }
 
 function loadStatueSegment( loader, path, index )
@@ -534,7 +552,7 @@ function placeMinigameNodes()
         }
         while (    ypos < WATERLEVEL
                 || ypos > TREE_HEIGHT
-                || distanceSquared(new Point(xpos, zpos), new Point(0, 0)) < VILLAGE_DIMENSIONS.x * VILLAGE_DIMENSIONS.y
+                || distanceSquared(new Point(xpos, zpos), new Point(0, 0)) < islandRadius * islandRadius
                 || isAnyCoordinateCloserThan2D( nodeCoordinates, xpos, zpos, 10 ) );
 
         //  TODO: Check for overlapping
@@ -578,13 +596,13 @@ function placeMinigameNodes()
         minigame_palm[i] .rotation.y       = minigame_palm_outline[i] .rotation.y       =
         minigame_palm_leaves[i].rotation.y = /*minigame_palm_leaves_outline[i].rotation.y =*/ Math.random() * Math.PI * 2;
 
-        scene.add( minigame_rock[i] );
-        scene.add( minigame_rock_outline[i] );
-        scene.add( minigame_water[i] );
+        scene.add( minigame_rock[i]          );
+        scene.add( minigame_rock_outline[i]  );
+        scene.add( minigame_water[i]         );
         scene.add( minigame_water_outline[i] );
-        scene.add( minigame_palm[i] );
-        scene.add( minigame_palm_outline[i] );
-        scene.add( minigame_palm_leaves[i] );
+        scene.add( minigame_palm[i]          );
+        scene.add( minigame_palm_outline[i]  );
+        scene.add( minigame_palm_leaves[i]   );
         //scene.add( minigame_palm_leaves_outline[i] );
     }
 
@@ -1083,14 +1101,19 @@ function changeStatueModel( mesh, segmentMat )
 
     targetRad        = 30;
     targetRotateSpd  = 5;
-    zoomInTime       = 1500;
+    zoomInTime       = 2500;
     zoomOutTime      = 2000;
-    segmentBuildTime = 2000;
+    segmentBuildTime = 3000;
     timeUntilZoomOut = 2000;
     particleTime     = 2500;
     particleSpd      = 1;
 
     controls.autoRotate  = true;
+
+    for (var i = 0; i < weazles.length; i++)
+    {
+        weazles[i].initBuilding();
+    }
 
     ShowStatue( function()
     {
@@ -1137,6 +1160,7 @@ function changeStatueModel( mesh, segmentMat )
         //1. BUILD UP PARTICLES //
         //----------------------//
         var alreadyDone = 0;
+
         $( { n: 0 } ).animate( { n: particleCount }, {
             duration: zoomInTime + segmentBuildTime,
             step: function ( now, fx )
@@ -1187,9 +1211,15 @@ function changeStatueModel( mesh, segmentMat )
                 clickable_objects.push( mesh );
             }
             mesh.material = segmentMat;
+
+            for (var i = 0; i < weazles.length; i++)
+            {
+                weazles[i].startWalking();
+                weazles[i].speed = startSpd;
+            }
             
         }, segmentBuildTime );
-    } );
+    }, zoomInTime);
 
     //----------------------//
     //    1. ROTATE IN      //
@@ -1234,14 +1264,17 @@ function changeStatueModel( mesh, segmentMat )
     }, (zoomInTime + segmentBuildTime + timeUntilZoomOut ) );
 }
 
-function ShowStatue( completeFctn )
+function ShowStatue( completeFctn, zoomInTime )
 {
     oldRad              = spherical.radius;
     oldRotateSpeed      = controls.autoRotateSpeed;
 
     targetRad           = 30;
-    targetRotateSpd     = 5;
-    var zoomInTime      = 1500;
+    targetRotateSpd = 5;
+    if (!zoomInTime)
+    {
+        var zoomInTime = 1500;
+    }
 
     controls.autoRotate = true;
 
