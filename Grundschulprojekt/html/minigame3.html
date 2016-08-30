@@ -1,13 +1,11 @@
-﻿<h1 align="center" style="background-color:#00ff21; color:#000000">WELCOME TO THE TREEGAME, PLS select START and COUNT THOSE FUCKIN TREES</h1>
-
-<nav id="buttonArea" style="margin-top:10px;">
+﻿<nav id="buttonArea" style="margin-top:10px;">
     <button id="startGameButton" style="margin:0 55px; display:inline-block;width:200px; height:30px; ">START</button>
     <button id="winMinigameButton" style="margin:auto">Win</button>
     <button id="loseMinigameButton" style="margin:auto">Lose</button>
     <button id="exitMinigameButton" style="margin:0 55px;display:inline-block; float:right; width:200px; height:30px;">Exit</button>
 </nav>
 
-<div id="treeBin" style="position:absolute; left:300px; width: 380px; height: 380px; 
+<div id="treeBin" style="position:absolute; left:300px; width: 70%; height: 82%; 
 background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-left:5%; border-radius: 15px 50px 5px 30px; opacity:0.8; "></div>
 
 <div id="counterDiv" style="width:250px; margin:2% 30px 30px 30px; border-radius: 15px 50px 5px 30px; opacity:0.8; background-color:#bf8338;">
@@ -30,6 +28,12 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
 </style>
 
 <script>
+
+    var treeAhornSrc = "";
+    var treeKastanieSrc = "";
+    var treenSource = "";
+    var treeAhornSource = "";
+    var treeAhornSource = "";
 
     var imageUrl = "../img/treeGame/woods.jpg";
     $("#minigame").css('background-image', 'url(' + imageUrl + ')');
@@ -69,13 +73,13 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
 
                     for (var j = 0; j < i * 2 + 1; j++) {
                         var randPic = Math.floor((Math.random() * 3) + 1);
-                        $("#treeBin").append('<img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree" height="50" width="50">');
+                        $("#treeBin").append('<img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree" height="20%" width="10%">');
 
                         // $("#" + id).offset({ top: newLine, left: leftN });
                         $("#" + id).css("position", "absolute");
                     }
                     for (var i = 0; i < (11 - rand) ; i++) {
-                        $("#treeBin").append('<img src="../img/treeGame/transparent.png" id="' + id + '" class="tree" height="50" width="50" position="absolute">');
+                        $("#treeBin").append('<img src="../img/treeGame/transparent.png" id="' + id + '" class="tree" height="20%" width="10%" position="absolute">');
                     }
 
                 }
@@ -86,7 +90,7 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
                     var randPic = Math.floor((Math.random() * 3) + 1);
                     var id = "tree" + zInd;
                     zInd++;
-                    list[i] = '<img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree" height="50" width="50">';
+                    list[i] = '<img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree" height="20%" width="10%">';
                 }
 
                 var counter = 0;
@@ -118,7 +122,6 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
                     // alert($(this).prop("id"));
                     rotate(degree, $(this));
                 });
-
             }
         }
         else {
@@ -137,10 +140,10 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
 
             if ($("#3treeCountBox").val() == t3 && $("#2treeCountBox").val() == t2 && $("#1treeCountBox").val() == t1)
             {         
-                alert("GEWONNEN.. JANZ DOLL du spast... nix bessers zu tun?!");
+                alert("GEWONNEN..");
             }
             else {
-                alert("VERLOREN.. SPAST... es wäre: Tree1 " + t1 + " Tree2 " + t2 + " Tree3 " + t3);
+                alert("VERLOREN... es wäre: Tree1 " + t1 + " Tree2 " + t2 + " Tree3 " + t3);
                 console.log("LOOOSER");      
             }
         });
@@ -183,6 +186,11 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
         }, 5000)
     };
 
+    function ("#img").click({
+
+
+
+    });
 
 </script>
 
