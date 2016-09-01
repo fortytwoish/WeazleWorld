@@ -51,10 +51,12 @@ optionEntries.push(new MenuEntry("menuVolume", '<input type="range" min="0" max=
 	});
 }));
 optionEntries.push(new MenuEntry("menuQuality", '<input type="range" min="1" max="5" value="1">', function () {
-	$("<h2>Qualität</h2>").insertBefore("#" + this.id);
-	$("#" + this.id).attr("value", getQuality());
+	$("<h2 id=\"quali\">Qualität</h2>").insertBefore("#" + this.id);
+	$("#" + this.id).attr("value", currentQuality);
 	$("#" + this.id).on("change", function () {
-		setQuality(this.value);
+	    $("#quali").html("<h2>Qualität: " + this.value + "</h2>");
+        console.log("Quality: " + this.value)
+	    setQualityLevel( parseInt(this.value) );
 	});
 }));
 optionEntries.push(new MenuEntry("menuCredits", '<input type="button" value="Credits">', function () {

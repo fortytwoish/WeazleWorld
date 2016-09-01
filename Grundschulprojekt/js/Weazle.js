@@ -23,7 +23,7 @@ var states = {
     BUILD:      4
 }
 
-const STATUE_DIST = 4;
+const STATUE_DIST = 3.95;
 
 const islandRadius = 21;
 

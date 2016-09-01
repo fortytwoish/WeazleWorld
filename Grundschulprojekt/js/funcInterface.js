@@ -94,39 +94,6 @@ function continueMainGame()
     //------------------------------------------------------//
     //                  IN MAIN GAME                        //
     //------------------------------------------------------//
-        function click_MapGenStart(terrainRes)
-        {
-            gameState = GAME_STATES.START;
-        
-            if (terrainRes != null && terrainRes >= 7 && terrainRes <= 12) {
-
-                //Generate new terrain
-                setQuality_TerrainResDependant(terrainRes);
-                controls.update(); //Necessary to bring the camera into bounds
-
-                //  Reset necessary objects
-                scene.remove( islandMesh );
-                for ( var i = 0; i < differentSpriteCount; i++ )
-                {
-                    scene.remove( decorationSpriteMeshes[i] );
-                }
-                grass_positions = [];
-
-                //  Create new objects
-
-                //      ISLAND
-                var islandGeom    = GenerateIsland(terrainRes, WATERLEVEL);
-
-                var islandMat     = new THREE.MeshPhongMaterial({ map: GenerateMaterial(islandGeom, SUN_POSITION) });
-                islandMat.shading = THREE.FlatShading;
-
-                initIslandDecoration();
-                placeMinigameNodes();
-                
-                islandMesh        = new THREE.Mesh(islandGeom, islandMat);
-                scene.add(    islandMesh );
-            }
-        } //to be moved to menu
 
         function openMenu()
         {

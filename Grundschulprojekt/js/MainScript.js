@@ -4,6 +4,7 @@ preventRaycastOnce = false;
 TERRAIN_OFFSET     = 0;
 TERRAIN_RESOLUTION = 0;
 WATER_SCALE_FACTOR = 1;
+GRASS_DENSITY = 1;
 
 //  CONSTANTS
 const DEFAULT_QUALITY    = 1;
@@ -44,7 +45,8 @@ var camera,
     minigame_palm_leaves         = null,
     minigame_palm_outline        = null,
     //minigame_palm_leaves_outline = null;
-    placedMinigameNodes          = false
+    placedMinigameNodes          = false,
+    decorationSpriteMeshes
 
 clickable_objects = [];
 waterCreated = false;
@@ -101,13 +103,13 @@ function init()
     controls.target          = new THREE.Vector3( 0, 10, 0 );
 
     //  Set default terrain gen & render quality
-    setQualityLevel( DEFAULT_QUALITY );
+    loadQualityLevel();
     
     initWater();
 
     initIsland();
 
-    initIslandDecoration();
+    initIslandDecoration( GRASS_DENSITY );
 
     initWeazles();
 
@@ -214,8 +216,21 @@ function initIsland()
     islandMesh.receiveShadow    = true;
 }
 
-function initIslandDecoration()
+function initIslandDecoration( density )
 {
+    if (decorationSpriteMeshes)
+    {
+        for (var i = 0; i < decorationSpriteMeshes.length; i++)
+        {
+            if (decorationSpriteMeshes[i])
+            {
+                scene.remove(decorationSpriteMeshes[i]);
+            }
+        }
+    }
+    
+    grass_positions = [];
+
     differentSpriteCount = 5;
 
     grassCount = grass_positions.length;
@@ -271,7 +286,7 @@ function initIslandDecoration()
 
     for ( var i = 0; i < differentSpriteCount; i++ )
     {
-        for ( j = 0; j < grassCount; j += differentSpriteCount )
+        for ( j = 0; j < grassCount; j += differentSpriteCount * density )
         {
             if( grass_positions[i + j] )
             {
@@ -325,15 +340,19 @@ function initStatueSegments()
     //Statue boundaries 
     var geom = new THREE.CubeGeometry(0.25, 2, 0.25);
 
-    var boxes = [new THREE.Mesh(geom, STATUE_WOOD_MAT),
+    var boxes = [ new THREE.Mesh(geom, STATUE_WOOD_MAT),
                   new THREE.Mesh(geom, STATUE_WOOD_MAT),
                   new THREE.Mesh(geom, STATUE_WOOD_MAT),
                   new THREE.Mesh(geom, STATUE_WOOD_MAT)];
 
     boxes[0].position.set(-STATUE_DIST, VILLAGE_DIMENSIONS.z, -STATUE_DIST);
-    boxes[1].position.set(STATUE_DIST, VILLAGE_DIMENSIONS.z, -STATUE_DIST);
-    boxes[2].position.set(-STATUE_DIST, VILLAGE_DIMENSIONS.z, STATUE_DIST);
-    boxes[3].position.set(STATUE_DIST, VILLAGE_DIMENSIONS.z, STATUE_DIST);
+    boxes[1].position.set( STATUE_DIST, VILLAGE_DIMENSIONS.z, -STATUE_DIST);
+    boxes[2].position.set(-STATUE_DIST, VILLAGE_DIMENSIONS.z,  STATUE_DIST);
+    boxes[3].position.set( STATUE_DIST, VILLAGE_DIMENSIONS.z,  STATUE_DIST);
+    //boxes[0].castShadow = true;
+    //boxes[1].castShadow = true;
+    //boxes[2].castShadow = true;
+    //boxes[3].castShadow = true;
 
     scene.add(boxes[0]);
     scene.add(boxes[1]);
@@ -375,10 +394,10 @@ function initStatueParticleSystem()
     for ( var p = 0; p < particleCount; p++ )
     {
         //  Random point on the statue's circle
-        var angle = Math.random() * Math.PI * 2;
-        var x = Math.random() * Math.cos( angle ) * 5;
-        var y = 0;
-        var z = Math.random() * Math.sin( angle ) * 5;
+        var angle = Math.random() * Math.PI           * 2;
+        var x     = Math.random() * Math.cos( angle ) * 5;
+        var y     = 0;
+        var z     = Math.random() * Math.sin( angle ) * 5;
 
         // Create the vertex
         var particle = new THREE.Vector3( x, y, z );
@@ -417,15 +436,15 @@ function initMinigameNodes()
 
     //  Init the models
     //  1. Rock
-    loadNodeSegment( loader, 'Models/rock.obj',                minigame_rock_geom );
-    loadNodeSegment( loader, 'Models/rock_outline.obj',        minigame_rock_outline_geom );
+    loadNodeSegment( loader, 'Models/rock.obj',                   minigame_rock_geom );
+    loadNodeSegment( loader, 'Models/rock_outline.obj',           minigame_rock_outline_geom );
     //  2. Water
-    loadNodeSegment( loader, 'Models/rock.obj',                minigame_water_geom );
-    loadNodeSegment( loader, 'Models/rock_outline.obj',        minigame_water_outline_geom );
+    loadNodeSegment( loader, 'Models/rock.obj',                   minigame_water_geom );
+    loadNodeSegment( loader, 'Models/rock_outline.obj',           minigame_water_outline_geom );
     //  3. palm
-    loadNodeSegment( loader, 'Models/palm_trunk_low.obj',          minigame_palm_geom );
-    loadNodeSegment( loader, 'Models/palm_trunk_outline_low.obj',  minigame_palm_outline_geom );
-    loadNodeSegment( loader, 'Models/palm_leaves_low.obj',         minigame_palm_leaves_geom );
+    loadNodeSegment( loader, 'Models/palm_trunk_low.obj',         minigame_palm_geom );
+    loadNodeSegment( loader, 'Models/palm_trunk_outline_low.obj', minigame_palm_outline_geom );
+    loadNodeSegment( loader, 'Models/palm_leaves_low.obj',        minigame_palm_leaves_geom );
     //loadNodeSegment( loader, 'Models/palm_leaves_outline_low.obj', minigame_palm_leaves_outline_geom );
 }
 
@@ -489,33 +508,33 @@ function OnAllMinigameNodesLoaded()
 {
     var outlineMat = new THREE.MeshBasicMaterial( { color: 0xFF0000 } );
 
-    minigame_rock                               = [];
-    minigame_rock_outline                       = [];
-                                                 
-    minigame_water                              = [];
-    minigame_water_outline                      = [];
-                                                 
-    minigame_palm                               = [];
-    minigame_palm_leaves                        = [];
-    minigame_palm_outline                       = [];
+    minigame_rock                         = [];
+    minigame_rock_outline                 = [];
+                                           
+    minigame_water                        = [];
+    minigame_water_outline                = [];
+                                           
+    minigame_palm                         = [];
+    minigame_palm_leaves                  = [];
+    minigame_palm_outline                 = [];
     //minigame_palm_leaves_outline                = [];
 
     for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
     {
         //  Generate meshes
-        minigame_rock[i]                        = new THREE.Mesh( minigame_rock_geom         .geometry,       minigame_rock_geom.material );
-        minigame_rock_outline[i]                = new THREE.Mesh( minigame_rock_outline_geom .geometry,       outlineMat );
-                                         
-        minigame_water[i]                       = new THREE.Mesh( minigame_water_geom        .geometry,       new THREE.MeshPhongMaterial( { color: 0x0000FF } ) );
-        minigame_water_outline[i]               = new THREE.Mesh( minigame_water_outline_geom.geometry,       outlineMat );
-                                         
-        minigame_palm[i]                        = new THREE.Mesh( minigame_palm_geom         .geometry,       minigame_palm_geom       .material);
-        minigame_palm_leaves[i]                 = new THREE.Mesh( minigame_palm_leaves_geom  .geometry,       minigame_palm_leaves_geom.material);
-        minigame_palm_outline[i]                = new THREE.Mesh( minigame_palm_outline_geom .geometry,       outlineMat );
-        //minigame_palm_leaves_outline[i]         = new THREE.Mesh( minigame_palm_leaves_outline_geom.geometry, outlineMat );
-
-        minigame_water_outline[i].visible       = false;
-        minigame_palm_outline[i].visible        = false;
+        minigame_rock[i]                  = new THREE.Mesh( minigame_rock_geom         .geometry, minigame_rock_geom.material );
+        minigame_rock_outline[i]          = new THREE.Mesh( minigame_rock_outline_geom .geometry, outlineMat );
+                                                                                                  
+        minigame_water[i]                 = new THREE.Mesh( minigame_water_geom        .geometry, new THREE.MeshPhongMaterial( { color: 0x0000FF } ) );
+        minigame_water_outline[i]         = new THREE.Mesh( minigame_water_outline_geom.geometry, outlineMat );
+                                                                                                  
+        minigame_palm[i]                  = new THREE.Mesh( minigame_palm_geom         .geometry, minigame_palm_geom       .material);
+        minigame_palm_leaves[i]           = new THREE.Mesh( minigame_palm_leaves_geom  .geometry, minigame_palm_leaves_geom.material);
+        minigame_palm_outline[i]          = new THREE.Mesh( minigame_palm_outline_geom .geometry, outlineMat );
+        //minigame_palm_leaves_outline[i]   = new THREE.Mesh( minigame_palm_leaves_outline_geom.geometry, outlineMat );
+                                          
+        minigame_water_outline[i].visible = false;
+        minigame_palm_outline[i].visible  = false;
         //minigame_palm_leaves_outline[i].visible = false;
 
     }
@@ -746,6 +765,11 @@ function animate()
 }
 
 renderWater = true;
+
+function renderOnce()
+{
+    renderer.render(scene, camera);
+}
 
 //------------------------------------------------------//
 //                  EVENT HANDLING                      //
