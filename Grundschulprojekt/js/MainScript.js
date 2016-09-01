@@ -218,6 +218,7 @@ function initIsland()
 
 function initIslandDecoration( density )
 {
+
     if (decorationSpriteMeshes)
     {
         for (var i = 0; i < decorationSpriteMeshes.length; i++)
@@ -229,7 +230,7 @@ function initIslandDecoration( density )
         }
     }
     
-    grass_positions = [];
+    
 
     differentSpriteCount = 5;
 
@@ -286,16 +287,17 @@ function initIslandDecoration( density )
 
     for ( var i = 0; i < differentSpriteCount; i++ )
     {
-        for ( j = 0; j < grassCount; j += differentSpriteCount * density )
+        for ( j = 0; j < grassCount; j += (differentSpriteCount * density) )
         {
             if( grass_positions[i + j] )
             {
                 for ( var k = 0; k < 5; k++ )
                 {
+                    
                     var coord = new THREE.Vector3();
                     coord.x = grass_positions[i + j].x + randBetween( -1, 1 );
                     coord.y = grass_positions[i + j].y + randBetween( -1, 1 );
-                    coord.z = grass_positions[i + j].z + randBetween( -0.1, 0.1 );
+                    coord.z = grass_positions[i + j].z + randBetween(-0.1, 0.1);
                     decorationSprites[i].vertices.push( coord );
                 }
             }

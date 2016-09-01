@@ -32,8 +32,6 @@ function setQualityLevel(level)
 
     currentQuality = level;
 
-    console.log("Setting quality: " + level);
-
     //if not mobile
     controls.rotateSpeed = 1;
     controls.zoomSpeed = 2;
@@ -98,15 +96,6 @@ function setQuality_TerrainResDependant( terrainRes )
 
     TERRAIN_RESOLUTION = terrainRes;
 
-    //  Water Plane is initially created at 512x512
-    WATER_SCALE_FACTOR = Math.pow( 2, ( terrainRes - 7 ) + 1 );
-    if ( waterMesh != null )
-    {
-        scene.remove( waterMesh  );
-        scene.remove( waterMesh2 );
-        initWater();
-    }
-
     camera.far = Math.pow( 2, terrainRes + 1 );
     camera.updateProjectionMatrix();
 
@@ -143,6 +132,16 @@ function setQuality_TerrainResDependant( terrainRes )
 
     if (qualityInitialized)
     {
+        console.log("Re-initializing level...");
+
+        //  Water Plane is initially created at 512x512
+        WATER_SCALE_FACTOR = Math.pow(2, (terrainRes - 7) + 1);
+        if (waterMesh != null) {
+            scene.remove(waterMesh);
+            scene.remove(waterMesh2);
+            initWater();
+        }
+
         gameState = GAME_STATES.START;
 
         if (terrainRes != null && terrainRes >= 7 && terrainRes <= 12)
@@ -164,10 +163,10 @@ function setQuality_TerrainResDependant( terrainRes )
 
             islandMesh = new THREE.Mesh(islandGeom, islandMat);
             scene.add(islandMesh);
+
+            renderOnce();
         }
     }
 
     qualityInitialized = true;
-
-    renderOnce();
 }
