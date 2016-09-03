@@ -29,10 +29,11 @@
 	<link type="text/css" rel="stylesheet" href="css/font-awesome.css">
 </head>
 <body>
-    <div id="mainGame" style="position:absolute; ">
+    <div id="mainGame" style="position:absolute; height:100%; width:100%;">
+        <div id="overlay"style="position:absolute; height:100%; width:100%; z-index:8; background-color: black; opacity: 0;"></div>
 
         <!--MessageBox Placeholder at top right corner-->
-        <div id='messageBox' class="menu blockRaycast">
+        <div id='messageBox' class="menu blockRaycast" style="position:absolute; z-index:10;">
             <div id='messageBoxContent'>
 
                 <p id='messageBoxContentParagraph'>
@@ -50,10 +51,7 @@
 	    <div id="maingameButtonDiv">
 		    <button id="menuButton" class="blockRaycast hiddenInMenu fa fa-cog"></button>
 		    <button id="fullscreenButton" class="blockRaycast hiddenInMenu fa fa-arrows-alt"></button>
-		    <button id="minigameButton" class="blockRaycast hiddenInMenu">Minigame</button>
-		    <button id="newMapButton" class="blockRaycast hiddenInMenu">New Map</button>
 		    <button id="exitStatueButton" class="blockRaycast hiddenInMenu">Exit Statue</button>
-		    <!--<button id="showMessageBoxButton" class="blockRaycast hiddenInMenu">MessageBox</button>-->
 	    </div>
 
         <!--Placeholder div for minigame content-->
@@ -62,10 +60,11 @@
         <!--Menu centered horizontally at half width-->
         <div id="menu" class="menu blockRaycast"></div>
 
+        <!-- SplashScreen placeholder -->
+        <div id="splashScreen" class="blockRaycast" style="position:absolute; z-index:9;"></div>
+
     </div>
 
-    <!-- SplashScreen placeholder -->
-    <div id="splashScreen" class="blockRaycast"></div>
 
 </body>
 </html>

@@ -3,7 +3,6 @@ isInMenu           = true;
 preventRaycastOnce = false;
 TERRAIN_OFFSET     = 0;
 TERRAIN_RESOLUTION = 0;
-WATER_SCALE_FACTOR = 1;
 GRASS_DENSITY = 1;
 
 //  CONSTANTS
@@ -44,7 +43,6 @@ var camera,
     minigame_palm                = null,
     minigame_palm_leaves         = null,
     minigame_palm_outline        = null,
-    //minigame_palm_leaves_outline = null;
     placedMinigameNodes          = false,
     decorationSpriteMeshes
 
@@ -53,11 +51,10 @@ waterCreated = false;
 
 function main()
 {
-    init();
-    animate();
+    initStaticElements();
 }
 
-function init()
+function initStaticElements()
 {
     clock = new THREE.Clock( true );
 
@@ -94,22 +91,14 @@ function init()
 
     controls.enableDamping   = false; //TODO: Enable this for touchscreens
 
-    controls.enablePan       = false;
+    controls.enablePan       = true;
 
     controls.rotateSpeed     = 1;
     controls.autoRotateSpeed = 1;
+    controls.autoRotate      = true;
     controls.zoomSpeed       = 1;
 
     controls.target          = new THREE.Vector3( 0, 10, 0 );
-
-    //  Set default terrain gen & render quality
-    loadQualityLevel();
-    
-    initWater();
-
-    initIsland();
-
-    initIslandDecoration( GRASS_DENSITY );
 
     initWeazles();
 
@@ -117,39 +106,29 @@ function init()
 
     initStatueParticleSystem();
 
-    initMinigameNodes();
-
     initLighting();
 
     //------------------------------------------------------//
     //                  -> SCENE                            //
     //------------------------------------------------------//
-    scene.add( islandMesh );
 
     scene.add( statueParticleSystem );
-
     scene.add( directionalLight );
     scene.add( directionalLight2 );
 
     //------------------------------------------------------//
-    //                  -> HTML                             //
-    //------------------------------------------------------//
-    var container = document.getElementById( "mainGame" );
-    container.appendChild( renderer.domElement );
-
-    stats = new Stats();
-    document.body.appendChild( stats.dom );
-
-    //------------------------------------------------------//
     //                  EVENT BINDING                       //
     //------------------------------------------------------//
-    document.addEventListener( 'click'     , onDocumentMouseClick, false );
+    window.addEventListener(   'resize'    , resizeSplashScreen  , false );
+    document.addEventListener( 'click'     , onWindowResize      , false );
     document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+    document.addEventListener( 'click'     , onDocumentMouseClick, false );
     document.addEventListener( 'keydown'   , onkeydown           , false );
-    window  .addEventListener( 'resize'    , onWindowResize      , false );
 
-    //  Call a window resize to ensure everything fits
-    onWindowResize();
+    //  Load non-static elements that change with quality setting
+    loadQualityLevel();
+    
+
 }
 
 function initRenderer()
@@ -162,7 +141,7 @@ function initRenderer()
 
 function initWater()
 {
-    var planeGeom         = new THREE.PlaneBufferGeometry( 128 * WATER_SCALE_FACTOR, 128 * WATER_SCALE_FACTOR, 1, 1 );
+    var planeGeom         = new THREE.PlaneBufferGeometry( Math.pow( 2, TERRAIN_RESOLUTION + 1), Math.pow( 2, TERRAIN_RESOLUTION + 1 ) );
     waterMesh2            = new THREE.Mesh( planeGeom, new THREE.MeshPhongMaterial( { color: WATERCOLOR_LOW, transparent: false, shininess: 150} ) );
     waterMesh2.rotation.x = -Math.PI * 0.5;
 
@@ -201,6 +180,8 @@ function initWater()
         }
 
         waterCreated = true;
+        asyncOperationFinished();
+
     } );
 }
 
@@ -214,24 +195,12 @@ function initIsland()
     islandMat.shading           = THREE.FlatShading;
     islandMesh                  = new THREE.Mesh( islandGeom, islandMat );
     islandMesh.receiveShadow    = true;
+
+    scene.add( islandMesh );
 }
 
 function initIslandDecoration( density )
 {
-
-    if (decorationSpriteMeshes)
-    {
-        for (var i = 0; i < decorationSpriteMeshes.length; i++)
-        {
-            if (decorationSpriteMeshes[i])
-            {
-                scene.remove(decorationSpriteMeshes[i]);
-            }
-        }
-    }
-    
-    
-
     differentSpriteCount = 5;
 
     grassCount = grass_positions.length;
@@ -293,7 +262,6 @@ function initIslandDecoration( density )
             {
                 for ( var k = 0; k < 5; k++ )
                 {
-                    
                     var coord = new THREE.Vector3();
                     coord.x = grass_positions[i + j].x + randBetween( -1, 1 );
                     coord.y = grass_positions[i + j].y + randBetween( -1, 1 );
@@ -425,6 +393,7 @@ function initStatueParticleSystem()
 
 function initMinigameNodes()
 {
+    console.log( "initiating minigame nodes..." );
     var loader                        = new THREE.OBJLoader();
 
     minigame_rock_geom                = new THREE.Mesh(),
@@ -542,6 +511,7 @@ function OnAllMinigameNodesLoaded()
     }
 
     placeMinigameNodes();
+    asyncOperationFinished();
 
 }
 
@@ -662,15 +632,28 @@ function initLighting()
     //scene.add( new THREE.CameraHelper( directionalLight.shadow.camera ) );
 }
 
+var saveAutoRotate;
+
 function pauseRendering()
 {
     pauseRender = true;
+    saveAutoRotate = controls.autoRotate;
+    controls.autoRotate = false;
 }
 
 function resumeRendering()
 {
+    controls.autoRotate = saveAutoRotate;
     pauseRender = false;
+    deltaTime = clock.getDelta();
     animate();
+}
+
+function renderOnce()
+{
+    //water.material.uniforms.time.value += 0.0005;
+    water.render();
+    renderer.render( scene, camera );
 }
 
 var pauseRender = false;
@@ -751,7 +734,7 @@ function animate()
     {
         if ( renderWater )
         {
-            water.material.uniforms.time.value += 0.005;
+            water.material.uniforms.time.value += deltaTime * 0.1;
             water.render();
         }
         else
@@ -767,11 +750,6 @@ function animate()
 }
 
 renderWater = true;
-
-function renderOnce()
-{
-    renderer.render(scene, camera);
-}
 
 //------------------------------------------------------//
 //                  EVENT HANDLING                      //
@@ -839,7 +817,6 @@ function onWindowResize()
     renderer.setPixelRatio(window.devicePixelRatio / subsampleFactor);
     renderer.setSize( window.innerWidth - scrollbarSize, window.innerHeight - scrollbarSize );
 
-    resizeSplashScreen();
     resizeMenu();
 }
 
@@ -857,6 +834,12 @@ function onDocumentTouchStart( event )
 
 function onDocumentMouseClick( event )
 {
+    //console.log( preventRaycastOnce );
+    //console.log( controls.enabled );
+    //console.log( pauseRender );
+    //console.log( canClickObjects );
+    //console.log( clickable_objects );
+
     if (preventRaycastOnce)
     {
         preventRaycastOnce = false;
@@ -875,6 +858,8 @@ function onDocumentMouseClick( event )
 
     raycaster.setFromCamera(mouse, camera);
     var intersects = raycaster.intersectObjects(clickable_objects);
+
+    
 
     if ( intersects.length > 0 )
     {
@@ -1449,4 +1434,4 @@ function OnMinigameAvailabilityChanged( minigameID, isAvailable )
 
 }
 
-main();
+//main();

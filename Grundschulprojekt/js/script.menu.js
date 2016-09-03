@@ -34,17 +34,49 @@ var MenuEntry = function(id, html, init) {
 var mainMenuEntries = new Array();
 mainMenuEntries.push(new MenuEntry("menuNewGame", '<input type="button" value="Neues Spiel">', function () {
 	$("#" + this.id).on("click touchstart", function () {
-		drawMenu(startMenu);
-	});
-}));
+	    drawMenu( startMenu );
+	} );
+	if ( FIRST_TIME_PLAYING )
+	{
+	    $( "#" + this.id ).attr( "disabled", true );
+	}
+} ) );
+
+
+
 mainMenuEntries.push(new MenuEntry("menuContinue", '<input type="button" value="Fortsetzen">', function () {
 	$("#" + this.id).attr("disabled", true);
 }));
 mainMenuEntries.push(new MenuEntry("menuOptions", '<input type="button" value="Optionen">', function () {
 	$("#" + this.id).on("click touchstart", function () {
-		drawMenu(optionMenu);
+	    drawMenu( optionMenu );
+	    document.body.appendChild( stats.dom );
+	    resumeRendering();
+	    controls.autoRotate = true;
+	    controls.update();
+	    if ( FIRST_TIME_PLAYING )
+	    {
+	        FIRST_TIME_PLAYING = false;
+	        setQualityButtonsDisabled( true );
+	        showMessageBox( ["Oben links siehst du deine FPS.", "Gehe langsam mit der Qualität hoch und klicke jeweils \"Übernehmen\".", "Wiederhole das, solange deine FPS über 30 bleiben.", "Wenn du die höchste Qualität gefunden hast und dein Abenteuer beginnen willst, klicke \"Zurück\"!"], "OK!",
+                function ()
+                {
+                    setQualityButtonsDisabled( false );
+                } );
+	        $( "#menuNewGame" ).attr( "disabled", false );
+	    }
 	});
-}));
+} ) );
+
+function setQualityButtonsDisabled( val )
+{
+    $( "#menuVolume" ) .attr( "disabled", val );
+    $( "#menuQuality" ).attr( "disabled", val );
+    $( "#menuApply" )  .attr( "disabled", val );
+    $( "#menuCredits" ).attr( "disabled", val );
+    $( "#menuBack" )   .attr( "disabled", val );
+
+}
 
 var startEntries = new Array();
 startEntries.push(new MenuEntry("menuName", '<input type="text" placeholder="Max" autofocus>', function () {
@@ -66,24 +98,50 @@ optionEntries.push(new MenuEntry("menuVolume", '<input type="range" min="0" max=
 	var volume = getVolume();
 	$('<h2><span class="left">Lautstärke:</span><span id="menuVolumeHeader" class="right">' + volume + '</span></h2>').insertBefore("#" + this.id);
 	$("#" + this.id).attr("value", volume);
-	$("#" + this.id).on("mouseup", function () {
-		$("#menuVolumeHeader").text(this.value);
+	$( "#" + this.id ).on( "mouseup", function () //IE 10
+	{
+		$("#menuVolumeHeader").text(this.value); 
 		setVolume(this.value);
-	});
+	} );
+	$( "#" + this.id ).on( "input", function () //Vernünftige Browser
+	{
+	    $( "#menuVolumeHeader" ).text( this.value );
+	} );
 }));
 optionEntries.push(new MenuEntry("menuQuality", '<input type="range" min="1" max="20" value="1">', function ()
 {
 	$('<h2><span class="left">Qualität:</span><span id="menuQualityHeader" class="right">' + currentQuality + '</span></h2>').insertBefore("#" + this.id);
 	$("#" + this.id).attr("value", currentQuality);
-	$("#" + this.id).on("mouseup", function () {
+	$( "#" + this.id ).on( "mouseup", function () //IE 10
+	{
 		$("#menuQualityHeader").text(this.value);
 	    quality = parseInt(this.value);
-	});
+	} );
+	$( "#" + this.id ).on( "input", function () //Vernünftige Browser
+	{
+	    $( "#menuQualityHeader" ).text( this.value );
+	} );
 }));
 optionEntries.push(new MenuEntry("menuApply", '<input type="button" value="Übernehmen">', function () {
-	$("#" + this.id).on("click", function () {
-		if (quality !== -1 && quality !== currentQuality)
-			setQualityLevel(quality);
+    $( "#" + this.id ).on( "click", function ()
+    {
+        setQualityButtonsDisabled( true );
+
+        $( "#menuApply" ).val( "Lädt..." );
+
+
+        setTimeout( function ()
+        {
+            if ( quality !== -1 )
+                setQualityLevel( quality );
+            else if ( currentQuality !== -1 )
+            {
+                quality = currentQuality;
+                setQualityLevel( currentQuality );
+            }
+        }, 500 );
+
+		
 	});
 }));
 optionEntries.push(new MenuEntry("menuCredits", '<input type="button" value="Credits">', function () {
@@ -91,7 +149,11 @@ optionEntries.push(new MenuEntry("menuCredits", '<input type="button" value="Cre
 }));
 optionEntries.push(new MenuEntry("menuBack", '<input type="button" value="Zurück">', function () {
 	$("#" + this.id).on("click touchstart", function () {
-		drawMenu(mainMenu);
+	    drawMenu( mainMenu );
+	    document.body.removeChild( stats.dom );
+	    pauseRendering();
+	    controls.autoRotate = false;
+	    controls.update();
 	});
 }));
 
@@ -105,11 +167,15 @@ var optionMenu = new Menu(optionEntries, "Optionen");
 
 hideMenu = function()
 {
+    controls.autoRotate = false;
+    controls.enabled = true;
 	$("#menu").css("visibility", "hidden");
 }
 
 showMenu = function()
 {
+    controls.autoRotate = true;
+    controls.enabled = false;
 	drawMenu(mainMenu);
 	$("#menu").css("visibility", "visible");
 }
@@ -120,6 +186,8 @@ showMenu = function()
 
 var initMenu = function()
 {
+    controls.autoRotate = true;
+    console.log( "initiating menu..." ); 
 	drawMenu(mainMenu);
 }
 
@@ -161,4 +229,4 @@ var resizeMenu = function () {
 $(function ()
 {
     resizeMenu();
-});
+} );

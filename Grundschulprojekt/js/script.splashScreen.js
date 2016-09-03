@@ -2,7 +2,12 @@ var appendToo = "#splashScreen";
 var logo = "img/logo.png";
 var mainGame = "#mainGame";
 
-$(function () {
+$( function ()
+{
+
+    window.addEventListener( 'resize', resizeSplashScreen, false );
+
+
     //$(mainGame).css("display", "none");
     $(menu).hide();
     $(appendToo + " *").remove();
@@ -24,14 +29,22 @@ $(function () {
 
 function splashscreenInteract()
 {
-    $(appendToo).off("click");
-    $(appendToo).off("touchstart");
-    $(appendToo).off("keyup");
-    $(appendToo).css("display", "none");
-    $(menu).show();
-    initMenu();
+    $( "#splashScreen h1" ).css( "-webkit-animation-play-state", "paused" );
+    $( "#splashScreen h1" ).html( "L&auml;dt..." );
+    $( "#splashScreen h1" ).css( "-webkit-animation-play-state", "running" );
 
-    endedSplashScreen();
+    $( appendToo ).off( "click" );
+    $( appendToo ).off( "touchstart" );
+    $( appendToo ).off( "keyup" );
+
+    setTimeout( function ()
+    {
+        main();
+        
+    }, 500 );
+    
+
+
 }
 
 function resizeSplashScreen()

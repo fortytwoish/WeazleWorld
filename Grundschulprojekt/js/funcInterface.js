@@ -106,6 +106,7 @@ function continueMainGame()
 
         function startMinigame( minigameID )
         {
+
             if ( !mgPossible( minigameID ) )
             {
                 alert(  "BUG:\n"
@@ -113,6 +114,8 @@ function continueMainGame()
                       + "(Es sollte also garnicht verfügbar sein...)");
                 return;
             }
+
+            pauseRendering();
 
             isInMenu = true;
 
@@ -158,6 +161,8 @@ function continueMainGame()
             $( "#minigame" ).css( "visibility", "hidden" );
     
             showButtons();
+
+            resumeRendering();
         }
 
         function minigamePlayed( minigameNumber )
@@ -228,8 +233,9 @@ function continueMainGame()
         function showMessageBox( messageArr, endText, completeFunction )
         {
             hideButtons();
+            $( "#messageBox" ).css( "visibility", "visible" );
             $( "#messageBoxButton" ).val( "weiter" );
-            $( "#messageBox" ).show("slow");
+            $( "#messageBox" ).show( "slow" );
             currentMessageBoxTexte = messageArr;
             currentMessageBoxEndText = endText;
             currentMessageBoxCompleteFunction = completeFunction;

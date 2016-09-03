@@ -9,19 +9,34 @@
         opacity: 0;
     }
 }
+
 #splashScreen h1 {
+    cursor: pointer;
     animation-name: text;
     animation-iteration-count: infinite;
-    animation-duration: 1s;
+    animation-duration: 2s;
     text-align: center;
     font-size: 2.5em;
+    text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+    font-family: 'Calibri';
+    font-size: 50pt;
 }
 #splashScreen{
     position: absolute;
     width: 400px;
     height: 500px;
+    text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
 }
 #splashScreen img{
+    cursor: pointer;
     width: 100%;
     height: auto;
+}
+
+body{
+    background: url(../img/Background.png) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }

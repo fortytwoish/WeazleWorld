@@ -9,19 +9,22 @@ function loadQualityLevel()
 
     if (typeof (storage) !== "undefined" && !isNaN(storage.quality))
     {
+        FIRST_TIME_PLAYING = false;
         console.log( "Setting quality to loaded level: " + storage.quality );
         setQualityLevel( parseInt(storage.quality) );
     }
     else
     {
-        alert("No web storage!");
-        console.log("No web storage. Setting quality to " + DEFAULT_QUALITY);
-        setQualityLevel(DEFAULT_QUALITY);
+        FIRST_TIME_PLAYING = true;
+        console.log( "No web storage. Setting quality to " + DEFAULT_QUALITY );
+        setQualityLevel( DEFAULT_QUALITY );
     }
 }
 
 function setQualityLevel(level)
 {
+    numOfAsyncChanges = 0;
+    totalAsyncChanges = 0;
 
     level = parseInt(level);
 
@@ -91,7 +94,7 @@ const global_fog_scale = 0.9;
 
 function setQuality_TerrainResDependant( terrainRes )
 {
-
+    
     console.log("Updating terrain: " + terrainRes);
 
     TERRAIN_RESOLUTION = terrainRes;
@@ -130,43 +133,137 @@ function setQuality_TerrainResDependant( terrainRes )
             break;
 	}
 
-    if (qualityInitialized)
+
+    //------------------------------------------------------//
+    //       REMOVE ANY EXISTING OBJECTS                    //
+    //------------------------------------------------------//
+
+    if ( typeof(waterMesh) !== 'undefined' )
     {
-        console.log("Re-initializing level...");
-
-        //  Water Plane is initially created at 512x512
-        WATER_SCALE_FACTOR = Math.pow(2, (terrainRes - 7) + 1);
-        if (waterMesh != null) {
-            scene.remove(waterMesh);
-            scene.remove(waterMesh2);
-            initWater();
-        }
-
-        gameState = GAME_STATES.START;
-
-        if (terrainRes != null && terrainRes >= 7 && terrainRes <= 12)
-        {
-
-            //  Reset necessary objects
-            scene.remove(islandMesh);
-
-            //  Create new objects
-
-            //      ISLAND
-            var islandGeom = GenerateIsland(terrainRes, WATERLEVEL);
-
-            var islandMat = new THREE.MeshPhongMaterial({ map: GenerateMaterial(islandGeom, SUN_POSITION) });
-            islandMat.shading = THREE.FlatShading;
-
-            initIslandDecoration(GRASS_DENSITY);
-            placeMinigameNodes();
-
-            islandMesh = new THREE.Mesh(islandGeom, islandMat);
-            scene.add(islandMesh);
-
-            renderOnce();
-        }
+        scene.remove(waterMesh);
+        scene.remove(waterMesh2);
     }
 
-    qualityInitialized = true;
+    if ( typeof ( islandMesh ) !== 'undefined' )
+    {
+        scene.remove( islandMesh );
+    }
+
+    console.log( "beginning grass removal" );
+    if ( typeof ( decorationSpriteMeshes ) !== 'undefined' )
+    {
+        console.log( "decorationSpriteMeshes exists" );
+        for ( var i = 0; i < decorationSpriteMeshes.length; i++ )
+        {
+            console.log( "trying grass removal " + i );
+            if ( decorationSpriteMeshes[i] )
+            {
+                console.log( "grass removal " + i );
+                scene.remove( decorationSpriteMeshes[i] );
+            }
+        }
+
+        grass_positions = [];
+    }
+
+    //------------------------------------------------------//
+    //       CREATE/PLACE NEW OBJECTS                       //
+    //------------------------------------------------------//
+
+
+    initWater();    //async
+    totalAsyncChanges++;
+
+    initIsland();       
+
+    initIslandDecoration( GRASS_DENSITY );
+
+    if (  minigame_rock == null ||  minigame_water == null ||  minigame_palm == null )
+    {
+        initMinigameNodes();    //async
+        totalAsyncChanges++;
+    }
+    else
+    {
+        placeMinigameNodes();
+    }
+
+
+    
+}
+
+var numOfAsyncChanges = 0;
+var totalAsyncChanges = 3;
+
+var fadeInTime        = 1500;
+var fadeOutTime       = 1500;
+var menuFadeInOffset = 1500;
+
+var initialized = false;
+
+function asyncOperationFinished()
+{
+    if ( ++numOfAsyncChanges == totalAsyncChanges )
+    {
+        renderOnce();
+        if ( !initialized )
+        {
+            //------------------------------------------------------//
+            //                  -> HTML                             //
+            //------------------------------------------------------//
+            var container = document.getElementById( "mainGame" );
+            $( "#overlay" ).animate( {
+                opacity: 1,
+            }, fadeOutTime, function ()
+            {
+                container.appendChild( renderer.domElement );
+                renderOnce();
+                stats = new Stats();
+
+                //  Call a window resize to ensure everything fits
+                onWindowResize();
+
+                renderOnce();
+                $( "#overlay" ).animate( {
+                    opacity: 0,
+                }, fadeInTime, function ()
+                {
+
+                    $( "#overlay" ).css( "display", "none" );
+
+                } );
+
+            } );
+            
+
+            $( "#splashScreen h1" ).css( "-webkit-animation-play-state", "paused" );
+
+            $( appendToo ).fadeOut( fadeOutTime, function ()
+            {
+                setTimeout( function ()
+                {
+                    if ( FIRST_TIME_PLAYING )//no localstorage or first time playing - show messagebox before showing menu
+                    {
+                        showMessageBox( ["Hallo!", "Es sieht so aus als würdest Du zum ersten Mal spielen.", "Bitte stelle zuallererst die Grafikoptionen im Optionen-Menü ein."], "OK!", function ()
+                        {
+                            $( menu ).fadeIn( fadeInTime );
+                        } );
+                    }
+                    else//directly show menu
+                    {
+                        $( menu ).fadeIn( fadeInTime );
+                    }
+                }, menuFadeInOffset );
+            } );
+
+            initMenu();
+
+            endedSplashScreen();
+
+            initialized = true;
+        }
+
+        setQualityButtonsDisabled( false );
+        $( "#menuApply" ).val( "Übernehmen" );
+    }
 }
