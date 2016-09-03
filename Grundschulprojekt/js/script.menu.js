@@ -2,9 +2,15 @@
 *   CONST
 */
 
-var SIZE = [300, 400];
+var SIZE = [300, 450];
 var APPENDTO = "#menu";
 var DEBUG = true;
+
+/*
+*   CONST
+*/
+
+var quality = -1;
 
 /*
 *   OBJECTS
@@ -26,11 +32,9 @@ var MenuEntry = function(id, html, init) {
 */
 
 var mainMenuEntries = new Array();
-mainMenuEntries.push(new MenuEntry("menuNewGame", '<input type="button" value="Neues Spiel">', function ()
-{
-	$("#" + this.id).on("click touchstart", function ()
-	{
-		continueMainGame();
+mainMenuEntries.push(new MenuEntry("menuNewGame", '<input type="button" value="Neues Spiel">', function () {
+	$("#" + this.id).on("click touchstart", function () {
+		drawMenu(startMenu);
 	});
 }));
 mainMenuEntries.push(new MenuEntry("menuContinue", '<input type="button" value="Fortsetzen">', function () {
@@ -42,21 +46,44 @@ mainMenuEntries.push(new MenuEntry("menuOptions", '<input type="button" value="O
 	});
 }));
 
+var startEntries = new Array();
+startEntries.push(new MenuEntry("menuName", '<input type="text" placeholder="Max" autofocus>', function () {
+	$("<h2>Wie heißt du?</h2>").insertBefore("#" + this.id);
+}));
+startEntries.push(new MenuEntry("menuStart", '<input type="button" value="Los geht\'s!">', function () {
+	$("#" + this.id).on("click touchstart", function () {
+		if ($("#menuName").val() !== "")
+			username = $("#menuName").val();
+		if (DEBUG)
+			console.log(username);
+		continueMainGame();
+	});
+}));
+
 var optionEntries = new Array();
-optionEntries.push(new MenuEntry("menuVolume", '<input type="range" min="0" max="100">', function () {
-	$("<h2>Lautstärke</h2>").insertBefore("#" + this.id);
-	$("#" + this.id).attr("value", getVolume());
-	$("#" + this.id).on("change", function () {
+optionEntries.push(new MenuEntry("menuVolume", '<input type="range" min="0" max="100">', function ()
+{
+	var volume = getVolume();
+	$('<h2><span class="left">Lautstärke:</span><span id="menuVolumeHeader" class="right">' + volume + '</span></h2>').insertBefore("#" + this.id);
+	$("#" + this.id).attr("value", volume);
+	$("#" + this.id).on("mouseup", function () {
+		$("#menuVolumeHeader").text(this.value);
 		setVolume(this.value);
 	});
 }));
-optionEntries.push(new MenuEntry("menuQuality", '<input type="range" min="1" max="5" value="1">', function () {
-	$("<h2 id=\"quali\">Qualität</h2>").insertBefore("#" + this.id);
+optionEntries.push(new MenuEntry("menuQuality", '<input type="range" min="1" max="20" value="1">', function ()
+{
+	$('<h2><span class="left">Qualität:</span><span id="menuQualityHeader" class="right">' + currentQuality + '</span></h2>').insertBefore("#" + this.id);
 	$("#" + this.id).attr("value", currentQuality);
-	$("#" + this.id).on("change", function () {
-	    $("#quali").html("<h2>Qualität: " + this.value + "</h2>");
-        console.log("Quality: " + this.value)
-	    setQualityLevel( parseInt(this.value) );
+	$("#" + this.id).on("mouseup", function () {
+		$("#menuQualityHeader").text(this.value);
+	    quality = parseInt(this.value);
+	});
+}));
+optionEntries.push(new MenuEntry("menuApply", '<input type="button" value="Übernehmen">', function () {
+	$("#" + this.id).on("click", function () {
+		if (quality !== -1 && quality !== currentQuality)
+			setQualityLevel(quality);
 	});
 }));
 optionEntries.push(new MenuEntry("menuCredits", '<input type="button" value="Credits">', function () {
@@ -68,6 +95,7 @@ optionEntries.push(new MenuEntry("menuBack", '<input type="button" value="Zurüc
 	});
 }));
 
+var startMenu = new Menu(startEntries, "Neues Spiel");;
 var mainMenu = new Menu(mainMenuEntries, "Hauptmenü");
 var optionMenu = new Menu(optionEntries, "Optionen");
 
@@ -108,6 +136,9 @@ var drawMenu = function (toDraw)
 		toDraw.menu[i].init();
 		if (DEBUG) console.log("Exec init func for '" + toDraw.menu[i].id + "'.");
 	}
+	$(APPENDTO + " h1, " + APPENDTO + " h2").on("selectstart", function () {
+		return false;
+	});
 }
 
 var resizeMenu = function () {

@@ -1,70 +1,114 @@
-.menu {
-    position: absolute;
-    background-color: rgba(0, 0, 0, 0.65);
-    border: 2px solid #faf9d9;
-    border-radius: 20px;
-    vertical-align: middle;
-    padding: 20px;
-    box-sizing: border-box;
+#menu{
+	position: absolute;
+	background-color: rgba(0, 0, 0, 0.65);
+	border: 2px solid #faf9d9;
+	border-radius: 20px;
+	vertical-align: middle;
+	padding: 20px;
+	box-sizing: border-box;
 }
-.menu h1, h2 {
+
+#menu .left{
+	text-align: left;
+	display: block;
+	position: absolute;
+	left: 0;
+}
+
+#menu .right{
+	text-align: right;
+	display: block;
+	position: absolute;
+	right: 0;
+}
+
+#menu h1, h2{
 	font-family: 'Calibri';
 	color: #FFFFFF;
 	text-align: center;
+	display: block;
+	position: relative;
+	width: 70%;
+	margin: auto;
 }
-.menu h1{
-    font-size: 25pt;
+
+#menu h1{
+	font-size: 25pt;
+	height: 25pt;
 	margin-bottom: 20px;
 }
-.menu h2{
+
+#menu h2{
 	font-size: 20pt;
+	height: 20pt;
 	margin-bottom: 10px;
 }
-.menu input{
-    width: 70%;
+
+#menu input{
+	width: 70%;
 	display: block;
 	margin: 0 auto 25px auto;
 }
-.menu input[type=button]{
+
+#menu input[type=text]{
+	width: 80%;
+	border: 0;
 	font-family: 'Calibri';
-    letter-spacing: 2px;
-    font-weight: bold;
-    background-color: #298AF4;
-    border: none;
-    border-radius: 10px;
-    font-size: 20pt;
-    color: #BFFFFF;
-    padding: 5px;
+	letter-spacing: 2px;
+	font-weight: bold;
+	background-color: #FFF;
+	border: none;
+	font-size: 20pt;
+	color: #000;
+	padding: 5px;
 }
-.menu input[type=range]{
-    /*removes default webkit styles*/
-    -webkit-appearance: none;
+
+#menu input[type=button]{
+	font-family: 'Calibri';
+	letter-spacing: 2px;
+	font-weight: bold;
+	background-color: #298AF4;
+	border: none;
+	border-radius: 10px;
+	font-size: 20pt;
+	color: #BFFFFF;
+	padding: 5px;
+}
+
+#menu input[type=range]{
+	/*removes default webkit styles*/
+	-webkit-appearance: none;
 
 	/*fix for FF unable to apply focus style bug */
-    border: 1px solid #FFFFFF;
+	border: 1px solid #FFFFFF;
 }
-.menu input[type=range]::-webkit-slider-runnable-track{
-    width: 300px;
-    height: 5px;
-    background: #FFFFFF;
-    border: none;
-    border-radius: 3px;
+
+#menu input[type=range]::-webkit-slider-runnable-track{
+	width: 300px;
+	height: 5px;
+	background: #FFFFFF;
+	border: none;
+	border-radius: 3px;
 }
-.menu input[type=range]::-webkit-slider-thumb{
-    -webkit-appearance: none;
-    border: none;
-    height: 16px;
-    width: 16px;
-    border-radius: 50%;
-    background: #298AF4;
-    margin-top: -4px;
+
+#menu input[type=range]::-webkit-slider-thumb{
+	-webkit-appearance: none;
+	border: none;
+	height: 16px;
+	width: 16px;
+	border-radius: 50%;
+	background: #298AF4;
+	margin-top: -4px;
 }
-.menu input[type=range]:hover::-webkit-slider-thumb{
-    background: #BFFFFF;
+
+#menu input[type=range]:hover::-webkit-slider-thumb{
+	background: #BFFFFF;
 }
-.menu input[type=range]:focus::-webkit-slider-thumb{
-    background: #BFFFFF;
+
+#menu input[type=range]:focus::-webkit-slider-thumb{
+	background: #BFFFFF;
 }
+
 /*
 	input[type=range]::-moz-range-track {
 	input[type=range]::-moz-range-thumb {
@@ -77,17 +121,57 @@
 	input[type=range]:focus::-ms-fill-upper {
 */
 
-.menu input:disabled{
-    color: #AAAAAA;
+#menu input:disabled{
+	color: #AAAAAA;
 	background-color: #444444;
 }
-.menu input:focus
-{
-    outline: none;
+
+#menu input:focus{
+	outline: none;
 }
-.menu input:hover
-{
-    background-color: #BFFFFF;
-    color: #298AF4;
+
+#menu input:hover{
+	background-color: #BFFFFF;
+	color: #298AF4;
 	cursor: pointer;
+}
+
+#menu input[type=text]:hover{
+	background-color: #FFF;
+	color: #000;
+	cursor: text;
+}
+
+/*----------------------*/
+
+#maingameButtonDiv{
+	max-width: 100px;
+	position: absolute;
+	top: 50px;
+}
+
+#maingameButtonDiv button{
+	margin: 4px;
+	width: 100%;
+	visibility: hidden;
+}
+
+#maingameButtonDiv #menuButton, #maingameButtonDiv #fullscreenButton{
+	background-color: transparent;
+	border: none;
+	font-size: 40pt;
+	color: rgba(0, 0, 0, 0.7);
+	width: inherit;
+}
+
+#maingameButtonDiv #menuButton:hover, #maingameButtonDiv #fullscreenButton:hover{
+	color: #298AF4;
+}
+
+#maingameButtonDiv #menuButton:focus, #maingameButtonDiv #fullscreenButton:focus{
+	outline: none;
+}
+
+#maingameButtonDiv #menuButton:active, #maingameButtonDiv #fullscreenButton:active{
+	outline: none;
 }

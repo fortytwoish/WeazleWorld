@@ -16,13 +16,17 @@
     <script type="text/javascript"         src="js/QualityLevels.js">                       </script>
     <script type="text/javascript"         src="js/AuxFunctions.js">                        </script>
     <script type="text/javascript"         src="js/funcInterface.js">                       </script>
-    <script type="text/javascript"         src="js/Weazle.js">                              </script>
+	<script type="text/javascript"		   src="js/Weazle.js">								</script>
+	<script type="text/javascript"         src="Resources/preloadjs-0.6.2.min.js">	       	</script>
+	<script type="text/javascript"         src="Resources/easeljs-0.8.2.min.js">	       	</script>
+	<script type="text/javascript"         src="Resources/tweenjs-0.6.2.min.js">			</script>
+	<script type="text/javascript"         src="Resources/jquery.rotate.js">				</script>
     <link rel="icon"      type="image/png" href="img/head.png">
     <link type="text/css" rel="stylesheet" href="css/reset.css">
     <link type="text/css" rel="stylesheet" href="css/foo.css">
     <link type="text/css" rel="stylesheet" href="css/menu.css">
     <link type="text/css" rel="stylesheet" href="css/splashScreen.css">
-    <link type="text/css" rel="stylesheet" href="css/maingame.css">
+	<link type="text/css" rel="stylesheet" href="css/font-awesome.css">
 </head>
 <body>
     <div id="mainGame" style="position:absolute; ">
@@ -43,21 +47,20 @@
         <script src="js/MainScript.js"></script>
 
         <!--MainGame Buttons-->
-        <div class="maingameButtonDiv">
-            <button id="menuButton" class="blockRaycast hiddenInMenu" >Menu</button>
-            <button id="minigameButton" class="blockRaycast hiddenInMenu" >Minigame</button>
-            <button id="newMapButton" class="blockRaycast hiddenInMenu" >New Map</button>
-            <button id="exitStatueButton" class="blockRaycast hiddenInMenu">Exit Statue</button>
-            <!--<button id="showMessageBoxButton" class="blockRaycast hiddenInMenu" >MessageBox</button>-->
-        </div>
+	    <div id="maingameButtonDiv">
+		    <button id="menuButton" class="blockRaycast hiddenInMenu fa fa-cog"></button>
+		    <button id="fullscreenButton" class="blockRaycast hiddenInMenu fa fa-arrows-alt"></button>
+		    <button id="minigameButton" class="blockRaycast hiddenInMenu">Minigame</button>
+		    <button id="newMapButton" class="blockRaycast hiddenInMenu">New Map</button>
+		    <button id="exitStatueButton" class="blockRaycast hiddenInMenu">Exit Statue</button>
+		    <!--<button id="showMessageBoxButton" class="blockRaycast hiddenInMenu">MessageBox</button>-->
+	    </div>
+
         <!--Placeholder div for minigame content-->
         <div id="minigame" class="centeredMenu minigame blockRaycast"></div>
 
         <!--Menu centered horizontally at half width-->
-        <div id="menu" class="menu blockRaycast">    
-            <h1>MENU</h1>
-            <button id="continueButton" style="margin:auto">Continue</button>
-        </div>
+        <div id="menu" class="menu blockRaycast"></div>
 
     </div>
 

@@ -64,11 +64,12 @@
   <ItemGroup>
     <Content Include="audio\click.mp3" />
     <Content Include="audio\theme.mp3" />
+    <Content Include="css\font-awesome.css" />
     <Content Include="css\foo.css" />
-    <Content Include="css\maingame.css" />
     <Content Include="css\menu.css" />
     <Content Include="css\reset.css" />
     <Content Include="css\splashScreen.css" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="html\minigame3.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -96,7 +97,7 @@
     <Content Include="img\waterGame\rotate.gif" />
     <Content Include="img\waterGame\STRAIGHT.png" />
     <Content Include="img\waternormals.jpg" />
-    <Content Include="Index.html" />
+    <Content Include="index.html" />
     <Content Include="js\AuxFunctions.js" />
     <Content Include="js\funcInterface.js" />
     <Content Include="js\MainScript.js" />
@@ -119,6 +120,7 @@
     <Content Include="obj\Debug\WeazleWorld.csproj.FileListAbsolute.txt" />
     <Content Include="Resources\Animation\JDLoader.min.js" />
     <Content Include="Resources\easeljs-0.8.2.min.js" />
+    <Content Include="Resources\jquery.rotate.js" />
     <Content Include="Resources\OBJLoader.js" />
     <Content Include="Resources\preloadjs-0.6.2.min.js" />
     <Content Include="Resources\tweenjs-0.6.2.min.js" />
@@ -145,6 +147,11 @@
     <Content Include="Models\palm_leaves_outline_low.obj" />
     <Content Include="Models\palm_trunk_low.obj" />
     <Content Include="Models\palm_trunk_outline_low.obj" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\FontAwesome.otf" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
