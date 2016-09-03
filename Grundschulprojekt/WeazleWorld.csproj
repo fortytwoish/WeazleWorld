@@ -101,7 +101,8 @@
     <Content Include="img\waterGame\rotate.gif" />
     <Content Include="img\waterGame\STRAIGHT.png" />
     <Content Include="img\waternormals.jpg" />
-    <Content Include="index.html">
+    <Content Include="img\wellTexture.png" />
+    <Content Include="Spielstart.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="js\AuxFunctions.js" />
@@ -136,7 +137,7 @@
     <Content Include="Resources\stats.min.js" />
     <Content Include="Resources\jquery-2.2.4.min.js" />
     <Content Include="Resources\three.min.js" />
-    <Content Include="spielstart.html" />
+    <Content Include="index.html" />
     <Content Include="Web.config" />
     <Content Include="Models\bird.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -158,6 +159,7 @@
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="Models\well.obj" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -145,14 +145,14 @@ function pointToString( point )
     return "[ " + point.x + " , " + point.y + " ]";
 }
 
-function arrayContains( a, obj )
+function indexInArray( a, obj )
 {
     for ( var i = 0; i < a.length; i++ )
     {
         if ( a[i] === obj )
         {
-            return true;
+            return i;
         }
     }
-    return false;
+    return -1;
 }

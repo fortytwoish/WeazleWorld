@@ -44,7 +44,8 @@ var camera,
     minigame_palm_leaves         = null,
     minigame_palm_outline        = null,
     placedMinigameNodes          = false,
-    decorationSpriteMeshes
+    decorationSpriteMeshes,
+    activeMinigameNodeIndex;
 
 clickable_objects = [];
 waterCreated = false;
@@ -72,7 +73,7 @@ function initStaticElements()
     //------------------------------------------------------//
     //                  CAMERA                              //
     //------------------------------------------------------//
-    camera            = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 3000000 );
+    camera            = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 5, 3000000 );
     camera.position.x = 0;
     camera.position.y = 10;
     camera.position.z = 35;
@@ -89,9 +90,9 @@ function initStaticElements()
     controls.minPolarAngle   = degreeToRad( 5 );     //  | (0)   |/  (~15)    |_ (90) 
     controls.maxPolarAngle   = degreeToRad( 85 );
 
-    controls.enableDamping   = false; //TODO: Enable this for touchscreens
-
-    controls.enablePan       = true;
+    controls.enableDamping   = false; //TODO: Enable this for touchscreens maybe?
+    controls.enabled         = false;
+    controls.enablePan       = false;
 
     controls.rotateSpeed     = 1;
     controls.autoRotateSpeed = 1;
@@ -119,16 +120,74 @@ function initStaticElements()
     //------------------------------------------------------//
     //                  EVENT BINDING                       //
     //------------------------------------------------------//
-    window.addEventListener(   'resize'    , resizeSplashScreen  , false );
-    document.addEventListener( 'click'     , onWindowResize      , false );
+    window.addEventListener(   'resize'    , onWindowResize, false );
     document.addEventListener( 'touchstart', onDocumentTouchStart, false );
     document.addEventListener( 'click'     , onDocumentMouseClick, false );
     document.addEventListener( 'keydown'   , onkeydown           , false );
 
+    handleWindowVisibility();
+
+    stats = new Stats();
+
     //  Load non-static elements that change with quality setting
     loadQualityLevel();
-    
+}
 
+//  Example by Andy E: http://stackoverflow.com/a/1060034
+function handleWindowVisibility()
+{
+    var hidden = "hidden";
+
+    // Standards:
+    if ( hidden in document )
+        document.addEventListener( "visibilitychange", onchange );
+    else if ( ( hidden = "mozHidden" ) in document )
+        document.addEventListener( "mozvisibilitychange", onchange );
+    else if ( ( hidden = "webkitHidden" ) in document )
+        document.addEventListener( "webkitvisibilitychange", onchange );
+    else if ( ( hidden = "msHidden" ) in document )
+        document.addEventListener( "msvisibilitychange", onchange );
+        // IE 9 and lower:
+    else if ( "onfocusin" in document )
+        document.onfocusin = document.onfocusout = onchange;
+        // All others:
+    else
+        window.onpageshow = window.onpagehide
+        = window.onfocus = window.onblur = onchange;
+
+    function onchange( evt )
+    {
+
+        var v = "visible", h = "hidden",
+            evtMap = {
+                focus: v, focusin: v, pageshow: v, blur: h, focusout: h, pagehide: h
+            };
+
+        evt = evt || window.event;
+        if ( evt.type in evtMap )
+        {
+            document.body.className = evtMap[evt.type];
+        }
+        else
+        {
+            document.body.className = this[hidden] ? "hidden" : "visible";
+            if ( this[hidden] )
+            {
+                console.log( "pausing rendering... " );
+                pauseRendering();
+            }
+            else
+            {
+                console.log( "resuming rendering... " );
+                resumeRendering();
+            }
+        }
+
+    }
+
+    // set the initial state (but only if browser supports the Page Visibility API)
+    if ( document[hidden] !== undefined )
+        onchange( { type: document[hidden] ? "blur" : "focus" } );
 }
 
 function initRenderer()
@@ -141,12 +200,9 @@ function initRenderer()
 
 function initWater()
 {
-    var planeGeom         = new THREE.PlaneBufferGeometry( Math.pow( 2, TERRAIN_RESOLUTION + 1), Math.pow( 2, TERRAIN_RESOLUTION + 1 ) );
+    var planeGeom         = new THREE.PlaneBufferGeometry( Math.pow( 2, TERRAIN_RESOLUTION + 1), Math.pow( 2, TERRAIN_RESOLUTION + 1 ), 1000, 1000 );
     waterMesh2            = new THREE.Mesh( planeGeom, new THREE.MeshPhongMaterial( { color: WATERCOLOR_LOW, transparent: false, shininess: 150} ) );
     waterMesh2.rotation.x = -Math.PI * 0.5;
-
-    //  Add to the scene even if renderWater is enabled, so that there is at least some water while the texture loads
-    scene.add( waterMesh2 );
 
     var textureLoader = new THREE.TextureLoader();
 
@@ -175,8 +231,11 @@ function initWater()
 
         if ( renderWater )
         {
-            scene.remove( waterMesh2 );
             scene.add( waterMesh );
+        }
+        else
+        {
+            scene.add( waterMesh2 );
         }
 
         waterCreated = true;
@@ -319,10 +378,6 @@ function initStatueSegments()
     boxes[1].position.set( STATUE_DIST, VILLAGE_DIMENSIONS.z, -STATUE_DIST);
     boxes[2].position.set(-STATUE_DIST, VILLAGE_DIMENSIONS.z,  STATUE_DIST);
     boxes[3].position.set( STATUE_DIST, VILLAGE_DIMENSIONS.z,  STATUE_DIST);
-    //boxes[0].castShadow = true;
-    //boxes[1].castShadow = true;
-    //boxes[2].castShadow = true;
-    //boxes[3].castShadow = true;
 
     scene.add(boxes[0]);
     scene.add(boxes[1]);
@@ -410,8 +465,7 @@ function initMinigameNodes()
     loadNodeSegment( loader, 'Models/rock.obj',                   minigame_rock_geom );
     loadNodeSegment( loader, 'Models/rock_outline.obj',           minigame_rock_outline_geom );
     //  2. Water
-    loadNodeSegment( loader, 'Models/rock.obj',                   minigame_water_geom );
-    loadNodeSegment( loader, 'Models/rock_outline.obj',           minigame_water_outline_geom );
+    loadNodeSegment( loader, 'Models/well.obj',                   minigame_water_geom );
     //  3. palm
     loadNodeSegment( loader, 'Models/palm_trunk_low.obj',         minigame_palm_geom );
     loadNodeSegment( loader, 'Models/palm_trunk_outline_low.obj', minigame_palm_outline_geom );
@@ -456,6 +510,18 @@ function loadNodeSegment( loader, path, targetGeom )
                         nodeLoaded();
                     } );
                 }
+                else if ( targetGeom == minigame_water_geom )
+                {
+                    
+                    //console.log( child.material );
+                    new THREE.TextureLoader().load( 'img/wellTexture.png', function ( loadedTexture )
+                    {
+                        targetGeom.material = child.material;
+                        targetGeom.material.map = loadedTexture;
+                        console.log( object );
+                        nodeLoaded();
+                    } );
+                }
                 else
                 {
                     nodeLoaded();
@@ -466,7 +532,7 @@ function loadNodeSegment( loader, path, targetGeom )
 }
 
 var nodesLoaded = 0;
-var nodesToLoad = 7;
+var nodesToLoad = 6;
 function nodeLoaded()
 {
     if ( ++nodesLoaded == nodesToLoad )
@@ -478,6 +544,7 @@ function nodeLoaded()
 function OnAllMinigameNodesLoaded()
 {
     var outlineMat = new THREE.MeshBasicMaterial( { color: 0xFF0000 } );
+    var outlineMatInv = new THREE.MeshBasicMaterial( { color: 0xFF0000, side: THREE.BackSide } );
 
     minigame_rock                         = [];
     minigame_rock_outline                 = [];
@@ -496,8 +563,8 @@ function OnAllMinigameNodesLoaded()
         minigame_rock[i]                  = new THREE.Mesh( minigame_rock_geom         .geometry, minigame_rock_geom.material );
         minigame_rock_outline[i]          = new THREE.Mesh( minigame_rock_outline_geom .geometry, outlineMat );
                                                                                                   
-        minigame_water[i]                 = new THREE.Mesh( minigame_water_geom        .geometry, new THREE.MeshPhongMaterial( { color: 0x0000FF } ) );
-        minigame_water_outline[i]         = new THREE.Mesh( minigame_water_outline_geom.geometry, outlineMat );
+        minigame_water[i]                 = new THREE.Mesh( minigame_water_geom        .geometry, minigame_water_geom.material  );
+        minigame_water_outline[i]         = new THREE.Mesh( new THREE.CubeGeometry(8.5,12.75,8.5), outlineMatInv );
                                                                                                   
         minigame_palm[i]                  = new THREE.Mesh( minigame_palm_geom         .geometry, minigame_palm_geom       .material);
         minigame_palm_leaves[i]           = new THREE.Mesh( minigame_palm_leaves_geom  .geometry, minigame_palm_leaves_geom.material);
@@ -552,8 +619,8 @@ function placeMinigameNodes()
         nodeCoordinates.push( new THREE.Vector3( xpos, ypos, zpos ) );
     }
 
-    var rock_height  = 0;
-    var water_height = 0;
+    var rock_height  =  0;
+    var water_height = -1;
     var palm_height  = -1;
 
     for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
@@ -569,6 +636,7 @@ function placeMinigameNodes()
         minigame_water[i].position.x       = minigame_water_outline[i].position.x       = nodeCoordinates[i * 3 + 1].x;
         minigame_water[i].position.y       = minigame_water_outline[i].position.y       = nodeCoordinates[i * 3 + 1].y + water_height;
         minigame_water[i].position.z       = minigame_water_outline[i].position.z       = nodeCoordinates[i * 3 + 1].z;
+        minigame_water[i].scale.set( 0.5, 0.75, 0.5 ); 
         //  Palm
         minigame_palm[i].position.x        = minigame_palm_outline[i].position.x        =
         minigame_palm_leaves[i].position.x = /*minigame_palm_leaves_outline[i].position.x =*/ nodeCoordinates[i * 3 + 2].x;
@@ -636,7 +704,7 @@ var saveAutoRotate;
 
 function pauseRendering()
 {
-    pauseRender = true;
+    renderThreadsToBeKilled++;
     saveAutoRotate = controls.autoRotate;
     controls.autoRotate = false;
 }
@@ -644,10 +712,14 @@ function pauseRendering()
 function resumeRendering()
 {
     controls.autoRotate = saveAutoRotate;
-    pauseRender = false;
     deltaTime = clock.getDelta();
     animate();
 }
+
+//  More thread-safe than a simple boolean that kills the next render thread
+//  Prevents a bug when pausing and _immediately_ resuming (so a second
+//  thread gets created, but the first one isn't killed)
+var renderThreadsToBeKilled = 0;
 
 function renderOnce()
 {
@@ -660,8 +732,9 @@ var pauseRender = false;
 //  Caution: Mostly debug stuff still
 function animate()
 {
-    if ( pauseRender )
+    if ( renderThreadsToBeKilled > 0 )
     {
+        renderThreadsToBeKilled--
         return;
     }
 
@@ -781,6 +854,19 @@ $( function ()
         openMenu();
     } );
 
+    $( "#fullscreenButton" ).click( function ()
+    {
+        if ( !isFullscreen )
+        {
+            isFullscreen = true;
+            goFullscreen();
+        }
+        else
+        {
+            isFullscreen = false;
+            exitFullscreen();
+        }
+    } );
     //Test, to be replaced by clicks on the island's objects
     $( "#minigameButton" ).click( function ()
     {
@@ -803,21 +889,68 @@ $( function ()
 
     $( "#exitStatueButton" ).click( function ()
     {
+        $( "#exitStatueButton" ).hide();
         ExitShowStatue();
     } );
-});
+} );
+
+var isFullscreen = false;
+
+function goFullscreen()
+{
+    var i = document.getElementById( "mainGame" );
+
+    if ( i.requestFullscreen )
+    {
+        i.requestFullscreen();
+    } else if ( i.webkitRequestFullscreen )
+    {
+        i.webkitRequestFullscreen();
+    } else if ( i.mozRequestFullScreen )
+    {
+        i.mozRequestFullScreen();
+    } else if ( i.msRequestFullscreen )
+    {
+        i.msRequestFullscreen();
+    }
+
+    THREE.FullScreen.request();
+}
+
+function exitFullscreen()
+{
+    if ( document.exitFullscreen )
+    {
+        document.exitFullscreen();
+    } else if ( document.webkitExitFullscreen )
+    {
+        document.webkitExitFullscreen();
+    } else if ( document.mozCancelFullScreen )
+    {
+        document.mozCancelFullScreen();
+    } else if ( document.msExitFullscreen )
+    {
+        document.msExitFullscreen();
+    }
+}
 
 //TODO: Find a better method to go fullscreen
 function onWindowResize()
 {
-    var scrollbarSize = 7;
+    console.log( "Resizing..." );
 
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setPixelRatio(window.devicePixelRatio / subsampleFactor);
-    renderer.setSize( window.innerWidth - scrollbarSize, window.innerHeight - scrollbarSize );
+    renderer.setSize( window.innerWidth, window.innerHeight );
 
     resizeMenu();
+    resizeSplashScreen();
+
+    if ( pauseRender )
+    {
+        renderOnce();
+    }
 }
 
 var raycaster = new THREE.Raycaster();
@@ -834,11 +967,11 @@ function onDocumentTouchStart( event )
 
 function onDocumentMouseClick( event )
 {
-    //console.log( preventRaycastOnce );
-    //console.log( controls.enabled );
-    //console.log( pauseRender );
-    //console.log( canClickObjects );
-    //console.log( clickable_objects );
+    //console.log( "preventRaycastOnce" + preventRaycastOnce );
+    //console.log( "controls.enabled  " + controls.enabled );
+    //console.log( "pauseRender       " + pauseRender );
+    //console.log( "canClickObjects   " + canClickObjects );
+    //console.log( "clickable_objects " + clickable_objects );
 
     if (preventRaycastOnce)
     {
@@ -863,21 +996,38 @@ function onDocumentMouseClick( event )
 
     if ( intersects.length > 0 )
     {
-        if ( arrayContains( minigame_rock, intersects[0].object ) )
+        var index = indexInArray( minigame_rock, intersects[0].object );
+        if ( index > -1 )
         {
+            activeMinigameNodeIndex = index;
             startMinigame( 1 );
+            return;
         }
-        else if ( arrayContains( minigame_water, intersects[0].object ) )
+        index = indexInArray( minigame_water, intersects[0].object );
+        if ( index > -1 )
         {
+            activeMinigameNodeIndex = index;
             startMinigame( 2 );
+            return;
         }
-        else if ( arrayContains( minigame_palm, intersects[0].object ) || arrayContains( minigame_palm_leaves, intersects[0].object ) )
+        index = indexInArray( minigame_palm, intersects[0].object );
+        if ( index > -1 )
         {
+            activeMinigameNodeIndex = index;
             startMinigame( 3 );
+            return;
         }
-        else if ( arrayContains(test_statues, intersects[0].object) )
+        index = indexInArray( minigame_palm_leaves, intersects[0].object );
+        if ( index > -1 )
         {
-            //$( "#exitStatueButton" ).show();
+            activeMinigameNodeIndex = index;
+            startMinigame( 3 );
+            return;
+        }
+        index = indexInArray( test_statues, intersects[0].object );
+        if ( index > -1 )
+        {
+            $( "#exitStatueButton" ).show();
             setTimeout( function ()
             {
                 ShowStatue();
@@ -885,10 +1035,10 @@ function onDocumentMouseClick( event )
             
         }
 
-
     }
 
 }
+
 var minigamesVis = true;
 var decorationVis = true;
 function onkeydown( event )
@@ -1216,12 +1366,13 @@ function changeStatueModel( mesh, segmentMat )
             //----------------------//
             //   2. BUILD SEGMENT   //
             //----------------------//
+            mesh.material = segmentMat;
+
             if ( segmentMat == STATUE_WOOD_MAT )
             {
                 scene.add( mesh );
                 clickable_objects.push( mesh );
             }
-            mesh.material = segmentMat;
 
             for (var i = 0; i < weazles.length; i++)
             {
@@ -1270,6 +1421,7 @@ function changeStatueModel( mesh, segmentMat )
                 controls.autoRotate      = false;
                 controls.enabled         = true;
                 canClickObjects          = true;
+                showButtons();
             }
         } );
     }, (zoomInTime + segmentBuildTime + timeUntilZoomOut ) );
@@ -1403,35 +1555,34 @@ function OnMinigameAvailabilityChanged( minigameID, isAvailable )
     }
     else
     {
-        console.log( "minigame " + minigameID + " is no longer available." );
+        var i = activeMinigameNodeIndex;
+
         switch ( minigameID )
         {
+
             case 1:
-                for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
-                {
-                    clickable_objects.splice( minigame_rock[i] );
-                    minigame_rock_outline[i].visible = false;
-                }
+                var index = indexInArray(clickable_objects, minigame_rock[i] );
+                console.log( index );
+                clickable_objects.splice( index, 1 );
+                minigame_rock_outline[i].visible = false;
                 break;
             case 2:
-                for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
-                {
-                    clickable_objects.splice( minigame_water[i] );
-                    minigame_water_outline[i].visible = false;
-                }
+                var index = indexInArray( clickable_objects, minigame_water[i] );
+                console.log( index );
+                clickable_objects.splice( index, 1 );
+                minigame_water_outline[i].visible = false;
                 break;
             case 3:
-                for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
-                {
-                    clickable_objects.splice( minigame_palm[i] );
-                    clickable_objects.splice( minigame_palm_leaves[i] );
-                    minigame_palm_outline[i].visible = false;
-                    //minigame_palm_leaves_outline[i].visible = false;
-                }
+                var index = indexInArray( clickable_objects, minigame_palm[i] );
+                console.log( index );
+                clickable_objects.splice( index, 1 );
+                index = indexInArray( clickable_objects, minigame_palm_leaves[i] );
+                clickable_objects.splice( index, 1 );
+                minigame_palm_outline[i].visible = false;
+                //minigame_palm_leaves_outline[i].visible = false;
+
                 break;
         }
     }
 
 }
-
-//main();

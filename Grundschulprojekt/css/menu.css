@@ -141,3 +141,54 @@
 	color: #000;
 	cursor: text;
 }
+
+/*----------------------*/
+
+#maingameButtonDiv{
+	max-width: 100px;
+	position: absolute;
+	top: 50px;
+}
+
+#maingameButtonDiv button{
+	margin: 4px;
+	width: 100%;
+	visibility: hidden;
+}
+
+#fullscreenButton{
+	visibility: visible;
+    z-index:99;
+    vertical-align:bottom;
+    text-align:right;
+    position:absolute;
+}
+
+#menuButton{
+	visibility: hidden;
+    z-index:99;
+    vertical-align:bottom;
+    text-align:right;
+    position:absolute;
+    right:60px;
+}
+
+#menuButton, #fullscreenButton{
+	background-color: transparent;
+	border: none;
+	font-size: 40pt;
+	color: rgba(0, 0, 0, 0.7);
+	width: inherit;
+}
+
+#menuButton:hover, #fullscreenButton:hover{
+	color: #298AF4;
+}
+
+#menuButton:focus, #fullscreenButton:focus{
+	outline: none;
+}
+
+#menuButton:active, #fullscreenButton:active{
+	outline: none;
+}

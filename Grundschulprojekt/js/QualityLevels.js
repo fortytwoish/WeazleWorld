@@ -264,9 +264,9 @@ function setQuality_TerrainResDependant(terrainRes)
 var numOfAsyncChanges = 0;
 var totalAsyncChanges = 3;
 
-var fadeInTime = 1500;
-var fadeOutTime = 1500;
-var menuFadeInOffset = 1500;
+var fadeInTime        = 1500;
+var fadeOutTime       = 1500;
+var menuFadeInOffset  = 1500;
 
 var initialized = false;
 
@@ -321,8 +321,22 @@ function asyncOperationFinished()
 
 			endedSplashScreen();
 
-			initialized = true;
-		}
+            initialized = true;
+        }
+        else
+        {
+            renderOnce();
+            $( "#splashScreen h1" ).css( "-webkit-animation-play-state", "paused" );
+            $( "#splashScreen" ).fadeOut("fast");
+            $( "#overlay" ).animate( {
+                opacity: 0,
+            }, fadeInTime, function ()
+            {
+
+                $( "#overlay" ).css( "display", "none" );
+
+            } );
+        }
 
 		setQualityButtonsDisabled(false);
 		$("#menuApply").val("Übernehmen");

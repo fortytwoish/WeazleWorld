@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Weazle World</title>
+    <meta charset="utf-8" />
+    <!--Frameworks-->
+    <script type="text/javascript"         src="Resources/jquery-2.2.4.min.js">             </script>
+    <script type="text/javascript"         src="Resources/three.min.js">                    </script>
+    <script type="text/javascript"         src="Resources/OrbitControls.js">                </script>
+    <script type="text/javascript"         src="Resources/stats.min.js">                    </script>
+    <script type="text/javascript"         src="Resources/water-material.js">               </script>
+    <script type="text/javascript"         src="Resources/OBJLoader.js">                    </script>
+    <script type="text/javascript"         src="Resources/Animation/JDLoader.min.js">       </script>
+    <script type="text/javascript"         src="js/script.splashScreen.js">                 </script>
+    <script type="text/javascript"         src="js/script.menu.js">                         </script>
+    <script type="text/javascript"         src="js/QualityLevels.js">                       </script>
+    <script type="text/javascript"         src="js/AuxFunctions.js">                        </script>
+    <script type="text/javascript"         src="js/funcInterface.js">                       </script>
+	<script type="text/javascript"		   src="js/Weazle.js">								</script>
+	<script type="text/javascript"         src="Resources/preloadjs-0.6.2.min.js">	       	</script>
+	<script type="text/javascript"         src="Resources/easeljs-0.8.2.min.js">	       	</script>
+	<script type="text/javascript"         src="Resources/tweenjs-0.6.2.min.js">			</script>
+	<script type="text/javascript"         src="Resources/jquery.rotate.js">				</script>
+    <link rel="icon"      type="image/png" href="img/head.png">
+	<link type="text/css" rel="stylesheet" href="css/reset.css">
+	<link type="text/css" rel="stylesheet" href="css/maingame.css">
+    <link type="text/css" rel="stylesheet" href="css/foo.css">
+    <link type="text/css" rel="stylesheet" href="css/menu.css">
+    <link type="text/css" rel="stylesheet" href="css/splashScreen.css">
+	<link type="text/css" rel="stylesheet" href="css/font-awesome.css">
+</head>
+<body>
+    <div id="mainGame" style="position:absolute; height:100%; width:100%; margin: 0;">
+        <button id="fullscreenButton" class="blockRaycast fa fa-arrows-alt"></button>
+        <button id="menuButton" class="blockRaycast hiddenInMenu fa fa-cog"></button> 
+
+        <div id="overlay"style="position:absolute; height:100%; width:100%; z-index:8; background-color: black; opacity: 0;"></div>
+
+        <!--MessageBox Placeholder at top right corner-->
+        <div id='messageBox' class="menu blockRaycast" style="position:absolute; z-index:10;">
+            <div id='messageBoxContent'>
+
+                <p id='messageBoxContentParagraph'>
+                </p>
+            </div>
+            <input type="button" id="messageBoxButton" value="WEITER" />
+        </div>
+
+     
+        <!--MainGame-->
+        <script src="js/MapGeneration.js"></script>
+        <script src="js/MainScript.js"></script>
+
+        <!--MainGame Buttons-->
+	    <div id="maingameButtonDiv">
+		    <button id="exitStatueButton" class="blockRaycast hiddenInMenu" style="display:none">Exit Statue</button>
+	    </div>
+
+        <!--Placeholder div for minigame content-->
+        <div id="minigame" class="centeredMenu minigame blockRaycast"></div>
+
+        <!--Menu centered horizontally at half width-->
+        <div id="menu" class="menu blockRaycast"></div>
+
+        <!-- SplashScreen placeholder -->
+        <div id="splashScreen" class="blockRaycast" style="position:absolute; z-index:9;"></div>
+
+    </div>
+
+
+</body>
+</html>

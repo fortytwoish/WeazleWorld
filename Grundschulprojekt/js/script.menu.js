@@ -35,22 +35,28 @@ var mainMenuEntries = new Array();
 mainMenuEntries.push(new MenuEntry("menuNewGame", '<input type="button" value="Neues Spiel">', function () {
 	$("#" + this.id).on("click touchstart", function () {
 	    drawMenu( startMenu );
+	    $( "#menuContinue" ).attr( "disabled", false );
+	    isGameStarted = true;
 	} );
-	if ( FIRST_TIME_PLAYING )
-	{
-	    $( "#" + this.id ).attr( "disabled", true );
-	}
+    $( "#" + this.id ).attr( "disabled", isGameStarted );
+
 } ) );
 
+var isGameStarted = false;
 
+mainMenuEntries.push( new MenuEntry( "menuContinue", '<input type="button" value="Fortsetzen">', function ()
+{
+    $( "#" + this.id ).attr( "disabled", !isGameStarted );
 
-mainMenuEntries.push(new MenuEntry("menuContinue", '<input type="button" value="Fortsetzen">', function () {
-		$("#" + this.id).attr("disabled", true);
+    $( "#" + this.id ).on( "click touchstart", function ()
+    {
+        continueMainGame();
+    } );
 }));
 mainMenuEntries.push(new MenuEntry("menuOptions", '<input type="button" value="Optionen">', function () {
 	$("#" + this.id).on("click touchstart", function () {
 	    drawMenu( optionMenu );
-	    document.body.appendChild( stats.dom );
+	    document.getElementById( "mainGame" ).appendChild( stats.dom );
 	    resumeRendering();
 	    controls.autoRotate = true;
 	    controls.update();
@@ -79,16 +85,20 @@ function setQualityButtonsDisabled( val )
 }
 
 var startEntries = new Array();
-startEntries.push(new MenuEntry("menuName", '<input type="text" placeholder="Max" autofocus>', function () {
-	$("<h2>Wie heißt du?</h2>").insertBefore("#" + this.id);
+startEntries.push(new MenuEntry("menuName", '<input type="text" placeholder="Dein Name" autofocus>', function () {
+    $( "<h2>Wie heißt du?</h2>" ).insertBefore( "#" + this.id );
 }));
 startEntries.push(new MenuEntry("menuStart", '<input type="button" value="Los geht\'s!">', function () {
 	$("#" + this.id).on("click touchstart", function () {
-		if ($("#menuName").val() !== "")
-			username = $("#menuName").val();
+	    if ( $( "#menuName" ).val() !== "" )
+	    {
+	        username = $( "#menuName" ).val();
+	        $( "#menuContinue" ).attr( "disabled", false );
+	        $( "#" + this.id ).attr( "disabled", true );
+	        continueMainGame();
+	    }
 		if (DEBUG)
 			console.log(username);
-		continueMainGame();
 	});
 }));
 
@@ -125,21 +135,35 @@ optionEntries.push(new MenuEntry("menuQuality", '<input type="range" min="1" max
 optionEntries.push(new MenuEntry("menuApply", '<input type="button" value="Übernehmen">', function () {
     $( "#" + this.id ).on( "click", function ()
     {
-        setQualityButtonsDisabled( true );
-
-        $( "#menuApply" ).val( "Lädt..." );
-
-
-        setTimeout( function ()
+        if ( quality !== -1 && quality !== currentQuality )
         {
-            if ( quality !== -1 )
-                setQualityLevel( quality );
-            else if ( currentQuality !== -1 )
+            setQualityButtonsDisabled( true );
+
+            $( "#menuApply" ).val( "Lädt..." );
+
+            $( "#overlay" ).show();
+            $( "#overlay" ).animate( {
+                opacity: 1,
+            }, 500 );
+
+            $( "#splashScreen h1" ).html( "Weazles wechseln die Insel ..." );
+
+            $( "#splashScreen h1" ).css( "-webkit-animation-play-state", "running" );
+            $( "#splashScreen" ).fadeIn( "fast" );
+
+            setTimeout( function ()
             {
-                quality = currentQuality;
-                setQualityLevel( currentQuality );
-            }
-        }, 500 );
+                if ( quality !== -1 )
+                {
+                    setQualityLevel( quality );
+                }
+                else if ( currentQuality !== -1 )
+                {
+                    quality = currentQuality;
+                    setQualityLevel( currentQuality );
+                }
+            }, 500 );
+        }
 
 		
 	});
@@ -150,7 +174,7 @@ optionEntries.push(new MenuEntry("menuCredits", '<input type="button" value="Cre
 optionEntries.push(new MenuEntry("menuBack", '<input type="button" value="Zurück">', function () {
 	$("#" + this.id).on("click touchstart", function () {
 	    drawMenu( mainMenu );
-	    document.body.removeChild( stats.dom );
+	    document.getElementById("mainGame").removeChild( stats.dom );
 	    pauseRendering();
 	    controls.autoRotate = false;
 	    controls.update();
@@ -187,7 +211,6 @@ showMenu = function()
 var initMenu = function()
 {
     controls.autoRotate = true;
-    console.log( "initiating menu..." ); 
 	drawMenu(mainMenu);
 }
 

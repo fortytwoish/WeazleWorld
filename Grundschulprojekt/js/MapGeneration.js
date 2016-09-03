@@ -6,7 +6,7 @@ const TEXTUREBRIGHTNESS = 0.45;
 
 
 //  "Biome" borders (upper limits)
-const BEACH_HEIGHT      = 3.25;
+const BEACH_HEIGHT      = 3;
 const BEACH_SLOPE       = 0.75;
 const GRASS_HEIGHT      = 150;
 const GRASS_SLOPE       = 0.65;

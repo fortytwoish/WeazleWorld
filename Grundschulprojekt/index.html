@@ -1,71 +1,78 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>Weazle World</title>
-    <meta charset="utf-8" />
-    <!--Frameworks-->
-    <script type="text/javascript"         src="Resources/jquery-2.2.4.min.js">             </script>
-    <script type="text/javascript"         src="Resources/three.min.js">                    </script>
-    <script type="text/javascript"         src="Resources/OrbitControls.js">                </script>
-    <script type="text/javascript"         src="Resources/stats.min.js">                    </script>
-    <script type="text/javascript"         src="Resources/water-material.js">               </script>
-    <script type="text/javascript"         src="Resources/OBJLoader.js">                    </script>
-    <script type="text/javascript"         src="Resources/Animation/JDLoader.min.js">       </script>
-    <script type="text/javascript"         src="js/script.splashScreen.js">                 </script>
-    <script type="text/javascript"         src="js/script.menu.js">                         </script>
-    <script type="text/javascript"         src="js/QualityLevels.js">                       </script>
-    <script type="text/javascript"         src="js/AuxFunctions.js">                        </script>
-    <script type="text/javascript"         src="js/funcInterface.js">                       </script>
-	<script type="text/javascript"		   src="js/Weazle.js">								</script>
-	<script type="text/javascript"         src="Resources/preloadjs-0.6.2.min.js">	       	</script>
-	<script type="text/javascript"         src="Resources/easeljs-0.8.2.min.js">	       	</script>
-	<script type="text/javascript"         src="Resources/tweenjs-0.6.2.min.js">			</script>
-	<script type="text/javascript"         src="Resources/jquery.rotate.js">				</script>
-    <link rel="icon"      type="image/png" href="img/head.png">
-	<link type="text/css" rel="stylesheet" href="css/reset.css">
-	<link type="text/css" rel="stylesheet" href="css/maingame.css">
-    <link type="text/css" rel="stylesheet" href="css/foo.css">
-    <link type="text/css" rel="stylesheet" href="css/menu.css">
-    <link type="text/css" rel="stylesheet" href="css/splashScreen.css">
-	<link type="text/css" rel="stylesheet" href="css/font-awesome.css">
+   <meta charset="utf-8">
+   <!-- <meta name="viewport" content="width=device-width"> -->
+   <title>b.i.b. International College - Lernspiele für die Grundschule</title>
+   <style type="text/css">
+    html, body {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+    
+		body{
+			margin: 0;
+			/*background-image: url(wiese.gif), linear-gradient(#81caf0 70%, #7bbd52 35%);
+      background-position: center center;
+      background-repeat: repeat-x;*/
+      background-color: #81caf0; 
+		}
+    
+    #rahmen {
+      background-image: url(img/rahmen.gif);
+      position: absolute;
+			top: 50%;
+			left: 50%;
+      margin-left: -640px;
+      margin-top: -400px;
+      width: 1280px;
+      height: 800px; 
+    }
+		
+		iframe {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			height: 520px;
+			width: 880px;
+			margin-top: -228px; 
+			margin-left: -408px;  /* Haelfte von Breite plus padding */
+			overflow:hidden;
+			border: none;
+		}
+    
+    @media (max-width: 1024px) {
+      body {
+			background-image: url(img/rahmen_klein.gif);
+			background-repeat: no-repeat;
+      background-position: bottom right;
+			background-attachment: fixed;
+      }
+    
+			#rahmen {
+				background-image: none;
+        margin: 0;
+        bottom: 0px;
+        right: 0px;
+        top: auto;
+        left: auto;
+			}
+      
+      iframe {
+        margin: 0;
+        bottom: 20px;
+        right: 20px;
+        top: auto;
+        left: auto;
+      }
+    }
+  </style>
 </head>
-<body>
-    <div id="mainGame" style="position:absolute; height:100%; width:100%;">
-        <div id="overlay"style="position:absolute; height:100%; width:100%; z-index:8; background-color: black; opacity: 0;"></div>
-
-        <!--MessageBox Placeholder at top right corner-->
-        <div id='messageBox' class="menu blockRaycast" style="position:absolute; z-index:10;">
-            <div id='messageBoxContent'>
-
-                <p id='messageBoxContentParagraph'>
-                </p>
-            </div>
-            <input type="button" id="messageBoxButton" value="WEITER" />
-        </div>
-
-     
-        <!--MainGame-->
-        <script src="js/MapGeneration.js"></script>
-        <script src="js/MainScript.js"></script>
-
-        <!--MainGame Buttons-->
-	    <div id="maingameButtonDiv">
-		    <button id="menuButton" class="blockRaycast hiddenInMenu fa fa-cog"></button>
-		    <button id="fullscreenButton" class="blockRaycast hiddenInMenu fa fa-arrows-alt"></button>
-		    <button id="exitStatueButton" class="blockRaycast hiddenInMenu fa fa-sign-out"></button>
-	    </div>
-
-        <!--Placeholder div for minigame content-->
-        <div id="minigame" class="centeredMenu minigame blockRaycast"></div>
-
-        <!--Menu centered horizontally at half width-->
-        <div id="menu" class="menu blockRaycast"></div>
-
-        <!-- SplashScreen placeholder -->
-        <div id="splashScreen" class="blockRaycast" style="position:absolute; z-index:9;"></div>
-
-    </div>
-
-
+                                                             
+<body>  
+  <div id="rahmen">
+      <iframe src="Spielstart.html" scrolling="no" id="#iframe" allowFullScreen></iframe> 
+  </div>
 </body>
 </html>

@@ -8,7 +8,8 @@ const TRIES_PER_MINIGAME = 4;
 username = "[Username not set]";
 showTutorials = true;
 
-    //Initial_ StateINIT>>>>>>>>>:
+//Initial_ StateINIT>>>>>>>>>:
+
         currentMessageBoxValue = 1
         currentMessageBoxTexte = [""];
         currentMessageBoxEndText = "";
@@ -126,7 +127,7 @@ function continueMainGame()
             {
                 //console.log( "Contents: " + data );
                 $( "#minigame" ).html( data );
-                $( "#minigame" ).css( "visibility", "visible" );
+                $( "#minigame" ).fadeIn( "slow" );//css( "visibility", "visible" );
             } );
 
         }
@@ -158,33 +159,32 @@ function continueMainGame()
         function exitMinigame()
         {
             isInMenu = false;
-            $( "#minigame" ).css( "visibility", "hidden" );
-    
-            showButtons();
+            $( "#minigame" ).fadeOut( "slow" );
 
             resumeRendering();
         }
 
         function minigamePlayed( minigameNumber )
         {
-            exitMinigame();
-
             var played = getMinigameState( minigameNumber, 1 ) + 1;
 
             setMinigameState( minigameNumber, 1, played ); //  Played++
 
+            //  The next minigame becomes available
             if( played == 1)
             {
                 MinigameAvailabilityChanged( minigameNumber + 1, true );
             }
-            else if( getMinigameState( minigameNumber, 0) ==  played)
-            {
-                MinigameAvailabilityChanged( minigameNumber, false );
-            }
+
+            //  A node of the current minigame becomes unavailable
+            MinigameAvailabilityChanged( minigameNumber, false );
+
         }
 
         function minigameWon( minigameNumber/*, points, lostTries*/ )
         {
+            exitMinigame();
+
             minigamePlayed( minigameNumber );
 
             var won = getMinigameState( minigameNumber, 2 ) + 1;
@@ -220,14 +220,12 @@ function continueMainGame()
         {
             $( "#menuButton" ).css( "visibility", "hidden" );
             $( "#minigameButton" ).css( "visibility", "hidden" );
-            $( "#newMapButton" ).css( "visibility", "hidden" );
         }
 
         function showButtons()
         {
             $( "#menuButton" ).css( "visibility", "visible" );
             $( "#minigameButton" ).css( "visibility", "visible" );
-            $( "#newMapButton" ).css( "visibility", "visible" );
         }
 
         function showMessageBox( messageArr, endText, completeFunction )
@@ -246,7 +244,7 @@ function continueMainGame()
 
         function exitMessageBox()
         {
-            $( "#messageBox" ).hide( "slow",  function(){showButtons()} );
+            $( "#messageBox" ).hide( "slow",  function(){} );
             currentMessageBoxCompleteFunction();
         }
 

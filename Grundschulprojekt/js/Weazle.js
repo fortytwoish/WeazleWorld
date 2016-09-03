@@ -85,7 +85,6 @@ class Weazle
                     this.walkTowards( targetCoords, deltaTime );
                     if ( distanceSquared(new Point(this.mesh.position.x, this.mesh.position.z), new Point(0,0)) < (STATUE_DIST * STATUE_DIST * STATUE_DIST) )
                     {
-                        console.log("Distance reached");
                         //  TODO: Blend to building animation
                         mixer.clipAction( weazleGeom.animations[0] ).stop();
                         //  TODO: Make hammer visible
@@ -115,6 +114,15 @@ class Weazle
         {
             this.mesh.lookAt( targetCoords );
             this.mesh.translateZ( deltaTime * this.speed );
+
+            //if ( Math.abs( this.mesh.position.x ) > islandRadius )
+            //{
+            //    this.mesh.position.x = targetCoords.x;
+            //}
+            //if ( Math.abs( this.mesh.position.y ) > islandRadius )
+            //{
+            //    this.mesh.position.x = targetCoords.y;
+            //}
         }
 
         this.setRandomCoords = function()
@@ -156,7 +164,7 @@ class Weazle
         //  Mesh
         var angle            = Math.random() * Math.PI * 2;
         this.mesh            = new THREE.SkinnedMesh(weazleGeom, weazleMat);
-        this.mesh.castShadow = true;
+        this.mesh.castShadow = false;
         this.mesh.position.x = randBetween(0.5, 1) * Math.cos(angle) * islandRadius;
         this.mesh.position.y = VILLAGE_DIMENSIONS.z;
         this.mesh.rotation.y = Math.random() * Math.PI;
