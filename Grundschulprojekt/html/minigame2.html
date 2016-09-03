@@ -6,10 +6,6 @@
 		height: 100%;
 	}
 
-	#minigame2 p{
-		margin-bottom: 50px;
-	}
-
 	/* testen 880 x 520 */
 
 	#minigame2 #gameFieldAll{
@@ -96,6 +92,14 @@
 		background-color: rgba(0, 0, 0, 0.3);
 	}
 
+	#minigame2 #tutMessage p, #minigame2 #exitMessage p{
+		margin-bottom: 50px;
+	}
+
+	#minigame2 #goMessage p:last-of-type{
+		margin-bottom: 50px;
+	}
+
 	#minigame2 #tutMessage div, #minigame2 #exitMessage div, #minigame2 #goMessage div{
 		font-size: 20pt;
 		position: relative;
@@ -128,17 +132,10 @@
 		margin: 0 30px 30px 30px;
 	}
 
-	#minigame2 #goYesButton{
+	#minigame2 #goOkButton{
 		display: inline-block;
-		width: 250px;
-		margin: auto;
+		width: 50%;
 		margin-bottom: 30px;
-	}
-
-	#minigame2 #goNoButton{
-		display: inline-block;
-		width: 250px;
-		margin: 0 30px 30px 30px;
 	}
 
 	#minigame2 input{
@@ -186,17 +183,17 @@
 	</div>
 	<div id="goMessage">
 		<div>
-			<p></p>
-			<input id="goNoButton" type="button" value="Weiter spielen">
-			<input id="goYesButton" type="button" value="Zurück zur Insel">
+			<input id="goOkButton" type="button" value="Zurück zur Insel">
 		</div>
 	</div>
 </div>
+<!-- MUSS ENTFERNT WERDEN -->
 <script type="text/javascript" src="../Resources/jquery-2.2.4.min.js"></script>
 <script type="text/javascript" src="../Resources/preloadjs-0.6.2.min.js"></script>
 <script type="text/javascript" src="../Resources/easeljs-0.8.2.min.js"></script>
 <script type="text/javascript" src="../Resources/tweenjs-0.6.2.min.js"></script>
 <script type="text/javascript" src="../Resources/jquery.rotate.js"></script>
+<!-- MUSS ENTFERNT WERDEN -->
 <script>
 	/*
 	*   CONST
@@ -298,7 +295,6 @@
 	var finishSound;
 	var gameField;
 	var hasWon = false;
-	var gameFinished = false;
 
 	/*
 	*   OBJECTS
@@ -389,104 +385,6 @@
 	*   GLOBAL FUNCTIONS
 	*/
 
-	/*
-	minigame2Start = function()
-	{
-		button.on("click", function()
-		{
-			if (check(gameField))
-			{
-				winCounter++;
-
-				// Points
-				switch (currentDifficulty)
-				{
-					case DIFFICULTIES.EASY:
-						points += 1;
-						break;
-					case DIFFICULTIES.MEDIUM:
-						points += 2;
-						break;
-					case DIFFICULTIES.HARD:
-						points += 3;
-						break;
-				}
-
-				// Schwirigkeit wählen
-				if (winCounter === 3)
-				{
-					winCounter = 0;
-					switch (currentDifficulty)
-					{
-						case DIFFICULTIES.EASY:
-							currentDifficulty = DIFFICULTIES.MEDIUM;
-							break;
-						case DIFFICULTIES.MEDIUM:
-							currentDifficulty = DIFFICULTIES.HARD;
-							break;
-						case DIFFICULTIES.HARD:
-							gameFinished = true;
-							break;
-					}
-				}
-
-				if (DEBUG >= DEBUG_LEVEL.DEBUG)
-					console.log("Level: " + currentDifficulty + " Counter: " + winCounter);
-
-				// Spiel zuende oder nicht
-				if (winCounter === 3 && currentDifficulty === DIFFICULTIES.HARD || gameFinished)
-				{
-					// Popup Nachricht
-					var message = popupMessage("Richtig\nDu hast " + points + " Punkte gewonnen.");
-					stage.addChild(message);
-
-					message.getChildByName("button").on("click", function()
-					{
-						resetMinigame();
-						minigameWon(2);
-						stage.removeChild(message);
-					});
-				} else
-				{
-					// Popup Nachricht
-					var message = popupMessage("Gewonnen");
-					stage.addChild(message);
-
-					// Nach klick neuer level starten
-					message.getChildByName("button").on("click", function()
-					{
-						// Pipes entfernen
-						removeBitmapsFromStage(stage, bitmaps);
-
-						// Neue daten Generieren
-						gameField = generateGameField(currentDifficulty);
-						bitmaps = gameFieldConvertToBitmap(gameField);
-
-						// Daten hinzufügen
-						setListenerToBitmap(bitmaps);
-						addBitmapsToStage(stage, bitmaps);
-						stage.removeChild(message);
-					});
-				}
-			} else
-			{
-				gameFinished = true;
-				var message = questionMessage("Falsch\nDu hast " + points + " Punkte gewonnen.\nLevel trozdem nochmal versuchen?");
-				stage.addChild(message);
-				message.getChildByName("yes").on("click", function()
-				{
-					stage.removeChild(message);
-				});
-				message.getChildByName("no").on("click", function()
-				{
-					resetMinigame();
-					minigameLost(2);
-					stage.removeChild(message);
-				});
-			}
-		});
-	}
-	*/
 
 	minigame2Start = function (level) {
 		switch (level)
@@ -581,14 +479,6 @@
 			rotateSound[1].onloadeddata = volume;
 			rotateSound[2].onloadeddata = volume;
 
-			/*
-			click.onloadeddata = mute;
-			finishSound.onloadeddata = mute;
-			backgroundMusic.onloadeddata = mute;
-			rotateSound[0].onloadeddata = mute;
-			rotateSound[1].onloadeddata = mute;
-			rotateSound[2].onloadeddata = mute;
-			*/
 		});
 
 		// Ladevorgang starten
@@ -711,26 +601,13 @@
 		$("#goButton").on("click", function () {
 			click.play();
 			finishSound.play();
-			if (!gameFinished)
-			{
-				if (check(gameField)) {
-					$("#goMessage p").text("Du hast gewonnen!");
-					hasWon = true;
-					gameFinished = true;
-				}
-				else {
-					$("#goMessage p").text("Du hast verloren!");
-					hasWon = false;
-					gameFinished = true;
-				}
-			} else
-			{
-				if (hasWon) {
-					$("#goMessage p").text("Du hast schon gewonnen!");
-				}
-				else {
-					$("#goMessage p").text("Du hast leider schon verloren!");
-				}
+			if (check(gameField)) {
+				$("<p>Du hast gewonnen!</p>").insertBefore("#goMessage input");
+				hasWon = true;
+			}
+			else {
+				$("<p>Du hast verloren!</p><p>Versuche es später noch einmal.</p>").insertBefore("#goMessage input");
+				hasWon = false;
 			}
 			$("#goMessage").css("visibility", "visible");
 			$("#goMessage").animate(
@@ -743,23 +620,8 @@
 			}, 200);
 		});
 
-		$("#goNoButton").on("click", function () {
+		$("#goOkButton").on("click", function () {
 			click.play();
-			$("#goMessage").animate(
-			{
-				opacity: 0
-			}, 200);
-			$("#goMessage div").animate(
-			{
-				top: 0
-			}, 200, function () {
-				$("#goMessage").css("visibility", "hidden");
-			});
-		});
-
-		$("#goYesButton").on("click", function () {
-			click.play();
-			backgroundMusic.pause();
 			if (hasWon) {
 				minigameWon(2);
 			}

@@ -1,0 +1,28 @@
+﻿#maingameButtonDiv{
+	max-width: 100px;
+	position: absolute;
+	top: 20px;
+	left: 20px;
+}
+
+#maingameButtonDiv button{
+	background-color: transparent;
+	border: none;
+	font-size: 50pt;
+	color: #000000;
+	color: rgba(0, 0, 0, 0.7);
+	width: inherit;
+	visibility: hidden;
+}
+
+#maingameButtonDiv button:hover{
+	color: #298AF4;
+}
+
+#maingameButtonDiv button:focus{
+	outline: none;
+}
+
+#maingameButtonDiv button:active{
+	outline: none;
+}

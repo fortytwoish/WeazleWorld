@@ -66,6 +66,7 @@
     <Content Include="audio\theme.mp3" />
     <Content Include="css\font-awesome.css" />
     <Content Include="css\foo.css" />
+    <Content Include="css\maingame.css" />
     <Content Include="css\menu.css" />
     <Content Include="css\reset.css" />
     <Content Include="css\splashScreen.css" />

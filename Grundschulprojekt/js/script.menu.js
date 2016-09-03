@@ -45,7 +45,7 @@ mainMenuEntries.push(new MenuEntry("menuNewGame", '<input type="button" value="N
 
 
 mainMenuEntries.push(new MenuEntry("menuContinue", '<input type="button" value="Fortsetzen">', function () {
-	$("#" + this.id).attr("disabled", true);
+		$("#" + this.id).attr("disabled", true);
 }));
 mainMenuEntries.push(new MenuEntry("menuOptions", '<input type="button" value="Optionen">', function () {
 	$("#" + this.id).on("click touchstart", function () {

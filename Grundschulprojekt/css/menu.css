@@ -141,37 +141,3 @@
 	color: #000;
 	cursor: text;
 }
-
-/*----------------------*/
-
-#maingameButtonDiv{
-	max-width: 100px;
-	position: absolute;
-	top: 50px;
-}
-
-#maingameButtonDiv button{
-	margin: 4px;
-	width: 100%;
-	visibility: hidden;
-}
-
-#maingameButtonDiv #menuButton, #maingameButtonDiv #fullscreenButton{
-	background-color: transparent;
-	border: none;
-	font-size: 40pt;
-	color: rgba(0, 0, 0, 0.7);
-	width: inherit;
-}
-
-#maingameButtonDiv #menuButton:hover, #maingameButtonDiv #fullscreenButton:hover{
-	color: #298AF4;
-}
-
-#maingameButtonDiv #menuButton:focus, #maingameButtonDiv #fullscreenButton:focus{
-	outline: none;
-}
-
-#maingameButtonDiv #menuButton:active, #maingameButtonDiv #fullscreenButton:active{
-	outline: none;
-}
