@@ -1,4 +1,4 @@
-#menu{
+.menu{
 	position: absolute;
 	background-color: rgba(0, 0, 0, 0.65);
 	border: 2px solid #faf9d9;
@@ -8,21 +8,21 @@
 	box-sizing: border-box;
 }
 
-#menu .left{
+.menu .left{
 	text-align: left;
 	display: block;
 	position: absolute;
 	left: 0;
 }
 
-#menu .right{
+.menu .right{
 	text-align: right;
 	display: block;
 	position: absolute;
 	right: 0;
 }
 
-#menu h1, h2{
+.menu h1, h2{
 	font-family: 'Calibri';
 	color: #FFFFFF;
 	text-align: center;
@@ -32,25 +32,25 @@
 	margin: auto;
 }
 
-#menu h1{
+.menu h1{
 	font-size: 25pt;
 	height: 25pt;
 	margin-bottom: 20px;
 }
 
-#menu h2{
+.menu h2{
 	font-size: 20pt;
 	height: 20pt;
 	margin-bottom: 10px;
 }
 
-#menu input{
+.menu input{
 	width: 70%;
 	display: block;
 	margin: 0 auto 25px auto;
 }
 
-#menu input[type=text]{
+.menu input[type=text]{
 	width: 80%;
 	border: 0;
 	font-family: 'Calibri';
@@ -63,7 +63,7 @@
 	padding: 5px;
 }
 
-#menu input[type=button]{
+.menu input[type=button]{
 	font-family: 'Calibri';
 	letter-spacing: 2px;
 	font-weight: bold;
@@ -75,7 +75,7 @@
 	padding: 5px;
 }
 
-#menu input[type=range]{
+.menu input[type=range]{
 	/*removes default webkit styles*/
 	-webkit-appearance: none;
 
@@ -83,7 +83,7 @@
 	border: 1px solid #FFFFFF;
 }
 
-#menu input[type=range]::-webkit-slider-runnable-track{
+.menu input[type=range]::-webkit-slider-runnable-track{
 	width: 300px;
 	height: 5px;
 	background: #FFFFFF;
@@ -91,7 +91,7 @@
 	border-radius: 3px;
 }
 
-#menu input[type=range]::-webkit-slider-thumb{
+.menu input[type=range]::-webkit-slider-thumb{
 	-webkit-appearance: none;
 	border: none;
 	height: 16px;
@@ -101,11 +101,11 @@
 	margin-top: -4px;
 }
 
-#menu input[type=range]:hover::-webkit-slider-thumb{
+.menu input[type=range]:hover::-webkit-slider-thumb{
 	background: #BFFFFF;
 }
 
-#menu input[type=range]:focus::-webkit-slider-thumb{
+.menu input[type=range]:focus::-webkit-slider-thumb{
 	background: #BFFFFF;
 }
 
@@ -121,22 +121,22 @@
 	input[type=range]:focus::-ms-fill-upper {
 */
 
-#menu input:disabled{
+.menu input:disabled{
 	color: #AAAAAA;
 	background-color: #444444;
 }
 
-#menu input:focus{
+.menu input:focus{
 	outline: none;
 }
 
-#menu input:hover{
+.menu input:hover{
 	background-color: #BFFFFF;
 	color: #298AF4;
 	cursor: pointer;
 }
 
-#menu input[type=text]:hover{
+.menu input[type=text]:hover{
 	background-color: #FFF;
 	color: #000;
 	cursor: text;
@@ -160,35 +160,48 @@
 	visibility: visible;
     z-index:99;
     vertical-align:bottom;
+    display:inline;
     text-align:right;
+    right:0;
     position:absolute;
 }
 
 #menuButton{
 	visibility: hidden;
     z-index:99;
+    display:inline;
     vertical-align:bottom;
     text-align:right;
     position:absolute;
     right:60px;
 }
 
-#menuButton, #fullscreenButton{
+#exitStatueButton
+{
+    visibility: hidden;
+    z-index:99;
+    display:inline;
+    vertical-align:bottom;
+    text-align:right;
+    position:absolute;
+    right:120px;
+}
+
+#menuButton, #fullscreenButton, #exitStatueButton{
 	background-color: transparent;
 	border: none;
 	font-size: 40pt;
-	color: rgba(0, 0, 0, 0.7);
-	width: inherit;
+	color: rgba(255, 255, 255, 1.0);
 }
 
-#menuButton:hover, #fullscreenButton:hover{
+#menuButton:hover, #fullscreenButton:hover, #exitStatueButton:hover{
 	color: #298AF4;
 }
 
-#menuButton:focus, #fullscreenButton:focus{
+#menuButton:focus, #fullscreenButton:focus, #exitStatueButton:focus{
 	outline: none;
 }
 
-#menuButton:active, #fullscreenButton:active{
+#menuButton:active, #fullscreenButton:active, #exitStatueButton:active{
 	outline: none;
 }

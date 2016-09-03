@@ -35,102 +35,107 @@ function setQualityLevel(level)
 	controls.rotateSpeed = 1;
 	controls.zoomSpeed = 2;
 
+	renderWater = true;
+
 	switch (level)
 	{
 		case 1:
 			setQuality_TerrainResDependant(7);
 			renderer.antialias = false;
+			renderWater = false;
 			subsampleFactor = 5;
-			GRASS_DENSITY = 20;
+			directionalLight.castShadow = false;
+			GRASS_DENSITY = -1;
 			break;
 		case 2:
 			setQuality_TerrainResDependant(7);
 			renderer.antialias = false;
-			subsampleFactor = 5;
-			GRASS_DENSITY = 19;
+			renderWater = false;
+			subsampleFactor = 4;
+			GRASS_DENSITY = -1;
 			break;
 		case 3:
 			setQuality_TerrainResDependant(7);
 			renderer.antialias = false;
-			subsampleFactor = 5;
-			GRASS_DENSITY = 18;
+			subsampleFactor = 4;
+			GRASS_DENSITY = -1;
 			break;
 		case 4:
 			setQuality_TerrainResDependant(8);
-			renderer.antialias = true;
-			subsampleFactor = 5;
+			renderer.antialias = false;
+			subsampleFactor = 3;
 			GRASS_DENSITY = 17;
 			break;
 		case 5:
 			setQuality_TerrainResDependant(8);
-			renderer.antialias = true;
-			subsampleFactor = 4;
+			renderer.antialias = false;
+			subsampleFactor = 3;
 			GRASS_DENSITY = 16;
 			break;
 		case 6:
 			setQuality_TerrainResDependant(8);
-			renderer.antialias = true;
-			subsampleFactor = 4;
+			renderer.antialias = false;
+			subsampleFactor = 2;
 			GRASS_DENSITY = 15;
 			break;
 		case 7:
 			setQuality_TerrainResDependant(9);
-			renderer.antialias = true;
-			subsampleFactor = 4;
+			renderer.antialias = false;
+			subsampleFactor = 2;
 			GRASS_DENSITY = 14;
 			break;
 		case 8:
 			setQuality_TerrainResDependant(9);
-			renderer.antialias = true;
-			subsampleFactor = 4;
+			renderer.antialias = false;
+			subsampleFactor = 1;
 			GRASS_DENSITY = 13;
 			break;
 		case 9:
 			setQuality_TerrainResDependant(9);
-			renderer.antialias = true;
-			subsampleFactor = 3;
+			renderer.antialias = false;
+			subsampleFactor = 1;
 			GRASS_DENSITY = 12;
 			break;
 		case 10:
 			setQuality_TerrainResDependant(10);
-			renderer.antialias = true;
-			subsampleFactor = 3;
+			renderer.antialias = false;
+			subsampleFactor = 1;
 			GRASS_DENSITY = 11;
 			break;
 		case 11:
 			setQuality_TerrainResDependant(10);
-			renderer.antialias = true;
-			subsampleFactor = 3;
+			renderer.antialias = false;
+			subsampleFactor = 1;
 			GRASS_DENSITY = 10;
 			break;
 		case 12:
 			setQuality_TerrainResDependant(10);
 			renderer.antialias = true;
-			subsampleFactor = 3;
+			subsampleFactor = 1;
 			GRASS_DENSITY = 9;
 			break;
 		case 13:
 			setQuality_TerrainResDependant(11);
 			renderer.antialias = true;
-			subsampleFactor = 3;
+			subsampleFactor = 1;
 			GRASS_DENSITY = 8;
 			break;
 		case 14:
 			setQuality_TerrainResDependant(11);
 			renderer.antialias = true;
-			subsampleFactor = 2;
+			subsampleFactor = 1;
 			GRASS_DENSITY = 7;
 			break;
 		case 15:
 			setQuality_TerrainResDependant(11);
 			renderer.antialias = true;
-			subsampleFactor = 2;
+			subsampleFactor = 1;
 			GRASS_DENSITY = 6;
 			break;
 		case 16:
 			setQuality_TerrainResDependant(11);
 			renderer.antialias = true;
-			subsampleFactor = 2;
+			subsampleFactor = 1;
 			GRASS_DENSITY = 5;
 			break;
 		case 17:

@@ -6,7 +6,7 @@ TERRAIN_RESOLUTION = 0;
 GRASS_DENSITY = 1;
 
 //  CONSTANTS
-const DEFAULT_QUALITY    = 1;
+const DEFAULT_QUALITY    = 8;
 const PAUSE_IN_MENU      = true;
 const WATERLEVEL         = 0;
 const WATERCOLOR         = 0x55AAAA;
@@ -830,31 +830,19 @@ renderWater = true;
 $( function ()
 {
     
-    $(".blockRaycast").mousedown(function ()
+    $( ".blockRaycast" ).on( "mousedown", "touchstart", function ()
     {
         preventRaycastOnce = true;
     } );
 
-	$("#newMapButton").click(function()
-	{
-		var terrainRes = parseInt(prompt("Which resolution? (7-12)"));
 
-        if (terrainRes != null && terrainRes >= 7 && terrainRes <= 12)
-        {
-            click_MapGenStart( terrainRes );
-		}
-		else
-		{
-			//	Cancel was pressed
-		}
-	} );
-
-    $( "#menuButton" ).click( function ()
+    $( "#menuButton" ).on("click", "touchstart", function()
     {
         openMenu();
     } );
 
-    $( "#fullscreenButton" ).click( function ()
+
+    $( "#fullscreenButton" ).on( "click", "touchstart", function ()
     {
         if ( !isFullscreen )
         {
@@ -867,31 +855,20 @@ $( function ()
             exitFullscreen();
         }
     } );
-    //Test, to be replaced by clicks on the island's objects
-    $( "#minigameButton" ).click( function ()
-    {
-        var minigameID = prompt("Which minigame? (1-3)");
 
-        if ( minigameID != null )
-        {
-            startMinigame( minigameID );
-        }
-    });
 
-    $("#showMessageBoxButton").click(function () {
-        click_MessageBox();
-    });
-
-    $( "#messageBoxButton" ).click( function ()
+    $( "#messageBoxButton" ).on( "click", "touchstart", function ()
     {
         click_MessageBoxWeiter();
     } );
 
-    $( "#exitStatueButton" ).click( function ()
+
+    $( "#exitStatueButton" ).on( "click", "touchstart", function ()
     {
         $( "#exitStatueButton" ).hide();
         ExitShowStatue();
     } );
+
 } );
 
 var isFullscreen = false;
