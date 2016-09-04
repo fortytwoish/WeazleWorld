@@ -133,8 +133,8 @@
 		color: #BFFFFF;
 		padding: 5px;
 	}
-	#minigame2 input:hover
-	{
+
+	#minigame2 input:hover{
 		background-color: #BFFFFF;
 		color: #298AF4;
 		cursor: pointer;
@@ -168,46 +168,340 @@
 
 	var TUTLEVEL = new Array();
 	TUTLEVEL.push(
-		[[6, 4, 0],
-		[4, 2, 6],
-		[2, 6, 7]]
+		[
+			[
+				6, 4, 0
+			],
+			[4, 2, 6],
+			[2, 6, 7]
+		]
 	);
 
 	var EASYLEVEL = new Array();
 	EASYLEVEL.push(
-		[[7, 6, 6, 4],
-		[6, 7, 6, 1],
-		[6, 7, 6, 1],
-		[0, 0, 0, 2]]
+		[
+			[
+				7, 6, 6, 4
+			],
+			[6, 7, 6, 1],
+			[6, 7, 6, 1],
+			[0, 0, 0, 2]
+		]
 	);
 	EASYLEVEL.push(
-		[[6, 6, 4, 0],
-		[4, 3, 1, 7],
-		[1, 1, 1, 6],
-		[2, 5, 2, 7]]
+		[
+			[
+				6, 6, 4, 0
+			],
+			[4, 3, 1, 7],
+			[1, 1, 1, 6],
+			[2, 5, 2, 7]
+		]
 	);
 	EASYLEVEL.push(
-		[[4, 3, 4, 0],
-		[1, 5, 2, 6],
-		[1, 6, 6, 6],
-		[2, 7, 6, 7]]
+		[
+			[
+				4, 3, 4, 0
+			],
+			[1, 5, 2, 6],
+			[1, 6, 6, 6],
+			[2, 7, 6, 7]
+		]
 	);
 	EASYLEVEL.push(
-		[[7, 7, 4, 0],
-		[7, 4, 2, 7],
-		[4, 2, 7, 6],
-		[2, 7, 7, 7]]
+		[
+			[
+				7, 7, 4, 0
+			],
+			[7, 4, 2, 7],
+			[4, 2, 7, 6],
+			[2, 7, 7, 7]
+		]
 	);
 	EASYLEVEL.push(
-		[[7, 6, 6, 4],
-		[6, 4, 3, 1],
-		[6, 1, 5, 2],
-		[0, 2, 6, 6]]
+		[
+			[
+				7, 6, 6, 4
+			],
+			[6, 4, 3, 1],
+			[6, 1, 5, 2],
+			[0, 2, 6, 6]
+		]
+	);
+	EASYLEVEL.push(
+		[
+			[
+				7, 4, 0, 0
+			],
+			[6, 5, 3, 6],
+			[4, 0, 2, 7],
+			[2, 0, 7, 7]
+		]
+	);
+	EASYLEVEL.push(
+		[
+			[
+				4, 0, 3, 4
+			],
+			[1, 6, 1, 1],
+			[1, 7, 5, 2],
+			[2, 6, 7, 7]
+		]
+	);
+	EASYLEVEL.push(
+		[
+			[
+				4, 3, 4, 0
+			],
+			[1, 1, 5, 3],
+			[1, 5, 0, 2],
+			[2, 6, 6, 7]
+		]
+	);
+	EASYLEVEL.push(
+		[
+			[
+				7, 7, 4, 0
+			],
+			[4, 0, 2, 7],
+			[5, 3, 6, 7],
+			[3, 2, 7, 7]
+		]
+	);
+	EASYLEVEL.push(
+		[
+			[
+				7, 0, 6, 4
+			],
+			[7, 0, 6, 1],
+			[6, 4, 0, 2],
+			[0, 2, 5, 7]
+		]
 	);
 
 	var MEDIUMLEVEL = new Array();
+	MEDIUMLEVEL.push(
+		[
+			[
+				7, 4, 0, 0, 0
+			],
+			[6, 1, 4, 3, 6],
+			[6, 5, 2, 1, 7],
+			[4, 0, 0, 2, 7],
+			[2, 6, 7, 6, 7]
+		]
+	);
+	MEDIUMLEVEL.push(
+		[
+			[
+				7, 7, 6, 6, 4
+			],
+			[4, 0, 4, 6, 1],
+			[1, 6, 5, 0, 2],
+			[1, 6, 6, 6, 6],
+			[2, 7, 6, 7, 7]
+		]
+	);
+	MEDIUMLEVEL.push(
+		[
+			[
+				7, 7, 6, 4, 0
+			],
+			[7, 1, 3, 1, 6],
+			[6, 1, 5, 2, 6],
+			[7, 5, 3, 6, 7],
+			[0, 1, 2, 6, 7]
+		]
+	);
+	MEDIUMLEVEL.push(
+		[
+			[
+				7, 6, 6, 6, 4
+			],
+			[6, 6, 4, 3, 1],
+			[4, 0, 2, 5, 2],
+			[1, 6, 6, 6, 7],
+			[2, 7, 6, 6, 7]
+		]
+	);
+	MEDIUMLEVEL.push(
+		[
+			[
+				7, 7, 7, 6, 4
+			],
+			[7, 6, 6, 4, 2],
+			[4, 0, 3, 1, 7],
+			[1, 7, 5, 2, 6],
+			[2, 6, 6, 7, 7]
+		]
+	);
+	MEDIUMLEVEL.push(
+		[
+			[
+				7, 6, 4, 0, 0
+			],
+			[6, 6, 1, 6, 6],
+			[7, 6, 5, 3, 7],
+			[6, 4, 3, 1, 6],
+			[0, 2, 5, 2, 7]
+		]
+	);
+	MEDIUMLEVEL.push(
+		[
+			[
+				7, 6, 6, 4, 0
+			],
+			[4, 0, 3, 5, 3],
+			[1, 6, 5, 0, 2],
+			[1, 6, 6, 6, 6],
+			[1, 6, 6, 6, 7]
+		]
+	);
+	MEDIUMLEVEL.push(
+		[
+			[
+				7, 7, 4, 0, 0
+			],
+			[7, 7, 1, 6, 6],
+			[6, 6, 1, 6, 7],
+			[4, 3, 1, 6, 7],
+			[2, 5, 2, 6, 7]
+		]
+	);
+	MEDIUMLEVEL.push(
+		[
+			[
+				7, 7, 4, 3, 4
+			],
+			[7, 6, 1, 5, 2],
+			[4, 3, 5, 3, 7],
+			[1, 5, 0, 2, 6],
+			[2, 7, 7, 6, 7]
+		]
+	);
+	MEDIUMLEVEL.push(
+		[
+			[
+				7, 7, 7, 7, 4
+			],
+			[4, 3, 4, 3, 1],
+			[1, 5, 2, 5, 2],
+			[1, 6, 6, 7, 6],
+			[2, 7, 7, 6, 7]
+		]
+	);
 
 	var HARDLEVEL = new Array();
+	HARDLEVEL.push(
+		[
+			[
+				7, 7, 7, 4, 0, 0, 0
+			],
+			[6, 7, 7, 5, 0, 3, 6],
+			[4, 0, 0, 0, 3, 1, 6],
+			[1, 7, 6, 4, 2, 1, 6],
+			[2, 6, 6, 5, 0, 2, 7]
+		]
+	);
+	HARDLEVEL.push(
+		[
+			[
+				7, 6, 6, 6, 6, 4, 0
+			],
+			[4, 0, 0, 3, 7, 5, 3],
+			[1, 7, 7, 1, 6, 7, 1],
+			[1, 7, 6, 1, 6, 7, 1],
+			[2, 7, 6, 5, 0, 0, 2]
+		]
+	);
+	HARDLEVEL.push(
+		[
+			[
+				7, 6, 6, 7, 4, 3, 4
+			],
+			[6, 6, 6, 4, 2, 1, 1],
+			[6, 6, 6, 1, 6, 1, 1],
+			[6, 7, 6, 1, 6, 5, 2],
+			[0, 0, 0, 2, 6, 6, 6]
+		]
+	);
+	HARDLEVEL.push(
+		[
+			[
+				7, 6, 6, 6, 4, 0, 0
+			],
+			[6, 7, 6, 4, 2, 6, 6],
+			[4, 0, 3, 5, 0, 0, 3],
+			[1, 6, 1, 6, 6, 6, 1],
+			[2, 7, 5, 0, 0, 0, 2]
+		]
+	);
+	HARDLEVEL.push(
+		[
+			[
+				4, 3, 7, 4, 0, 3, 4
+			],
+			[1, 1, 0, 1, 6, 1, 1],
+			[1, 1, 0, 1, 6, 1, 1],
+			[1, 1, 0, 5, 3, 1, 1],
+			[2, 5, 0, 0, 2, 5, 2]
+		]
+	);
+	HARDLEVEL.push(
+		[
+			[
+				7, 6, 6, 6, 6, 6, 4
+			],
+			[2, 0, 0, 0, 0, 0, 2],
+			[1, 6, 6, 6, 4, 0, 3],
+			[5, 0, 0, 0, 2, 6, 1],
+			[0, 0, 0, 0, 0, 0, 2]
+		]
+	);
+	HARDLEVEL.push(
+		[
+			[
+				7, 4, 0, 0, 0, 0, 0
+			],
+			[6, 1, 4, 0, 0, 3, 6],
+			[6, 1, 5, 0, 3, 1, 6],
+			[6, 5, 0, 0, 2, 1, 6],
+			[0, 0, 0, 0, 0, 2, 7]
+		]
+	);
+	HARDLEVEL.push(
+		[
+			[
+				7, 6, 6, 6, 6, 4, 0
+			],
+			[6, 6, 4, 3, 6, 5, 3],
+			[6, 4, 2, 5, 3, 4, 2],
+			[4, 2, 7, 7, 5, 2, 6],
+			[2, 6, 6, 6, 6, 6, 7]
+		]
+	);
+	HARDLEVEL.push(
+		[
+			[
+				7, 6, 6, 6, 4, 3, 4
+			],
+			[6, 7, 7, 7, 1, 5, 2],
+			[6, 6, 6, 6, 1, 6, 6],
+			[6, 4, 3, 6, 1, 7, 6],
+			[0, 2, 5, 0, 2, 6, 7]
+		]
+	);
+	HARDLEVEL.push(
+		[
+			[
+				4, 0, 0, 3, 4, 3, 4
+			],
+			[1, 6, 7, 5, 2, 1, 1],
+			[5, 3, 6, 6, 6, 1, 1],
+			[4, 2, 6, 7, 6, 1, 1],
+			[2, 7, 6, 6, 6, 5, 2]
+		]
+	);
 
 	var LEVELS = {
 		TUT: TUTLEVEL,
@@ -352,8 +646,8 @@
 	*   GLOBAL FUNCTIONS
 	*/
 
-
-	minigame2Start = function (level) {
+	minigame2Start = function(level)
+	{
 		switch (level)
 		{
 			case 0:
@@ -391,7 +685,8 @@
 		loadQueue.loadFile(AUDIOFILES.ROTATE3);
 
 		// Handle window resize
-		$(window).on("resize", function () {
+		$(window).on("resize", function()
+		{
 			resize();
 		});
 
@@ -399,14 +694,16 @@
 		var loadBar = new createjs.Shape();
 		loadBar.graphics.beginFill("Grey").drawRect(250, 250, 0, 20);
 		stage.addChild(loadBar);
-		loadQueue.on("progress", function (e) {
+		loadQueue.on("progress", function(e)
+		{
 			loadBar.graphics.beginFill("Grey").drawRect(250, 250, e.progress * 200, 20);
 			if (e.progress === 1)
 				stage.removeChild(loadBar);
 		});
 
 		// Fertig geladen
-		loadQueue.on("complete", function () {
+		loadQueue.on("complete", function()
+		{
 			createjs.Ticker.addEventListener("tick", tick);
 			createjs.Ticker.setFPS(FPS);
 
@@ -414,7 +711,8 @@
 			addGameFieldToTable(gameField);
 			$("#start").attr("src", IMAGES.START);
 			$("#target").attr("src", IMAGES.TARGET);
-			setTimeout(function () {
+			setTimeout(function()
+			{
 				resize();
 			}, 10);
 
@@ -429,7 +727,7 @@
 			rotateSound[1] = new Audio(AUDIOFILES.ROTATE2);
 			rotateSound[2] = new Audio(AUDIOFILES.ROTATE3);
 
-			var mute = function ()
+			var mute = function()
 			{
 				this.muted = true;
 			}
@@ -445,14 +743,14 @@
 			rotateSound[0].onloadeddata = volume;
 			rotateSound[1].onloadeddata = volume;
 			rotateSound[2].onloadeddata = volume;
-
 		});
 
 		// Ladevorgang starten
 		loadQueue.load();
 
 		// Generate animated Background objects
-		for (var i = 0; i < 10; i++) {
+		for (var i = 0; i < 10; i++)
+		{
 			var background = new createjs.Shape();
 			background.graphics.beginFill("Grey").drawPolyStar(parseInt(300 - Math.random() * (window.innerWidth + 300)) + 300, parseInt(300 - Math.random() * (window.innerHeight + 300)) + 300, 600, 5, 0.2, parseInt(Math.random() * 360));
 			background.alpha = Math.random();
@@ -470,8 +768,10 @@
 		var waterTimer = 2;
 
 		// Animation
-		function tick() {
-			if (waterParticles > 0 && waterTimer === 0) {
+		function tick()
+		{
+			if (waterParticles > 0 && waterTimer === 0)
+			{
 				var waterParticle = new createjs.Shape();
 				// drawPolyStar ( x  y  radius  sides  pointSize  angle )
 				waterParticle.graphics.beginFill("DeepSkyBlue").drawPolyStar(window.innerWidth - parseInt(Math.random() * (window.innerWidth / 10)), 0, 8, 5, 0.2, parseInt(Math.random() * 360));
@@ -489,7 +789,8 @@
 
 		// JQuery
 
-		$("#tutButton").on("click touchstart", function () {
+		$("#tutButton").on("click touchstart", function()
+		{
 			click.play();
 			$("#tutMessage").css("visibility", "visible");
 			$("#tutMessage").animate(
@@ -502,7 +803,8 @@
 			}, 200);
 		});
 
-		$("#tutOkButton").on("click touchstart", function () {
+		$("#tutOkButton").on("click touchstart", function()
+		{
 			click.play();
 			$("#tutMessage").animate(
 			{
@@ -511,19 +813,22 @@
 			$("#tutMessage div").animate(
 			{
 				top: 0
-			}, 200, function () {
+			}, 200, function()
+			{
 				$("#tutMessage").css("visibility", "hidden");
 			});
 		});
 
-		$("#goButton").on("click touchstart", function () {
+		$("#goButton").on("click touchstart", function()
+		{
 			click.play();
 			finishSound.play();
-			if (check(gameField)) {
+			if (check(gameField))
+			{
 				$("<p>Du hast gewonnen!</p>").insertBefore("#goMessage input");
 				hasWon = true;
-			}
-			else {
+			} else
+			{
 				$("<p>Du hast verloren!</p><p>Versuche es später noch einmal.</p>").insertBefore("#goMessage input");
 				hasWon = false;
 			}
@@ -538,16 +843,15 @@
 			}, 200);
 		});
 
-		$("#goOkButton").on("click touchstart", function () {
+		$("#goOkButton").on("click touchstart", function()
+		{
 			click.play();
 			backgroundMusic.pause();
 			createjs.Ticker.paused = true;
-			if (hasWon) {
+			if (hasWon)
 				minigameWon(2);
-			}
-			else {
+			else
 				minigameLost(2);
-			}
 			$("#goMessage").animate(
 			{
 				opacity: 0
@@ -555,7 +859,8 @@
 			$("#goMessage div").animate(
 			{
 				top: 0
-			}, 200, function () {
+			}, 200, function()
+			{
 				$("#goMessage").css("visibility", "hidden");
 			});
 		});
@@ -631,14 +936,12 @@
 				$(this).children("img").not("#rotater").css({ transform: "rotate(1deg)" });
 
 			$(this).children("img").not("#rotater").animate({ rotate: gameFieldLocal[row][col].getRotation() }, { duration: 200 }, 'linear');
-
 		});
 
 		$("#gameField td").on("mouseenter", function()
 		{
 			$(this).append('<img id="rotater" src="' + IMAGES.ROTATE + '" alt="Rotations anzeige Pfeil" >');
 			$(this).css("cursor", "pointer");
-
 		});
 
 		$("#gameField td").on("mouseleave", function()
@@ -684,12 +987,16 @@
 				}
 
 		// Testausgabe row = zeile
-		if (DEBUG >= DEBUG_LEVEL.DEBUG) {
+		if (DEBUG >= DEBUG_LEVEL.DEBUG)
+		{
 			console.log("Lösung");
-			gameField.forEach(function (row) {
+			gameField.forEach(function(row)
+			{
 				var s = '[';
-				row.forEach(function (col) {
-					switch (col.getPipeType()) {
+				row.forEach(function(col)
+				{
+					switch (col.getPipeType())
+					{
 						case PIPES.UPDOWN:
 							s = s + ' ' + "|";
 							break;
