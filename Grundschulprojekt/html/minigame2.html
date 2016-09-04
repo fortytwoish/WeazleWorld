@@ -65,12 +65,6 @@
 		left: 20px;
 	}
 
-	#minigame2 #exitButton{
-		position: absolute;
-		top: 20px;
-		right: 20px;
-	}
-
 	#minigame2 #canvas{
 		position: absolute;
 		width: 100%;
@@ -78,7 +72,7 @@
 		background-color: #AAA;
 	}
 
-	#minigame2 #tutMessage, #minigame2 #exitMessage, #minigame2 #goMessage{
+	#minigame2 #tutMessage, #minigame2 #goMessage{
 		position: absolute;
 		text-align: center;
 		width: 100%;
@@ -92,7 +86,7 @@
 		background-color: rgba(0, 0, 0, 0.3);
 	}
 
-	#minigame2 #tutMessage p, #minigame2 #exitMessage p{
+	#minigame2 #tutMessage p{
 		margin-bottom: 50px;
 	}
 
@@ -100,7 +94,7 @@
 		margin-bottom: 50px;
 	}
 
-	#minigame2 #tutMessage div, #minigame2 #exitMessage div, #minigame2 #goMessage div{
+	#minigame2 #tutMessage div, #minigame2 #goMessage div{
 		font-size: 20pt;
 		position: relative;
 		margin: 15% 25% auto 25%;
@@ -118,18 +112,6 @@
 		display: inline-block;
 		width: 40%;
 		margin-bottom: 30px;
-	}
-
-	#minigame2 #exitYesButton{
-		display: inline-block;
-		width: 30%;
-		margin-bottom: 30px;
-	}
-
-	#minigame2 #exitNoButton{
-		display: inline-block;
-		width: 30%;
-		margin: 0 30px 30px 0;
 	}
 
 	#minigame2 #goOkButton{
@@ -173,26 +155,12 @@
 			<input id="tutOkButton" type="button" value="O.K.">
 		</div>
 	</div>
-	<div id="exitMessage">
-		<div>
-			<p>Minispiel wirklich verlassen?</p>
-			<input id="exitNoButton" type="button" value="Nein">
-			<input id="exitYesButton" type="button" value="Ja">
-		</div>
-	</div>
 	<div id="goMessage">
 		<div>
 			<input id="goOkButton" type="button" value="Zurück zur Insel">
 		</div>
 	</div>
 </div>
-<!-- MUSS ENTFERNT WERDEN -->
-<script type="text/javascript" src="../Resources/jquery-2.2.4.min.js"></script>
-<script type="text/javascript" src="../Resources/preloadjs-0.6.2.min.js"></script>
-<script type="text/javascript" src="../Resources/easeljs-0.8.2.min.js"></script>
-<script type="text/javascript" src="../Resources/tweenjs-0.6.2.min.js"></script>
-<script type="text/javascript" src="../Resources/jquery.rotate.js"></script>
-<!-- MUSS ENTFERNT WERDEN -->
 <script>
 	/*
 	*   CONST
@@ -521,56 +489,7 @@
 
 		// JQuery
 
-		$("#exitButton").on("click", function () {
-			click.play();
-			$("#exitMessage").css("visibility", "visible");
-			$("#exitMessage").animate(
-			{
-					opacity: 1
-			}, 200);
-			$("#exitMessage div").animate(
-			{
-					top: 20
-			}, 200);
-		});
-
-		$("#exitNoButton").on("click", function () {
-			click.play();
-			$("#exitMessage").animate(
-			{
-				opacity: 0
-			}, 200);
-			$("#exitMessage div").animate(
-			{
-				top: 0
-			}, 200, function()
-			{
-				$("#exitMessage").css("visibility", "hidden");
-			});
-		});
-
-		$("#exitYesButton").on("click", function () {
-			click.play();
-			backgroundMusic.pause();
-			$("#exitMessage").animate(
-			{
-				opacity: 0
-			}, 200);
-			$("#exitMessage div").animate(
-			{
-				top: 0
-			}, 200, function () {
-				$("#exitMessage").css("visibility", "hidden");
-			});
-			if (hasWon) {
-				minigameWon(2);
-			}
-			else {
-				minigameLost(2);
-			}
-		});
-
-		$("#tutButton").on("click", function () {
+		$("#tutButton").on("click touchstart", function () {
 			click.play();
 			$("#tutMessage").css("visibility", "visible");
 			$("#tutMessage").animate(
@@ -583,7 +502,7 @@
 			}, 200);
 		});
 
-		$("#tutOkButton").on("click", function () {
+		$("#tutOkButton").on("click touchstart", function () {
 			click.play();
 			$("#tutMessage").animate(
 			{
@@ -597,7 +516,7 @@
 			});
 		});
 
-		$("#goButton").on("click", function () {
+		$("#goButton").on("click touchstart", function () {
 			click.play();
 			finishSound.play();
 			if (check(gameField)) {
@@ -619,9 +538,10 @@
 			}, 200);
 		});
 
-		$("#goOkButton").on("click", function () {
+		$("#goOkButton").on("click touchstart", function () {
 			click.play();
 			backgroundMusic.pause();
+			createjs.Ticker.paused = true;
 			if (hasWon) {
 				minigameWon(2);
 			}
@@ -697,7 +617,7 @@
 			$("#gameField").append(row + '</tr>');
 		}
 
-		$("td").on("click", function()
+		$("td").on("click touchstart", function()
 		{
 			click.play();
 			rotateSound[Math.floor(Math.random() * 3)].play();
@@ -707,8 +627,10 @@
 			var col = $(this).closest('td').index();
 
 			gameField[row][col].turn();
+			if (gameFieldLocal[row][col].getRotation() === 90)
+				$(this).children("img").not("#rotater").css({ transform: "rotate(1deg)" });
 
-			$(this).children("img").not("#rotater").animate({ rotate: gameFieldLocal[row][col].getRotation() },{ duration: 200 }, 'linear');
+			$(this).children("img").not("#rotater").animate({ rotate: gameFieldLocal[row][col].getRotation() }, { duration: 200 }, 'linear');
 
 		});
 

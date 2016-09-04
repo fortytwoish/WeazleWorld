@@ -837,19 +837,19 @@ renderWater = true;
 $( function ()
 {
     
-    $(".blockRaycast").mousedown(function ()
+	$(".blockRaycast").on("click mousedown touchstart", function ()
     {
         preventRaycastOnce = true;
     } );
 
 
-    $( "#menuButton" ).click( function ()
+    $("#menuButton").on("click touchstart", function ()
     {
         openMenu();
     } );
 
 
-    $( "#fullscreenButton" ).click( function ()
+    $( "#fullscreenButton" ).on("click touchstart", function ()
     {
         if ( !isFullscreen )
         {
@@ -864,13 +864,13 @@ $( function ()
     } );
 
 
-    $( "#messageBoxButton" ).click( function ()
+    $("#messageBoxButton").on("click touchstart", function ()
     {
         click_MessageBoxWeiter();
     } );
 
 
-    $( "#exitStatueButton" ).click( function ()
+    $("#exitStatueButton").on("click touchstart", function ()
     {
         $( "#exitStatueButton" ).hide();
         ExitShowStatue();
