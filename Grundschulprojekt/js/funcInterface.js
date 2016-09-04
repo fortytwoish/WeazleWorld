@@ -156,14 +156,6 @@ function continueMainGame()
     //                  IN MINIGAME                         //
     //------------------------------------------------------//
 
-        function exitMinigame()
-        {
-            isInMenu = false;
-            $( "#minigame" ).fadeOut( "slow" );
-
-            resumeRendering();
-        }
-
         function minigamePlayed( minigameNumber )
         {
             var played = getMinigameState( minigameNumber, 1 ) + 1;
@@ -179,12 +171,16 @@ function continueMainGame()
             //  A node of the current minigame becomes unavailable
             MinigameAvailabilityChanged( minigameNumber, false );
 
+            isInMenu = false;
+
+            $( "#minigame" ).fadeOut( "slow" );
+
+            resumeRendering();
+
         }
 
         function minigameWon( minigameNumber/*, points, lostTries*/ )
         {
-            exitMinigame();
-
             minigamePlayed( minigameNumber );
 
             var won = getMinigameState( minigameNumber, 2 ) + 1;
@@ -196,15 +192,15 @@ function continueMainGame()
 
         function minigameLost( minigameNumber/*, points, lostTries*/ )
         {
+            minigamePlayed( minigameNumber );
+            showButtons();
+
             //  The first game (tutorial) can't be lost
             var played = getMinigameState( minigameNumber, 1 );
             if ( played == 0 )
             {
-                exitMinigame();
                 return;
             }
-
-            minigamePlayed( minigameNumber );
 
             var lost = getMinigameState( minigameNumber, 3 ) + 1;
 

@@ -260,6 +260,11 @@ function initIsland()
 
 function initIslandDecoration( density )
 {
+    if ( density == -1 )
+    {
+        return;
+    }
+
     differentSpriteCount = 5;
 
     grassCount = grass_positions.length;
@@ -830,19 +835,19 @@ renderWater = true;
 $( function ()
 {
     
-    $( ".blockRaycast" ).on( "mousedown", "touchstart", function ()
+    $(".blockRaycast").mousedown(function ()
     {
         preventRaycastOnce = true;
     } );
 
 
-    $( "#menuButton" ).on("click", "touchstart", function()
+    $( "#menuButton" ).click( function ()
     {
         openMenu();
     } );
 
 
-    $( "#fullscreenButton" ).on( "click", "touchstart", function ()
+    $( "#fullscreenButton" ).click( function ()
     {
         if ( !isFullscreen )
         {
@@ -857,13 +862,13 @@ $( function ()
     } );
 
 
-    $( "#messageBoxButton" ).on( "click", "touchstart", function ()
+    $( "#messageBoxButton" ).click( function ()
     {
         click_MessageBoxWeiter();
     } );
 
 
-    $( "#exitStatueButton" ).on( "click", "touchstart", function ()
+    $( "#exitStatueButton" ).click( function ()
     {
         $( "#exitStatueButton" ).hide();
         ExitShowStatue();
