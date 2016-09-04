@@ -621,6 +621,7 @@
 
 		$("#goOkButton").on("click", function () {
 			click.play();
+			backgroundMusic.pause();
 			if (hasWon) {
 				minigameWon(2);
 			}
