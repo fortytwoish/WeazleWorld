@@ -35,7 +35,8 @@ var mainMenuEntries = new Array();
 mainMenuEntries.push(new MenuEntry("menuNewGame", '<input type="button" value="Neues Spiel">', function () {
 	$("#" + this.id).on("click touchstart", function () {
 	    drawMenu( startMenu );
-	    $( "#menuContinue" ).attr( "disabled", false );
+	    $("#menuContinue").attr("disabled", false);
+
 	    isGameStarted = true;
 	} );
     $( "#" + this.id ).attr( "disabled", isGameStarted );
@@ -96,6 +97,9 @@ startEntries.push(new MenuEntry("menuStart", '<input type="button" value="Los ge
 	        $( "#menuContinue" ).attr( "disabled", false );
 	        $( "#" + this.id ).attr( "disabled", true );
 	        continueMainGame();
+	        soundIntro.pause();
+	        soundMaingame.play();
+
 	    }
 		if (DEBUG)
 			console.log(username);

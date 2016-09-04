@@ -1,32 +1,31 @@
-﻿<nav id="buttonArea" style="margin-top:10px;">
-    <button id="startGameButton" style="margin:0 55px; display:inline-block;width:200px; height:30px; ">START</button>
-    <button id="winMinigameButton" style="margin:auto">Win</button>
-    <button id="loseMinigameButton" style="margin:auto">Lose</button>
-</nav>
+﻿    <button id="countedButton">COUNTED</button>
+    
 
-<div id="treeBin" style="position:absolute; left:300px; width: 70%; height: 82%; 
-background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-left:5%; border-radius: 15px 50px 5px 30px; opacity:0.8; "></div>
+    <div class="wrap">
+        <div id="counterDiv">
+            <div class="menuItem">
+                <input type="number" id="1treeCountBox">
+                <img src="../img/treeGame/tree1.png" id="counterImg" />
+            </div>
+            <div class="menuItem">
+                <input type="number" id="2treeCountBox">
+                <img src="../img/treeGame/tree2.png" id="counterImg" />
+            </div>
+            <div class="menuItem">
+                <input type="number" id="3treeCountBox">
+                <img src="../img/treeGame/tree3.png" id="counterImg" />
+            </div>
+        </div>
+        <div id="treeBin"></div>
+    </div>
 
-<div id="counterDiv" style="width:250px; margin:2% 30px 30px 30px; border-radius: 15px 50px 5px 30px; opacity:0.8; background-color:#bf8338;">
-    <input type="number" id="1treeCountBox" style="width:50px; opacity:0.8;  margin:4% 20px 20px 20px; text-align:center; vertical-align:text-bottom">
-    <img src="../img/treeGame/tree1.png" style="height: 100px; width:100px" />
+    <style>
+        input[type=number]::-webkit-inner-spin-button {
+            opacity: 1;
+        }
+    </style>
 
-    <input type="number" id="2treeCountBox" style="width:50px; opacity:0.8;  margin:4% 20px 20px 20px; text-align:center; vertical-align:text-bottom">
-    <img src="../img/treeGame/tree2.png" style="height: 100px; width:100px" />
-
-    <input type="number" id="3treeCountBox" style="width:50px; opacity:0.8;  margin:4% 20px 20px 20px; text-align:center; vertical-align:text-bottom">
-    <img src="../img/treeGame/tree3.png" style="height: 100px; width:100px" />
-</div>
-
-<button id="CountedButton" style="margin:10px 55px; width:200px; height:30px; display:inline-block;">COUNTED</button>
-
-<style>
-     input[type=number]::-webkit-inner-spin-button {
-        opacity: 1;
-    }    
-</style>
-
-<script>
+    <script>
 
     var treeAhornSrc = "";
     var treeKastanieSrc = "";
@@ -43,17 +42,24 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
     var top = 120;
     var first = true;
     var shape = "triangle";
+     var randOffset = Math.floor((Math.random() * 20) + 1);
 
-    $("#startGameButton").click(function () {
-        
-        clickCount++;
 
-        rand = Math.floor(Math.random() * 5) + 3;
 
-        var square = rand * rand;
+
+    	
+    	$("#treeBin").addClass("treeBinWithTrees");
+
+
+    	clickCount++;
+
+       //rand = Math.floor(Math.random() * 5) + 3;
+
+       // var square = rand * rand;
 
         //maxArea
         //rand = 2;
+		var rand = 56;
 
         $("#textArea").html("<input type='text' id='countedText'>");
         shape = $("#countedTrees").val();
@@ -72,24 +78,21 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
 
                     for (var j = 0; j < i * 2 + 1; j++) {
                         var randPic = Math.floor((Math.random() * 3) + 1);
-                        $("#treeBin").append('<img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree" height="20%" width="10%">');
+                        $("#treeBin").append('<div class="' + i*100 + 'treeDiv"> <img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree"></div>');
 
                         // $("#" + id).offset({ top: newLine, left: leftN });
                         $("#" + id).css("position", "absolute");
                     }
-                    for (var i = 0; i < (11 - rand) ; i++) {
-                        $("#treeBin").append('<img src="../img/treeGame/transparent.png" id="' + id + '" class="tree" height="20%" width="10%" position="absolute">');
-                    }
-
                 }
             }
             else {
 
-                for (var i = 0; i < square; i++) {
+                for (var i = 0; i < rand; i++) {
                     var randPic = Math.floor((Math.random() * 3) + 1);
                     var id = "tree" + zInd;
                     zInd++;
-                    list[i] = '<img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree" height="20%" width="10%">';
+                    var randWeight = Math.floor((Math.random() * 9) + 1);
+                    list[i] = '<div class="treeDiv"><div class="imgWrap"><img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree"><div id="'+randWeight+'" class="imgContent">'+randWeight+'</div></div></div>';
                 }
 
                 var counter = 0;
@@ -107,11 +110,11 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
 
                 var randOffset = Math.floor((Math.random() * 20) + 1);
 
-                // works with height....
+                             // works with height....
                 $(".tree").each(function (index, value) {
 
                     $(this).animate({
-                        "margin-left": "-=" + randOffset
+                        "margin-left": "-=" + 10
                     }, 10);
                 });
 
@@ -122,6 +125,13 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
                     rotate(degree, $(this));
                 });
             }
+
+            $("body").on('click', '.treeDiv .imgWrap img', function(){
+		    	console.log("addingclass");
+		    	var result = Math.floor((Math.random() * 2) + 1);
+		    	console.log("transf"+result);
+		    	$(this).addClass("transf"+result);
+		    });
         }
         else {
             $("#treeBin").empty();
@@ -131,22 +141,24 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
         }
 
         $("#CountedButton").click(function () {
-            
-            var t1 = $("img[src='../img/treeGame/tree1.png']").length - 1;
-            var t2 = $("img[src='../img/treeGame/tree2.png']").length - 1;
-            var t3 = $("img[src='../img/treeGame/tree3.png']").length - 1;
+
+            var t1 = $("img[src='../img/treeGame/rsz_tree1.png']").length - 1;
+            var t2 = $("img[src='../img/treeGame/rsz_tree2.png']").length - 1;
+            var t3 = $("img[src='../img/treeGame/rsz_tree3.png']").length - 1;
             console.log($("#1treeCountBox").val());
 
             if ($("#3treeCountBox").val() == t3 && $("#2treeCountBox").val() == t2 && $("#1treeCountBox").val() == t1)
-            {         
+            {
                 alert("GEWONNEN..");
             }
             else {
                 alert("VERLOREN... es wäre: Tree1 " + t1 + " Tree2 " + t2 + " Tree3 " + t3);
-                console.log("LOOOSER");      
+                console.log("LOOOSER");
             }
         });
-    });
+
+
+   
 
     $( "#winMinigameButton" ).click( function ()
     {
@@ -169,6 +181,8 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
         //TODO!!
     }
 
+
+
     //function randBetween(low, high) {
     //    var result = ((Math.random() * (high - low)) + low).parseInt();
     //    //if (debugOutput_PointArithmetic) console.log("[randBetween] Random number between " + low + " and " + high + ": " + result);
@@ -185,8 +199,17 @@ background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-l
         }, 5000)
     };
 
-</script>
+    </script>
 
-<script>
+<!--<div id="treeBin" style="position:absolute; left:300px; width: 70%; height: 82%;
+background-color:#bf8338; margin-top:2%; margin-left:10px; padding:1%; padding-left:5%; border-radius: 15px 50px 5px 30px; opacity:0.8; "></div>-->
+<!--<div id="counterDiv" style="width:250px; margin:2% 30px 30px 30px; border-radius: 15px 50px 5px 30px; opacity:0.8; background-color:#bf8338;">
+    <input type="number" id="1treeCountBox" style="width:50px; opacity:0.8;  margin:4% 20px 20px 20px; text-align:center; vertical-align:text-bottom">
+    <img src="../img/treeGame/tree1.png" style="height: 100px; width:100px" />
 
-</script>
+    <input type="number" id="2treeCountBox" style="width:50px; opacity:0.8;  margin:4% 20px 20px 20px; text-align:center; vertical-align:text-bottom">
+    <img src="../img/treeGame/tree2.png" style="height: 100px; width:100px" />
+
+    <input type="number" id="3treeCountBox" style="width:50px; opacity:0.8;  margin:4% 20px 20px 20px; text-align:center; vertical-align:text-bottom">
+    <img src="../img/treeGame/tree3.png" style="height: 100px; width:100px" />
+</div>-->

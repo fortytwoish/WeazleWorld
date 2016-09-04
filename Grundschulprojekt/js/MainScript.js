@@ -24,8 +24,15 @@ const STATUE_WOOD_MAT    = new THREE.MeshPhongMaterial( { color: 0x7F6343, shini
 const STATUE_BRONZE_MAT  = new THREE.MeshPhongMaterial( { color: 0x70431C, shininess: 150, specular: 0x70431C, side: THREE.DoubleSide } );
 const STATUE_SILVER_MAT  = new THREE.MeshPhongMaterial( { color: 0x999999, shininess: 250, specular: 0x999999, side: THREE.DoubleSide } );
 const STATUE_GOLD_MAT    = new THREE.MeshPhongMaterial( { color: 0x9A7D31, shininess: 350, specular: 0x9A7D31, side: THREE.DoubleSide } );
-const WEAZLE_AMOUNT      = 8;
+const WEAZLE_AMOUNT = 8;
 
+var volumeLevel = 0.2;
+
+var soundBuilding = new Howl({ src: ['audio/buildingSound.mp3'], volume: volumeLevel });
+var soundIntro = new Howl({ src: ['audio/finalpartwithjingles.mp3'], volume: volumeLevel, loop: true });
+var soundMaingame = new Howl({ src: ['audio/maingameBackgroundSound.mp3'], volume: volumeLevel, loop: true });
+var soundMaingame2 = new Howl({ src: ['audio/firstpartwithout drums.mp3'], volume: volumeLevel, loop: true });
+var soundMenu = new Howl({ src: ['audio/secondpartwithdrumsandfunk.mp3'], volume: volumeLevel, loop: true });
 
 //  LOCALS
 var camera,
@@ -256,6 +263,8 @@ function initIsland()
     islandMat.shading           = THREE.FlatShading;
     islandMesh                  = new THREE.Mesh( islandGeom, islandMat );
     islandMesh.receiveShadow    = true;
+
+    soundIntro.play();
 
     scene.add( islandMesh );
 }
@@ -1291,6 +1300,11 @@ function changeStatueModel( mesh, segmentMat )
     timeUntilZoomOut = 2000;
     particleTime     = 2500;
     particleSpd      = 1;
+    
+    //start building Sound
+    setTimeout(function () {
+        soundBuilding.play();
+    }, 1000);
 
     controls.autoRotate  = true;
 

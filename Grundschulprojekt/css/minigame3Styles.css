@@ -1,0 +1,127 @@
+﻿.wrap {
+    width:100%;
+}
+#counterDiv {
+    display:block;
+    float:left;
+    margin-left:20px;
+    width:10%;
+    padding:20px;
+    background-color:#bf8338;
+    border-radius: 15px 50px 5px 30px; opacity:0.8;
+}
+#counterDiv .menuItem img {
+    width:100%;
+}
+
+#counterDiv .menuItem input {
+    width:100%;
+}
+
+#countedButton{
+    position: absolute;
+    margin: 20px;
+    margin-top: 5px;
+    width: 120px;
+    top: 90%;
+    left: 0%;
+    height: 30px;
+    display: inline-block;
+}
+
+
+#menuItem{
+	border: 1px solid black;
+}
+
+#counterDiv .menuItem {
+    width:100%;
+}
+
+#treeBin {
+    display:none;
+    width:70%;
+    height: 411px;
+    padding:20px;
+    margin-left:20px;
+    background-color:#bf8338;
+    border-radius: 15px 50px 5px 30px; 
+    opacity:0.8;
+}
+
+#treeBin .treeDiv {
+    width:7%;
+    display:inline-block;
+    position:relative;
+    height:100px;
+}
+#treeBin .treeDiv .imgContent {
+    position: absolute;
+    bottom: 0;
+    left: 5px;
+    text-align: center;
+    right: 5px;
+    background-color:black;
+    color:white;
+    z-index:999;
+}
+#treeBin .treeDiv img {
+    position:absolute;
+    top:0px;
+    left:0px;
+    transform-origin: 50% 90%;
+    z-index:1;
+}
+
+.clearfix {
+    clear:both;
+}
+
+#treeBin .treeDiv img {
+    height:100px;
+}
+
+.transf2 {
+  top: 85px;
+  left: 75px;
+  transition-duration:1s;
+  transform: rotate(90deg); 
+}
+
+
+.transf1 {
+  top: 85px;
+  left: 75px;
+  transition-duration:1s;
+  transform: rotate(-90deg); 
+}
+
+@media screen and (min-width: 1000px) {
+    #treeBin {
+        height: 800px;
+    }
+    #treeBin .treeDiv {
+        width:6.8%;
+        height:200px;
+    }
+    #treeBin .treeDiv img {
+        height:200px;
+    }
+    #treeBin .treeDiv .imgContent {
+        font-size:30px;
+    }
+}
+
+#treeBin.treeBinWithTrees {
+    display: inline-block;
+}
+
+.number{
+    text-align:center; 
+    vertical-align:text-bottom
+}
+
+.counterImg{
+    height:10%;
+    width:10%;
+}
