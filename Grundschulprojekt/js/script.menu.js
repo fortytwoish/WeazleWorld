@@ -133,7 +133,7 @@ optionEntries.push(new MenuEntry("menuQuality", '<input type="range" min="1" max
 	} );
 }));
 optionEntries.push(new MenuEntry("menuApply", '<input type="button" value="Übernehmen">', function () {
-    $( "#" + this.id ).on( "click", function ()
+    $( "#" + this.id ).on( "click touchstart", function ()
     {
         if ( quality !== -1 && quality !== currentQuality )
         {
@@ -164,8 +164,8 @@ optionEntries.push(new MenuEntry("menuApply", '<input type="button" value="Über
                 }
             }, 500 );
         }
-
-		
+        if (DEBUG)
+        	console.log("Apply Quality: " + quality);
 	});
 }));
 optionEntries.push(new MenuEntry("menuCredits", '<input type="button" value="Credits">', function () {
