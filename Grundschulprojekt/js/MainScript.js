@@ -120,9 +120,11 @@ function initStaticElements()
     //------------------------------------------------------//
     //                  EVENT BINDING                       //
     //------------------------------------------------------//
-    window.addEventListener(   'resize'    , onWindowResize, false );
+    window  .addEventListener( 'resize'    , onWindowResize      , false );
     document.addEventListener( 'touchstart', onDocumentTouchStart, false );
-    document.addEventListener( 'click'     , onDocumentMouseClick, false );
+    document.addEventListener( 'touchend'  , onDocumentTouchEnd  , false );
+    document.addEventListener( 'mousedown' , onDocumentMouseDown , false );
+    document.addEventListener( 'mouseup'   , onDocumentMouseUp   , false );
     document.addEventListener( 'keydown'   , onkeydown           , false );
 
     handleWindowVisibility();
@@ -935,8 +937,10 @@ function onWindowResize()
     }
 }
 
-var raycaster = new THREE.Raycaster();
-var mouse     = new THREE.Vector2();
+
+//--------------------------------------------------//
+//              TOUCH HANDLING                      //
+//--------------------------------------------------//
 
 function onDocumentTouchStart( event )
 {
@@ -944,39 +948,44 @@ function onDocumentTouchStart( event )
 
     event.clientX = event.touches[0].clientX;
     event.clientY = event.touches[0].clientY;
-    onDocumentMouseClick( event );
+
+    console.log( "touch start: " + event.clientX + ", " + event.clientY );
+
+    onDocumentMouseDown( event );
 }
 
-function onDocumentMouseClick( event )
+function onDocumentTouchEnd( event )
 {
-    //console.log( "preventRaycastOnce" + preventRaycastOnce );
-    //console.log( "controls.enabled  " + controls.enabled );
-    //console.log( "pauseRender       " + pauseRender );
-    //console.log( "canClickObjects   " + canClickObjects );
-    //console.log( "clickable_objects " + clickable_objects );
-
-    if (preventRaycastOnce)
-    {
-        preventRaycastOnce = false;
-        return;
-    }
-
-    if ( !controls.enabled || pauseRender || !canClickObjects )
-    {
-        return;
-    }
-
     event.preventDefault();
 
-    mouse.x =  ( event.clientX / renderer.domElement.clientWidth  ) * 2 - 1;
+    event.clientX = event.changedTouches[0].clientX;
+    event.clientY = event.changedTouches[0].clientY;
+
+    console.log( "touch end: " + event.clientX + ", " + event.clientY );
+
+    onDocumentMouseUp( event );
+}
+
+//--------------------------------------------------//
+//              CLICK HANDLING                      //
+//--------------------------------------------------//
+var raycaster    = new THREE.Raycaster();
+var mouse        = new THREE.Vector2();
+var mouseDownObj;
+
+function onDocumentMouseUp( event )
+{
+    event.preventDefault();
+
+    mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
     mouse.y = -( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
 
-    raycaster.setFromCamera(mouse, camera);
-    var intersects = raycaster.intersectObjects(clickable_objects);
+    raycaster.setFromCamera( mouse, camera );
+    var intersects = raycaster.intersectObjects( clickable_objects );
 
-    
+    //console.log( intersects[0].object + " x " + mouseDownObj );
 
-    if ( intersects.length > 0 )
+    if ( intersects.length > 0 && intersects[0].object === mouseDownObj )
     {
         var index = indexInArray( minigame_rock, intersects[0].object );
         if ( index > -1 )
@@ -1014,11 +1023,43 @@ function onDocumentMouseClick( event )
             {
                 ShowStatue();
             }, 250 );
-            
+
         }
 
     }
+}
 
+function onDocumentMouseDown( event )
+{
+    if ( preventRaycastOnce )
+    {
+        preventRaycastOnce = false;
+        return;
+    }
+
+    if ( !controls.enabled || pauseRender || !canClickObjects )
+    {
+        return;
+    }
+
+    event.preventDefault();
+
+    mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
+    mouse.y = -( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
+
+    raycaster.setFromCamera( mouse, camera );
+    var intersects = raycaster.intersectObjects( clickable_objects );
+
+    if ( intersects.length > 0 )
+    {
+        console.log( "hit object: " + intersects[0].object );
+        mouseDownObj = intersects[0].object;
+    }
+    else
+    {
+        console.log( "Did not hit an object." );
+        mouseDownObj = null;
+    }
 }
 
 var minigamesVis = true;
