@@ -41,8 +41,8 @@
     //------------------------------------------------------//
     //                  ISLAND                              //
     //------------------------------------------------------//
-    var scale = 10;
-    var dim = VILLAGE_DIMENSIONS.x * scale;
+    var scale  = 10;
+    var dim    = VILLAGE_DIMENSIONS.x * scale;
     var height = 1;
     
     var topLeft     = new Point( 0, 0 );
@@ -242,9 +242,9 @@ function mg1_start()
 
     sendWord( "YOU" );
     setTimeout( function () { sendWord( "FUCK" ) }, 5000 );
-    setTimeout( function () { sendWord( "YOU" ) }, 10000 );
+    setTimeout( function () { sendWord( "YOU" ) },  10000 );
     setTimeout( function () { sendWord( "FUCK" ) }, 15000 );
-    setTimeout( function () { sendWord( "YOU" ) }, 20000 );
+    setTimeout( function () { sendWord( "YOU" ) },  20000 );
     setTimeout( function () { sendWord( "FUCK" ) }, 25000 );
 }
 
@@ -256,9 +256,9 @@ function mg1_end()
     animate();
     minigameLost( 1 );
 
-    document.removeEventListener( 'mousemove', mg1_onMg1MouseMove, false );
+    document.removeEventListener( 'mousemove',  mg1_onMg1MouseMove,  false );
     document.removeEventListener( 'touchstart', mg1_onMg1TouchStart, false );
-    document.removeEventListener( 'mousedown', mg1_onMg1MouseDown, false );
+    document.removeEventListener( 'mousedown',  mg1_onMg1MouseDown,  false );
 }
 
 var endMinigame = 0;
@@ -320,24 +320,24 @@ function initPath()
 
     spline = new THREE.SplineCurve3(
     [
-        new THREE.Vector3( -80,     height, 15 ),
-        new THREE.Vector3( -78.5,   height, -0.54 ),
-        new THREE.Vector3( -69.32,  height, -13.5 ),
-        new THREE.Vector3( -55.2,   height, -25 ),
-        new THREE.Vector3( -40,     height, -32.8 ),
-        new THREE.Vector3( -23.1,   height, -39 ),
-        new THREE.Vector3( 0,       height, -42.5 ),
-        new THREE.Vector3( 22.76,   height, -41.3 ),
-        new THREE.Vector3( 45.1,    height, -33.4 ),
-        new THREE.Vector3( 58.45,   height, -25.06 ),
-        new THREE.Vector3( 71,      height, -9.6 ),
-        new THREE.Vector3( 74.11,   height, 3.54 ),
-        new THREE.Vector3( 68.36,   height, 21.06 ),
-        new THREE.Vector3( 57.74,   height, 31.8 ),
-        new THREE.Vector3( 43.43,   height, 38.6 ),
-        new THREE.Vector3( 21.51,   height, 42.18 ),
-        new THREE.Vector3( -3.13,   height, 38.36 ),
-        new THREE.Vector3( -24.1,   height, 17.4 )
+        new THREE.Vector3( -80,    height, 15 ),
+        new THREE.Vector3( -78.5,  height, -0.54 ),
+        new THREE.Vector3( -69.32, height, -13.5 ),
+        new THREE.Vector3( -55.2,  height, -25 ),
+        new THREE.Vector3( -40,    height, -32.8 ),
+        new THREE.Vector3( -23.1,  height, -39 ),
+        new THREE.Vector3( 0,      height, -42.5 ),
+        new THREE.Vector3( 22.76,  height, -41.3 ),
+        new THREE.Vector3( 45.1,   height, -33.4 ),
+        new THREE.Vector3( 58.45,  height, -25.06 ),
+        new THREE.Vector3( 71,     height, -9.6 ),
+        new THREE.Vector3( 74.11,  height, 3.54 ),
+        new THREE.Vector3( 68.36,  height, 21.06 ),
+        new THREE.Vector3( 57.74,  height, 31.8 ),
+        new THREE.Vector3( 43.43,  height, 38.6 ),
+        new THREE.Vector3( 21.51,  height, 42.18 ),
+        new THREE.Vector3( -3.13,  height, 38.36 ),
+        new THREE.Vector3( -24.1,  height, 17.4 )
     ] );
 
     var material = new THREE.LineBasicMaterial( {
@@ -716,7 +716,6 @@ function initSkipParticles()
                     map: THREE.ImageUtils.loadTexture( "img/RockGame/waterRipple.png" ),
                     transparent: true,
                     alphaTest: 0.5
-                    
                 } ) ) );
 
             mg1_scene.add( skipEffects[i][j] );

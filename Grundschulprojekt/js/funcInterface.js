@@ -121,8 +121,9 @@ function continueMainGame()
                 mg1_start();
             }
             else
-            {
+            {   
                 pauseRendering();
+                
             }
 
             isInMenu = true;
@@ -141,7 +142,6 @@ function continueMainGame()
     
         function click_MessageBox()
         {
-            console.log( "Toggling Messagebox" );
             //$( "#messageBox" ).css( "visibility", "visible" );
             $( "#messageBox" ).toggle( "slow" );
         }

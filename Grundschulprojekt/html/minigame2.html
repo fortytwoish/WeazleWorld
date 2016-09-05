@@ -749,27 +749,29 @@
 		loadQueue.load();
 
 		// Generate animated Background objects
-		for (var i = 0; i < 10; i++)
-		{
-			var background = new createjs.Shape();
-			background.graphics.beginFill("Grey").drawPolyStar(parseInt(300 - Math.random() * (window.innerWidth + 300)) + 300, parseInt(300 - Math.random() * (window.innerHeight + 300)) + 300, 600, 5, 0.2, parseInt(Math.random() * 360));
-			background.alpha = Math.random();
-			background.x = background.x + 600 / 2;
-			background.y = background.y + 600 / 2;
-			background.regX = 600 / 2;
-			background.regY = 600 / 2;
-			createjs.Tween.get(background, { loop: true })
-				.to({ rotation: 360 }, parseInt(Math.random() * 20000) + 40000);
-			stage.addChild(background);
-		}
+		//for (var i = 0; i < 10; i++)
+		//{
+		//	var background = new createjs.Shape();
+		//	background.graphics.beginFill("Grey").drawPolyStar(parseInt(300 - Math.random() * (window.innerWidth + 300)) + 300, parseInt(300 - Math.random() * (window.innerHeight + 300)) + 300, 600, 5, 0.2, parseInt(Math.random() * 360));
+		//	background.alpha = Math.random();
+		//	background.x = background.x + 600 / 2;
+		//	background.y = background.y + 600 / 2;
+		//	background.regX = 600 / 2;
+		//	background.regY = 600 / 2;
+		//	createjs.Tween.get(background, { loop: true })
+		//		.to({ rotation: 360 }, parseInt(Math.random() * 20000) + 40000);
+		//	stage.addChild(background);
+		//}
 
 		// Water particles
-		var waterParticles = 40;
-		var waterTimer = 2;
+		var waterParticles = 0;
+		var waterTimer = 0;
 
 		// Animation
 		function tick()
 		{
+		    return;
+
 			if (waterParticles > 0 && waterTimer === 0)
 			{
 				var waterParticle = new createjs.Shape();
@@ -1046,6 +1048,7 @@
 
 	$(function()
 	{
-		minigame2Start(0);
+	    var mg2Won = getMinigameState( 2, 2 );
+	    minigame2Start( mg2Won );
 	});
 </script>
