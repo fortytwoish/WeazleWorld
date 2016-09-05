@@ -28,13 +28,7 @@ const STATUE_SILVER_MAT  = new THREE.MeshPhongMaterial( { color: 0x999999, shini
 const STATUE_GOLD_MAT    = new THREE.MeshPhongMaterial( { color: 0x9A7D31, shininess: 350, specular: 0x9A7D31, side: THREE.DoubleSide } );
 const WEAZLE_AMOUNT = 8;
 
-var volumeLevel = 0.2;
 
-var soundBuilding = new Howl({ src: ['audio/buildingSound.mp3'], volume: volumeLevel });
-var soundIntro = new Howl({ src: ['audio/finalpartwithjingles.mp3'], volume: volumeLevel, loop: true });
-var soundMaingame = new Howl({ src: ['audio/maingameBackgroundSound.mp3'], volume: volumeLevel, loop: true });
-var soundMaingame2 = new Howl({ src: ['audio/firstpartwithout drums.mp3'], volume: volumeLevel, loop: true });
-var soundMenu = new Howl({ src: ['audio/secondpartwithdrumsandfunk.mp3'], volume: volumeLevel, loop: true });
 
 //  LOCALS
 var camera,
@@ -62,6 +56,17 @@ waterCreated = false;
 function main()
 {
     initStaticElements();
+    initSounds();
+}
+
+function initSounds()
+{
+    volumeLevel = 0.2;
+    soundBuilding = new Howl( { src: ['audio/buildingSound.mp3'], volume: volumeLevel } );
+    soundIntro = new Howl( { src: ['audio/finalpartwithjingles.mp3'], volume: volumeLevel, loop: true } );
+    soundMaingame = new Howl( { src: ['audio/maingameBackgroundSound.mp3'], volume: volumeLevel, loop: true } );
+    soundMaingame2 = new Howl( { src: ['audio/firstpartwithout drums.mp3'], volume: volumeLevel, loop: true } );
+    soundMenu = new Howl( { src: ['audio/secondpartwithdrumsandfunk.mp3'], volume: volumeLevel, loop: true } );
 }
 
 function initStaticElements()
@@ -267,7 +272,7 @@ function initIsland()
     islandMesh                  = new THREE.Mesh( islandGeom, islandMat );
     islandMesh.receiveShadow    = true;
 
-    soundIntro.play();
+    //soundIntro.play();
 
     scene.add( islandMesh );
 }
@@ -522,7 +527,7 @@ function loadNodeSegment( loader, path, targetGeom )
                 }
                 else if ( targetGeom == minigame_rock_geom )
                 {
-                    new THREE.TextureLoader().load( 'img/rockTexture.png', function ( loadedTexture )
+                    new THREE.TextureLoader().load( 'img/rockTexture_lowQ.png', function ( loadedTexture )
                     {
                         targetGeom.material.map = loadedTexture;
                         nodeLoaded();
@@ -719,6 +724,9 @@ var saveAutoRotate;
 
 function pauseRendering()
 {
+    console.log( "Pausing rendering" );
+    pauseRender = true;
+    
     renderThreadsToBeKilled++;
     saveAutoRotate = controls.autoRotate;
     controls.autoRotate = false;
@@ -726,6 +734,15 @@ function pauseRendering()
 
 function resumeRendering()
 {
+    if ( !pauseRender )
+    {
+        return;
+    }
+
+    console.log( "Resuming rendering" );
+
+    pauseRender = false;
+
     controls.autoRotate = saveAutoRotate;
     deltaTime = clock.getDelta();
     animate();
@@ -743,12 +760,11 @@ function renderOnce()
     renderer.render( scene, camera );
 }
 
-var pauseRender = false;
+var pauseRender = true;
 //  Caution: Mostly debug stuff still
 function animate()
 {
     
-
     if ( SCENE_TO_RENDER == scene )
     {
         deltaTime = clock.getDelta();
@@ -991,6 +1007,18 @@ var mouseDownObj;
 
 function onDocumentMouseUp( event )
 {
+
+    if ( preventRaycastOnce )
+    {
+        preventRaycastOnce = false;
+        return;
+    }
+
+    if ( !controls.enabled || pauseRender || !canClickObjects )
+    {
+        return;
+    }
+
     event.preventDefault();
 
     mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
@@ -1041,6 +1069,8 @@ function onDocumentMouseUp( event )
         }
 
     }
+
+    mouseDownObj = null;
 }
 
 function onDocumentMouseDown( event )
@@ -1078,55 +1108,6 @@ var minigamesVis = true;
 var decorationVis = true;
 function onkeydown( event )
 {
-
-    if ( event.key == "+" )
-    {
-        projectileMesh.translateY( 1 );
-    }
-    else if ( event.key == "-" )
-    {
-        projectileMesh.translateY( -1 );
-    }
-    else if ( event.key == "8" )
-    {
-        projectileMesh.translateZ( 1 );
-    }
-    else if ( event.key == "2" )
-    {
-        projectileMesh.translateZ( -1 );
-    }
-    else if ( event.key == "4" )
-    {
-        projectileMesh.translateX( -1 );
-    }
-    else if ( event.key == "5" )
-    {
-        console.log( lastX + ", " + lastZ );
-        projectileMesh.lookAt( new THREE.Vector3( lastX, 4, lastZ ) );
-    }
-    else if ( event.key == "6" )
-    {
-        projectileMesh.translateX( 1 );
-    }
-    else if ( event.key == "7" )
-    {
-        console.log( "rotating x... Before: " + projectileMesh.rotation.x );
-        projectileMesh.rotateX(Math.PI / 2);
-        console.log("after: " + projectileMesh.rotation.x );
-    }
-    else if ( event.key == "9" )
-    {
-        console.log( "rotating z... Before: " + projectileMesh.rotation.z );
-        projectileMesh.rotateY( Math.PI / 2 );
-        console.log( "after: " + projectileMesh.rotation.z);
-    }
-    else if ( event.key == "3" )
-    {
-        console.log( "rotating y... Before: " + projectileMesh.rotation.y );
-        projectileMesh.rotateZ( Math.PI / 2 );
-        console.log( "after: " + projectileMesh.rotation.y );
-    }
-
     //  directionalLight.shadow.camera.right    = 10;
     //  directionalLight.shadow.camera.left = -10;
     //  directionalLight.shadow.camera.top = 20;
