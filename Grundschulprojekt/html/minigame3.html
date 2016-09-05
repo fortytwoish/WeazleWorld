@@ -1,5 +1,7 @@
 ﻿    <button id="CountedButton" >COUNTED</button>
     
+    <h1 id="chopTreeInfo"></h1>
+    
 
     <div class="wrap">
         <div id="counterDiv">
@@ -50,22 +52,15 @@
     else
         randTreeCount = Math.floor((Math.random() * 36) + 20);
     
-    showMessageBox(getMinigame3Text("tutorial"), "Weiter geht's");
+        showMessageBox(getMinigame3Text("tutorial"), "Weiter geht's");
 
-    $("#treeBin").addClass("treeBinWithTrees");
+        $("#treeBin").addClass("treeBinWithTrees");
 
-    console.log("adding " + randTreeCount + " trees...");
-        //rand = Math.floor(Math.random() * 5) + 3;
-
-        // var square = rand * rand;
-
-        //maxArea
-        //rand = 2;
+        console.log("adding " + randTreeCount + " trees...");
     	var rand = randTreeCount;
 
         $("#textArea").html("<input type='text' id='countedText'>");
         shape = $("#countedTrees").val();
-        console.log(shape);
 
         var list = new Array();
         
@@ -106,7 +101,6 @@
 
                     $(".imgContent").hide();
                 });
-
             }
 
 
@@ -151,6 +145,8 @@
                 $(".imgContent").show();
                 showMessageBox(getMinigame3Text("firstPartWon"), "Weiter geht's", function () {
                     canStartChopping = true;
+                    if(!tutorial)
+                    $("#chopTreeInfo").html("<b>Bitte " + treesToBeChoppped + " (Tonnen) Bäume fällen! </b>");
                 });               
             }
             else {
