@@ -1355,7 +1355,9 @@ function ShowStatue( completeFctn, zoomInTime )
         var zoomInTime = 1500;
     }
 
-    controls.autoRotate = true;
+    controls.autoRotate
+
+    ;
 
     //----------------------//
     //     1.  ZOOM IN      //

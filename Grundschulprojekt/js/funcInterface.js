@@ -521,4 +521,41 @@ function continueMainGame()
 
         segmentBuiltEndText = "Zeig's mir!";
 
+        function getMinigame3Text(state, treeValue) {
+
+            var text;
+
+            switch (state) {
+                case "tutorial":{
+                    text = ["Willkommen im Baum-MiniSpiel", "Deine Aufgabe ist es die Bäume zu zählen!",
+                            "Gib die Anzahl der Bäume auf der linken Seite an und drücke auf Gezählt!",
+                            "Viel Erfolg"];
+                    break;
+                    }
+                case "firstPartWon": {
+                    text = ["Sehr gut, du hast die Bäume korrekt gezählt.", "Nun steht fest, wie viele Bäume in diesem Waldstück verfügbar sind",
+                            "Als nächstes musst du insgesamt " + treeValue + "Tonnen Bäume fällen", "Hierbei helfen dir die Zahlenwerte unter den Bäumen.",
+                            "Klicke auf die Bäume um sie zu fällen", "Wenn du die richtige Menge geerntet hast geht es wieder auf die Insel"];
+                    break;
+                }
+                case "firstPartFailed": {
+                    text = ["Leider hast du die Bäume nicht richtig gezählt", "Da nicht weißt wie viele Bäume sich genau im Wald befinden, kannst du auch keine Ernten",
+                            "Viel Glück beim nächsten Mal"];
+                    break;
+                }
+                case "secondPartWon": {
+                    text = ["Sehr gut, du hast die richtige Menge an Holz.", "Nun haben deine Weazle fürs Erste genug Holz.", "Sie feiern dich nun durch den Ausbau der Statue!!!"];
+                    break;
+                }
+                case "secondPartLost": {
+                    text = ["Leider hast du nicht die richtige Menge an Bäumen gefällt", "Dies ist nicht nachhaltig, daher viel Glück beim nächsten Mal!"];
+                    break;
+                }
+                default:
+                    break;
+            }
+            return text;
+        }
+
+
         

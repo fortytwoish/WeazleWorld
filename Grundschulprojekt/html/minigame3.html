@@ -1,18 +1,18 @@
-﻿    <button id="countedButton">COUNTED</button>
+﻿    <button id="CountedButton" >COUNTED</button>
     
 
     <div class="wrap">
         <div id="counterDiv">
             <div class="menuItem">
-                <input type="number" id="1treeCountBox">
+                <input type="number" id="1treeCountBox" min="0">
                 <img src="../img/treeGame/tree1.png" id="counterImg" />
             </div>
             <div class="menuItem">
-                <input type="number" id="2treeCountBox">
+                <input type="number" id="2treeCountBox" min="0">
                 <img src="../img/treeGame/tree2.png" id="counterImg" />
             </div>
             <div class="menuItem">
-                <input type="number" id="3treeCountBox">
+                <input type="number" id="3treeCountBox" min="0">
                 <img src="../img/treeGame/tree3.png" id="counterImg" />
             </div>
         </div>
@@ -27,12 +27,6 @@
 
     <script>
 
-    var treeAhornSrc = "";
-    var treeKastanieSrc = "";
-    var treenSource = "";
-    var treeAhornSource = "";
-    var treeAhornSource = "";
-
     var imageUrl = "../img/treeGame/woods.jpg";
     $("#minigame").css('background-image', 'url(' + imageUrl + ')');
     var rand = 0;
@@ -40,33 +34,41 @@
     var zInd = 0;
     var positioning = 230;
     var top = 120;
-    var first = true;
+    var tutorial = true;
     var shape = "triangle";
-     var randOffset = Math.floor((Math.random() * 20) + 1);
+    var randOffset = Math.floor((Math.random() * 20) + 1);
+    var treesToBeChoppped = Math.floor((Math.random() * 30) + 20);
+    var choppedTrees = 0;
+    var randTreeCount = 0;
+    var canStartChopping = false;
+    var treesChopped = 0;
 
+    if (tutorial){
+        randTreeCount = 6;
+        treesToBeChoppped = 10;
+    }
+    else
+        randTreeCount = Math.floor((Math.random() * 36) + 20);
+    
+    showMessageBox(getMinigame3Text("tutorial"), "Weiter geht's");
 
+    $("#treeBin").addClass("treeBinWithTrees");
 
+    console.log("adding " + randTreeCount + " trees...");
+        //rand = Math.floor(Math.random() * 5) + 3;
 
-    	
-    	$("#treeBin").addClass("treeBinWithTrees");
-
-
-    	clickCount++;
-
-       //rand = Math.floor(Math.random() * 5) + 3;
-
-       // var square = rand * rand;
+        // var square = rand * rand;
 
         //maxArea
         //rand = 2;
-		var rand = 56;
+    	var rand = randTreeCount;
 
         $("#textArea").html("<input type='text' id='countedText'>");
         shape = $("#countedTrees").val();
         console.log(shape);
 
         var list = new Array();
-        if (clickCount % 2 == "1") {
+        
             if (shape == "triangle") {
 
                 var randPic = Math.floor((Math.random() * 3) + 1);
@@ -78,10 +80,8 @@
 
                     for (var j = 0; j < i * 2 + 1; j++) {
                         var randPic = Math.floor((Math.random() * 3) + 1);
-                        $("#treeBin").append('<div class="' + i*100 + 'treeDiv"> <img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree"></div>');
+                        $("#treeBin").append('<div class="' + i*100 + 'treeDiv"> <img src="../img/treeGame/rsz_tree' + randPic + '.png" id="' + id + '" class="tree"></div>');
 
-                        // $("#" + id).offset({ top: newLine, left: leftN });
-                        $("#" + id).css("position", "absolute");
                     }
                 }
             }
@@ -90,75 +90,74 @@
                 for (var i = 0; i < rand; i++) {
                     var randPic = Math.floor((Math.random() * 3) + 1);
                     var id = "tree" + zInd;
+                    
                     zInd++;
                     var randWeight = Math.floor((Math.random() * 9) + 1);
-                    list[i] = '<div class="treeDiv"><div class="imgWrap"><img src="../img/treeGame/tree' + randPic + '.png" id="' + id + '" class="tree"><div id="'+randWeight+'" class="imgContent">'+randWeight+'</div></div></div>';
+                    list[i] = '<div class="treeDiv" id="'+randWeight+'"><div class="imgWrap" id="' + randWeight + '"><img src="../img/treeGame/rsz_tree' + randPic + '.png" id="' + id + ' ' + randWeight +'" class="tree"><div id="' + randWeight + '" class="imgContent">' + randWeight + '</div></div></div>';
                 }
 
                 var counter = 0;
                 $.each(list, function (index, value) {
                     console.log("randomVal: " + rand)
                     var id = "tree" + zInd;
-                    if (counter == rand) {
-                        console.log("printing " + (11 - rand) + " transparents!" + " with counter " + counter);
 
-                        counter = 0;
-                    }
                     $("#treeBin").append(value);
                     counter++;
+
+                    $(".imgContent").hide();
                 });
 
-                var randOffset = Math.floor((Math.random() * 20) + 1);
-
-                             // works with height....
-                $(".tree").each(function (index, value) {
-
-                    $(this).animate({
-                        "margin-left": "-=" + 10
-                    }, 10);
-                });
-
-                $(".tree").click(function () {
-                    degree = 100;
-                    //alert("ANIMATING!!!!! ID: " + $(this).prop("id") + " VALUE IS " +  'transform: rotate(' + degree + 'deg)');
-                    // alert($(this).prop("id"));
-                    rotate(degree, $(this));
-                });
             }
 
-            $("body").on('click', '.treeDiv .imgWrap img', function(){
-		    	console.log("addingclass");
-		    	var result = Math.floor((Math.random() * 2) + 1);
-		    	console.log("transf"+result);
-		    	$(this).addClass("transf"+result);
-		    });
-        }
-        else {
-            $("#treeBin").empty();
-            top = 120;
-            positioning = 250;
-            first = true;
-        }
 
-        $("#CountedButton").click(function () {
+            $("body").on('click', '.treeDiv .imgWrap img', function () {
+               
+                if (canStartChopping) {
+                    var tmp = $(this).attr("id");
 
-            var t1 = $("img[src='../img/treeGame/rsz_tree1.png']").length - 1;
-            var t2 = $("img[src='../img/treeGame/rsz_tree2.png']").length - 1;
-            var t3 = $("img[src='../img/treeGame/rsz_tree3.png']").length - 1;
-            console.log($("#1treeCountBox").val());
+                    tmp = parseInt(tmp.substring(tmp.length -1));
 
+                    treesChopped += parseInt(tmp);
+                   
+		    	    var result = Math.floor((Math.random() * 2) + 1);
+		    	    console.log("transf"+result);
+		    	    $(this).addClass("transf" + result);
+
+		    	    if ( tutorial || treesChopped == treesToBeChoppped ) {
+		    	        //show MessageBox(textArr)=>completefct
+		    	        showMessageBox(getMinigame3Text("secondPartWon"), "Weiter geht's", function () {
+		    	            minigameWon(3);
+		    	            tutorial = false;
+		    	        });		    	        
+		    	    }
+		    	    else if (treesChopped >= treesToBeChoppped) {
+		    	        showMessageBox(getMinigame3Text("secondPartLost"), "Weiter geht's", function () {
+		    	            minigameLost(3);
+		    	        });		    	        
+		    	    }
+                }
+		    }); 
+
+      $("#CountedButton").click(function () {
+
+          console.log("countedButtonClicked");
+
+            var t1 = $("img[src='../img/treeGame/rsz_tree1.png']").length;
+            var t2 = $("img[src='../img/treeGame/rsz_tree2.png']").length;
+            var t3 = $("img[src='../img/treeGame/rsz_tree3.png']").length;
+            
             if ($("#3treeCountBox").val() == t3 && $("#2treeCountBox").val() == t2 && $("#1treeCountBox").val() == t1)
             {
-                alert("GEWONNEN..");
+                $(".imgContent").show();
+                showMessageBox(getMinigame3Text("firstPartWon"), "Weiter geht's", function () {
+                    canStartChopping = true;
+                });               
             }
             else {
-                alert("VERLOREN... es wäre: Tree1 " + t1 + " Tree2 " + t2 + " Tree3 " + t3);
+                showMessageBox(getMinigame3Text("firstPartLost"), "Weiter geht's");
                 console.log("LOOOSER");
             }
         });
-
-
-   
 
     $( "#winMinigameButton" ).click( function ()
     {
@@ -174,30 +173,18 @@
     {
         resetMinigame();
         exitMinigame();
-    } );
+    });
 
     function resetMinigame()
     {
         //TODO!!
     }
 
-
-
     //function randBetween(low, high) {
     //    var result = ((Math.random() * (high - low)) + low).parseInt();
     //    //if (debugOutput_PointArithmetic) console.log("[randBetween] Random number between " + low + " and " + high + ": " + result);
     //    return result;
     //};
-
-    function rotate(degree, tree) {
-        //alert("#" + tree);
-        //$("#" + tree).css("position", "absolute");
-        tree.animate({
-           'height':'8s0px',
-           'transform': 'rotate(100deg)',
-           'zoom': '1'
-        }, 5000)
-    };
 
     </script>
 
