@@ -16,13 +16,17 @@ $( function ()
 
     resizeSplashScreen();
 
-    $( appendToo ).on( "click touchstart", function ( e )
+    $("#resetQualityButton").on("click", function (e)
     {
-        splashscreenInteract();
+    	$(this).css("display", "none");
+	    setQualityLevel(1);
     });
-    $(appendToo).on("keyup", function (e) {
-        splashscreenInteract()
-    } );
+
+    $(appendToo).on("click touchstart keyup", function (e)
+    {
+    	$("#resetQualityButton").css("display", "none");
+    	splashscreenInteract();
+    });
 
     $(appendToo).focus();
 });

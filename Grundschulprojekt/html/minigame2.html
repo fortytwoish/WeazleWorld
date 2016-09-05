@@ -139,9 +139,18 @@
 		color: #298AF4;
 		cursor: pointer;
 	}
+	#minigame2 #timer{
+		position: absolute;
+		font-size: 30pt;
+		top: 20px;
+		right: 20px;
+		color: #FFF;
+		font-family: Arial;
+	}
 </style>
 <div id="minigame2">
 	<canvas id="canvas"></canvas>
+	<div id="timer"></div>
 	<div id="gameFieldAll">
 		<img id="start" alt="Der Start">
 		<table id="gameField"></table>
@@ -536,8 +545,6 @@
 	};
 	var AUDIOFILES = {
 		BACKGROUND: "audio/waterGame/background.mp3",
-		CLICK: "audio/waterGame/click.mp3",
-		FINISH: "audio/waterGame/finish.mp3",
 		ROTATE1: "audio/waterGame/rotate1.wav",
 		ROTATE2: "audio/waterGame/rotate2.mp3",
 		ROTATE3: "audio/waterGame/rotate3.mp3"
@@ -551,11 +558,11 @@
 	*/
 
 	var backgroundMusic;
-	var click;
 	var rotateSound;
-	var finishSound;
 	var gameField;
 	var hasWon = false;
+	var timerGo = false;
+	var timerTime = 120;
 
 	/*
 	*   OBJECTS
@@ -646,12 +653,13 @@
 	*   GLOBAL FUNCTIONS
 	*/
 
+
 	minigame2Start = function(level)
 	{
 		switch (level)
 		{
 			case 0:
-				LEVEL = LEVELS.TUT;
+				LEVEL = LEVELS.TUT[0];
 				$("#tutMessage").css(
 				{
 					visibility: "visible",
@@ -659,13 +667,19 @@
 				});
 				break;
 			case 1:
-				LEVEL = LEVELS.EASY;
+				LEVEL = LEVELS.EASY[mg2LevelID];
+				timerGo = true;
+				timerTime = 30;
 				break;
 			case 2:
-				LEVEL = LEVELS.MEDIUM;
+				LEVEL = LEVELS.MEDIUM[mg2LevelID];
+				timerGo = true;
+				timerTime = 45;
 				break;
 			case 3:
-				LEVEL = LEVELS.HARD;
+				LEVEL = LEVELS.HARD[mg2LevelID];
+				timerGo = true;
+				timerTime = 60;
 				break;
 		}
 
@@ -678,8 +692,6 @@
 		loadQueue.loadFile(IMAGES.TARGET);
 		loadQueue.loadFile(IMAGES.ROTATE);
 		loadQueue.loadFile(AUDIOFILES.BACKGROUND);
-		loadQueue.loadFile(AUDIOFILES.CLICK);
-		loadQueue.loadFile(AUDIOFILES.FINISH);
 		loadQueue.loadFile(AUDIOFILES.ROTATE1);
 		loadQueue.loadFile(AUDIOFILES.ROTATE2);
 		loadQueue.loadFile(AUDIOFILES.ROTATE3);
@@ -720,29 +732,23 @@
 			backgroundMusic.autoplay = true;
 			backgroundMusic.loop = true;
 
-			click = new Audio(AUDIOFILES.CLICK);
-			finishSound = new Audio(AUDIOFILES.FINISH);
 			rotateSound = new Array(3);
 			rotateSound[0] = new Audio(AUDIOFILES.ROTATE1);
 			rotateSound[1] = new Audio(AUDIOFILES.ROTATE2);
 			rotateSound[2] = new Audio(AUDIOFILES.ROTATE3);
-
-			var mute = function()
-			{
-				this.muted = true;
-			}
 
 			var volume = function()
 			{
 				this.volume = getVolume() / 100;
 			}
 
-			click.onloadeddata = volume;
-			finishSound.onloadeddata = volume;
 			backgroundMusic.onloadeddata = volume;
 			rotateSound[0].onloadeddata = volume;
 			rotateSound[1].onloadeddata = volume;
 			rotateSound[2].onloadeddata = volume;
+
+			if (timerGo)
+				timer();
 		});
 
 		// Ladevorgang starten
@@ -793,7 +799,6 @@
 
 		$("#tutButton").on("click touchstart", function()
 		{
-			click.play();
 			$("#tutMessage").css("visibility", "visible");
 			$("#tutMessage").animate(
 			{
@@ -807,7 +812,6 @@
 
 		$("#tutOkButton").on("click touchstart", function()
 		{
-			click.play();
 			$("#tutMessage").animate(
 			{
 				opacity: 0
@@ -819,19 +823,18 @@
 			{
 				$("#tutMessage").css("visibility", "hidden");
 			});
+			timer();
 		});
 
 		$("#goButton").on("click touchstart", function()
 		{
-			click.play();
-			finishSound.play();
-			if (check(gameField))
-			{
+			$("#goMessage p").remove();
+			timerTime = 0;
+			if (check(gameField)) {
 				$("<p>Du hast gewonnen!</p>").insertBefore("#goMessage input");
 				hasWon = true;
-			} else
-			{
-				$("<p>Du hast verloren!</p><p>Versuche es später noch einmal.</p>").insertBefore("#goMessage input");
+			} else {
+				$("<p>Du hast leider verloren.</p><p>Versuche es später noch einmal.</p>").insertBefore("#goMessage input");
 				hasWon = false;
 			}
 			$("#goMessage").css("visibility", "visible");
@@ -847,7 +850,6 @@
 
 		$("#goOkButton").on("click touchstart", function()
 		{
-			click.play();
 			backgroundMusic.pause();
 			createjs.Ticker.paused = true;
 			if (hasWon)
@@ -871,6 +873,35 @@
 	/*
 	*   LOCAL FUNCTIONS
 	*/
+
+	var timer = function () {
+		setTimeout(function () {
+			$("#timer").text(timerTime);
+			if (--timerTime >= 0)
+				timer();
+			else
+			{
+				$("#goMessage p").remove();
+				timerTime = 0;
+				if (check(gameField)) {
+					$("<p>Du hast gewonnen!</p>").insertBefore("#goMessage input");
+					hasWon = true;
+				} else {
+					$("<p>Die Zeit ist um!</p><p>Versuche es später noch einmal.</p>").insertBefore("#goMessage input");
+					hasWon = false;
+				}
+				$("#goMessage").css("visibility", "visible");
+				$("#goMessage").animate(
+				{
+					opacity: 1
+				}, 200);
+				$("#goMessage div").animate(
+				{
+					top: 20
+				}, 200);
+			}
+		}, 1000);
+	}
 
 	var resize = function()
 	{
@@ -926,7 +957,6 @@
 
 		$("td").on("click touchstart", function()
 		{
-			click.play();
 			rotateSound[Math.floor(Math.random() * 3)].play();
 
 			// row = zeile
@@ -955,8 +985,7 @@
 
 	var generateGameField = function(levels)
 	{
-		var index = Math.floor(Math.random() * levels.length);
-		var gameField = levels[index];
+		var gameField = levels;
 
 		for (var i = 0; i < gameField.length; i++)
 			for (var j = 0; j < gameField[i].length; j++)

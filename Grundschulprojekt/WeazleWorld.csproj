@@ -62,8 +62,10 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="audio\click.mp3" />
-    <Content Include="audio\theme.mp3" />
+    <Content Include="audio\waterGame\background.mp3" />
+    <Content Include="audio\waterGame\rotate1.wav" />
+    <Content Include="audio\waterGame\rotate2.mp3" />
+    <Content Include="audio\waterGame\rotate3.mp3" />
     <Content Include="css\font-awesome.css" />
     <Content Include="css\foo.css" />
     <Content Include="css\maingame.css" />
@@ -144,7 +146,6 @@
     <Content Include="Models\bird.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="img\waterGame\Pipe.psd" />
     <Content Include="Models\Statue_Bottom.obj" />
     <Content Include="Models\Statue_Mid.obj" />
     <Content Include="Models\Statue_Top.obj" />

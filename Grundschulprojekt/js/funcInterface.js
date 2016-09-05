@@ -22,6 +22,8 @@ showTutorials = true;
         var gameState  = GAME_STATES.SPLASH;
         var difficulty = DIFFICULTIES.NORMAL;
 
+		var mg2LevelID = Math.floor(Math.random() * 10);
+
         var statueModel;
         var statueState = STATUE_STATES.NOT_STARTED;
 

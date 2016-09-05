@@ -187,21 +187,21 @@
     right:120px;
 }
 
-#menuButton, #fullscreenButton, #exitStatueButton{
+#menuButton, #fullscreenButton, #exitStatueButton, #resetQualityButton{
 	background-color: transparent;
 	border: none;
 	font-size: 40pt;
 	color: rgba(255, 255, 255, 1.0);
 }
 
-#menuButton:hover, #fullscreenButton:hover, #exitStatueButton:hover{
+#menuButton:hover, #fullscreenButton:hover, #exitStatueButton:hover, #resetQualityButton:hover{
 	color: #298AF4;
 }
 
-#menuButton:focus, #fullscreenButton:focus, #exitStatueButton:focus{
+#menuButton:focus, #fullscreenButton:focus, #exitStatueButton:focus, #resetQualityButton:focus{
 	outline: none;
 }
 
-#menuButton:active, #fullscreenButton:active, #exitStatueButton:active{
+#menuButton:active, #fullscreenButton:active, #exitStatueButton:active, #resetQualityButton:active{
 	outline: none;
 }
