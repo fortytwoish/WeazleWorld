@@ -1,4 +1,6 @@
-﻿.wrap {
+﻿@import url('minigame3Styles.css');
+@import url('minigame3Styles.css');
+.wrap {
     width:100%;
 }
 #counterDiv {
@@ -14,8 +16,18 @@
     width:100%;
 }
 
+#chopTreeInfo{
+    background-color:#bf8338;
+    margin:auto;
+    text-align: center;
+    font-size:25pt;    
+}
+
 #counterDiv .menuItem input {
-    width:100%;
+    width:92%;
+    text-align:center;
+    margin-left:4px;
+    margin-top:2px;
 }
 
 #countedButton{
@@ -29,19 +41,19 @@
     display: inline-block;
 }
 
-
-#menuItem{
-	border: 1px solid black;
+.menuItem{
+	border: 5px solid black;
+    margin-bottom:10px;
 }
 
 #counterDiv .menuItem {
-    width:100%;
+    width:80%;
 }
 
 #treeBin {
     display:none;
     width:70%;
-    height: 411px;
+    height: 400px;
     padding:20px;
     margin-left:20px;
     background-color:#bf8338;
@@ -58,7 +70,7 @@
 #treeBin .treeDiv .imgContent {
     position: absolute;
     bottom: 0;
-    left: 5px;
+    left: 30px;
     text-align: center;
     right: 5px;
     background-color:black;
