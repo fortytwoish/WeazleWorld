@@ -553,9 +553,9 @@ function GenerateMaterial( geometry, sunPosition )
         {
 
             shadeInv /= 5;
-            imageData[i] = ( shadeInv * ( 0 + 20 ) * 0.85 + geometry.attributes.position.array[j + 1] ).clamp8Bit( CLAMP_GRASS );
+            imageData[i]     = ( shadeInv * ( 0 + 20 ) * 0.85 + geometry.attributes.position.array[j + 1] ).clamp8Bit( CLAMP_GRASS );
             imageData[i + 1] = ( shadeInv * ( 0 + 20 ) * 0.85 + geometry.attributes.position.array[j + 1] ).clamp8Bit( CLAMP_GRASS );
-            imageData[i + 2] = ( shadeInv * 13 + geometry.attributes.position.array[j + 1] ).clamp8Bit( CLAMP_GRASS );
+            imageData[i + 2] = ( shadeInv * 13 + geometry.attributes.position.array[j + 1] )               .clamp8Bit( CLAMP_GRASS );
 
         }
 

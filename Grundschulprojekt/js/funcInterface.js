@@ -116,7 +116,14 @@ function continueMainGame()
                 return;
             }
 
-            pauseRendering();
+            if ( minigameID == 1 )
+            {
+                mg1_start();
+            }
+            else
+            {
+                pauseRendering();
+            }
 
             isInMenu = true;
 

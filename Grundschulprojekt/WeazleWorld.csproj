@@ -80,7 +80,6 @@
     <Content Include="html\minigame2.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="html\Outline effect %28Three.js%29.html" />
     <Content Include="img\Background.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -101,7 +100,10 @@
     <Content Include="img\waterGame\rotate.gif" />
     <Content Include="img\waterGame\STRAIGHT.png" />
     <Content Include="img\waternormals.jpg" />
+    <Content Include="img\RockGame\waterRipple.png" />
     <Content Include="img\wellTexture.png" />
+    <Content Include="js\Minigame1.js" />
+    <Content Include="Resources\Calibri_Bold.js" />
     <Content Include="Spielstart.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -167,6 +169,8 @@
     <Compile Include="obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Models\otter_highQ.obj" />
+    <Content Include="Resources\Calibri_Bold.json" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

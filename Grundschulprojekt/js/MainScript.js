@@ -3,10 +3,12 @@ isInMenu           = true;
 preventRaycastOnce = false;
 TERRAIN_OFFSET     = 0;
 TERRAIN_RESOLUTION = 0;
-GRASS_DENSITY = 1;
+GRASS_DENSITY      = 1;
+
+SCENE_TO_RENDER = null;
 
 //  CONSTANTS
-const DEFAULT_QUALITY    = 8;
+const DEFAULT_QUALITY    = 1;
 const PAUSE_IN_MENU      = true;
 const WATERLEVEL         = 0;
 const WATERCOLOR         = 0x55AAAA;
@@ -40,17 +42,17 @@ var camera,
     renderer,
     islandMesh,
     waterMesh,
-    test_statues                 = [],
-    subsampleFactor              = 1,
-    canClickObjects              = true,
-    minigame_rock                = null,
-    minigame_rock_outline        = null,
-    minigame_water               = null,
-    minigame_water_outline       = null,
-    minigame_palm                = null,
-    minigame_palm_leaves         = null,
-    minigame_palm_outline        = null,
-    placedMinigameNodes          = false,
+    test_statues           = [],
+    subsampleFactor        = 1,
+    canClickObjects        = true,
+    minigame_rock          = null,
+    minigame_rock_outline  = null,
+    minigame_water         = null,
+    minigame_water_outline = null,
+    minigame_palm          = null,
+    minigame_palm_leaves   = null,
+    minigame_palm_outline  = null,
+    placedMinigameNodes    = false,
     decorationSpriteMeshes,
     activeMinigameNodeIndex;
 
@@ -76,6 +78,9 @@ function initStaticElements()
     //------------------------------------------------------//
     scene     = new THREE.Scene();
     scene.fog = new THREE.FogExp2( FOG_COLOR, 0.001 );
+    SCENE_TO_RENDER = scene;
+
+    initMinigame1();
 
     //------------------------------------------------------//
     //                  CAMERA                              //
@@ -182,12 +187,10 @@ function handleWindowVisibility()
             document.body.className = this[hidden] ? "hidden" : "visible";
             if ( this[hidden] )
             {
-                console.log( "pausing rendering... " );
                 pauseRendering();
             }
             else
             {
-                console.log( "resuming rendering... " );
                 resumeRendering();
             }
         }
@@ -204,12 +207,12 @@ function initRenderer()
     renderer                    = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setClearColor( WINDOW_CLEAR_COLOR );
     renderer.shadowMap.enabled  = true;
-    renderer.shadowMap.Type     = THREE.BasicShadowMap;
+    //renderer.shadowMap.Type     = THREE.BasicShadowMap;
 }
 
 function initWater()
 {
-    var planeGeom         = new THREE.PlaneBufferGeometry( Math.pow( 2, TERRAIN_RESOLUTION + 1), Math.pow( 2, TERRAIN_RESOLUTION + 1 ), 1000, 1000 );
+    var planeGeom         = new THREE.PlaneBufferGeometry( Math.pow( 2, TERRAIN_RESOLUTION + 1), Math.pow( 2, TERRAIN_RESOLUTION + 1 ), 1, 1 );
     waterMesh2            = new THREE.Mesh( planeGeom, new THREE.MeshPhongMaterial( { color: WATERCOLOR_LOW, transparent: false, shininess: 150} ) );
     waterMesh2.rotation.x = -Math.PI * 0.5;
 
@@ -464,7 +467,6 @@ function initStatueParticleSystem()
 
 function initMinigameNodes()
 {
-    console.log( "initiating minigame nodes..." );
     var loader                        = new THREE.OBJLoader();
 
     minigame_rock_geom                = new THREE.Mesh(),
@@ -528,13 +530,10 @@ function loadNodeSegment( loader, path, targetGeom )
                 }
                 else if ( targetGeom == minigame_water_geom )
                 {
-                    
-                    //console.log( child.material );
                     new THREE.TextureLoader().load( 'img/wellTexture.png', function ( loadedTexture )
                     {
                         targetGeom.material = child.material;
                         targetGeom.material.map = loadedTexture;
-                        console.log( object );
                         nodeLoaded();
                     } );
                 }
@@ -706,12 +705,12 @@ function initLighting()
     directionalLight2 = new THREE.DirectionalLight( OPPOSITE_LIGHTCOL, OPPOSITE_LIGHTSTR );
     directionalLight2.position.set( -SUN_POSITION.x, SUN_POSITION.y, -SUN_POSITION.z );
 
-    directionalLight.shadowCameraRight    = 6;
-    directionalLight.shadowCameraLeft     = -6;
-    directionalLight.shadowCameraTop      = 12;
-    directionalLight.shadowCameraBottom   = 2;
-    directionalLight.shadowCameraFar      = 16;
-    directionalLight.shadowCameraNear     = -2.5;
+    directionalLight.shadow.camera.right = 6;
+    directionalLight.shadow.camera.left = -6;
+    directionalLight.shadow.camera.top = 12;
+    directionalLight.shadow.camera.bottom = 2;
+    directionalLight.shadow.camera.far = 16;
+    directionalLight.shadow.camera.near = -2.5;
     directionalLight.castShadow           = true;
     //scene.add( new THREE.CameraHelper( directionalLight.shadow.camera ) );
 }
@@ -748,94 +747,106 @@ var pauseRender = false;
 //  Caution: Mostly debug stuff still
 function animate()
 {
-    if ( renderThreadsToBeKilled > 0 )
-    {
-        renderThreadsToBeKilled--
-        return;
-    }
-
-    stats.begin();
-
-    deltaTime = clock.getDelta();
-    for ( var i = 0; i < weazles.length; i++ )
-    {
-        weazles[i].update( deltaTime );
-    }
-
-
-    var camFieldX = Math.round( middle.x + camera.position.z );
-    var camFieldY = Math.round( middle.y + camera.position.x );
-
-    //  Prevent camera collision
-    if ( camFieldX >= 0 && camFieldX < field.length && camFieldY >= 0 && camFieldY < field.length )
-    {
-        var terrainAtCameraPos = field[camFieldX][camFieldY ];
-
-        if ( camera.position.y <= terrainAtCameraPos )
-        {
-            camera.position.y = terrainAtCameraPos;
-        }
-    }
-
-    if ( controls.autoRotate )
-    {
-        controls.update();
-    }
-
-    //  Pulsing minigame outlines
-    if ( placedMinigameNodes )
-    {
-        var col = Math.round( 255 * ( Math.sin( Date.now() / 500 ) / 4 + 0.75 ) );
-
-        for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
-        {
-            if ( minigame_rock_outline[i] && minigame_rock_outline[i].visible )
-            {
-                minigame_rock_outline[i].material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
-            }
-            if ( minigame_water_outline[i] && minigame_water_outline[i].visible )
-            {
-                minigame_water_outline[i].material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
-            }
-            if ( minigame_palm_outline[i] && minigame_palm_outline[i].visible )
-            {
-                minigame_palm_outline[i].material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
-            }
-        }
-    }
-
-    
     
 
-    if (!isInMenu)
+    if ( SCENE_TO_RENDER == scene )
     {
-        
-    }
-    else
-    {
-        //SET THESE TO AUTOMATICALLY ROTATE, FOR EXAMPLE WHEN VIEWING STATUE
-        //controls.autoRotate = true;
-    }
-           
-    //  continue render loop
+        deltaTime = clock.getDelta();
 
-    if ( waterCreated )
-    {
-        if ( renderWater )
+        if ( renderThreadsToBeKilled > 0 )
         {
-            water.material.uniforms.time.value += deltaTime * 0.1;
-            water.render();
+            renderThreadsToBeKilled--
+            return;
+        }
+
+        stats.begin();
+
+
+        for ( var i = 0; i < weazles.length; i++ )
+        {
+            weazles[i].update( deltaTime );
+        }
+
+
+        var camFieldX = Math.round( middle.x + camera.position.z );
+        var camFieldY = Math.round( middle.y + camera.position.x );
+
+        //  Prevent camera collision
+        if ( camFieldX >= 0 && camFieldX < field.length && camFieldY >= 0 && camFieldY < field.length )
+        {
+            var terrainAtCameraPos = field[camFieldX][camFieldY];
+
+            if ( camera.position.y <= terrainAtCameraPos )
+            {
+                camera.position.y = terrainAtCameraPos;
+            }
+        }
+
+        if ( controls.autoRotate )
+        {
+            controls.update();
+        }
+
+        //  Pulsing minigame outlines
+        if ( placedMinigameNodes )
+        {
+            var col = Math.round( 255 * ( Math.sin( Date.now() / 500 ) / 4 + 0.75 ) );
+
+            for ( var i = 0; i < TRIES_PER_MINIGAME; i++ )
+            {
+                if ( minigame_rock_outline[i] && minigame_rock_outline[i].visible )
+                {
+                    minigame_rock_outline[i].material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
+                }
+                if ( minigame_water_outline[i] && minigame_water_outline[i].visible )
+                {
+                    minigame_water_outline[i].material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
+                }
+                if ( minigame_palm_outline[i] && minigame_palm_outline[i].visible )
+                {
+                    minigame_palm_outline[i].material.color = new THREE.Color( "rgb(" + col + ", 0, 0)" );
+                }
+            }
+        }
+
+
+
+
+        if ( !isInMenu )
+        {
+
         }
         else
         {
-            waterTexture.offset.x = Math.cos(Date.now() / 200000);
-            waterTexture.offset.y = Math.sin(Date.now() / 200000);
+            //SET THESE TO AUTOMATICALLY ROTATE, FOR EXAMPLE WHEN VIEWING STATUE
+            //controls.autoRotate = true;
         }
+
+        //  continue render loop
+
+        if ( waterCreated )
+        {
+            if ( renderWater )
+            {
+                water.material.uniforms.time.value += deltaTime * 0.1;
+                water.render();
+            }
+            else
+            {
+                waterTexture.offset.x = Math.cos( Date.now() / 200000 );
+                waterTexture.offset.y = Math.sin( Date.now() / 200000 );
+            }
+        }
+
+        requestAnimationFrame( animate );
+        renderer.render( scene, camera );
+        stats.end();
     }
-    
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-    stats.end();
+    else
+    {
+        animateMinigame1();
+    }
+
 }
 
 renderWater = true;
@@ -930,10 +941,10 @@ function exitFullscreen()
 //TODO: Find a better method to go fullscreen
 function onWindowResize()
 {
-    console.log( "Resizing..." );
-
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = mg1_camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
+    mg1_camera.updateProjectionMatrix();
+
     renderer.setPixelRatio(window.devicePixelRatio / subsampleFactor);
     renderer.setSize( window.innerWidth, window.innerHeight );
 
@@ -958,8 +969,6 @@ function onDocumentTouchStart( event )
     event.clientX = event.touches[0].clientX;
     event.clientY = event.touches[0].clientY;
 
-    console.log( "touch start: " + event.clientX + ", " + event.clientY );
-
     onDocumentMouseDown( event );
 }
 
@@ -969,8 +978,6 @@ function onDocumentTouchEnd( event )
 
     event.clientX = event.changedTouches[0].clientX;
     event.clientY = event.changedTouches[0].clientY;
-
-    console.log( "touch end: " + event.clientX + ", " + event.clientY );
 
     onDocumentMouseUp( event );
 }
@@ -991,8 +998,6 @@ function onDocumentMouseUp( event )
 
     raycaster.setFromCamera( mouse, camera );
     var intersects = raycaster.intersectObjects( clickable_objects );
-
-    //console.log( intersects[0].object + " x " + mouseDownObj );
 
     if ( intersects.length > 0 && intersects[0].object === mouseDownObj )
     {
@@ -1061,12 +1066,10 @@ function onDocumentMouseDown( event )
 
     if ( intersects.length > 0 )
     {
-        console.log( "hit object: " + intersects[0].object );
         mouseDownObj = intersects[0].object;
     }
     else
     {
-        console.log( "Did not hit an object." );
         mouseDownObj = null;
     }
 }
@@ -1075,158 +1078,53 @@ var minigamesVis = true;
 var decorationVis = true;
 function onkeydown( event )
 {
-    if(event.key == "r")
-    {
-        if ( controls.autoRotate )
-        {
-            controls.autoRotate = false;
-        }
-        else
-        {
-            controls.autoRotate = true;
-        }
-    }
-    else if ( event.key == "s" )
-    {
-        if ( directionalLight.castShadow )
-        {
-            directionalLight.castShadow = false;
-        }
-        else
-        {
-            directionalLight.castShadow = true;
-        }
-    }
-    else if ( event.key == "g" )
-    {
-        if ( decorationVis )
-        {
-            for ( var i = 0; i < differentSpriteCount; i++ )
-            {
-                decorationSpriteMeshes[i].visible = false;
-            }
-            decorationVis = false;
-        }
-        else
-        {
-            for ( var i = 0; i < differentSpriteCount; i++ )
-            {
-                decorationSpriteMeshes[i].visible = true;
-            }
-            decorationVis = true;
-        }
-    }
-    else if ( event.key == "w" )
-    {
-        if ( renderWater )
-        {
-            renderWater = false;
-            scene.remove( waterMesh );
-            scene.add( waterMesh2 );
-        }
-        else
-        {
-            renderWater = true;
-            scene.remove( waterMesh2 );
-            scene.add( waterMesh );
-        }
-    }
-    else if( event.key == "m")
-    {
-        if ( minigamesVis )
-        {
-            for ( var i = 0; i < minigame_rock.length; i++ )
-            {
-                minigame_rock_outline[i].visible = false;
-                minigame_water_outline[i].visible = false;
-                minigame_palm_outline[i].visible = false;
-                //minigame_palm_leaves_outline[i].visible = false;
-                minigame_rock[i].visible = false;
-                minigame_water[i].visible = false;
-                minigame_palm[i].visible = false;
-                minigame_palm_leaves[i].visible = false;
-            }
-            minigamesVis = false;
-        }
-        else
-        {
-            for ( var i = 0; i < minigame_rock.length; i++ )
-            {
-                minigame_rock_outline[i].visible = true;
-                minigame_water_outline[i].visible = true;
-                minigame_palm_outline[i].visible = true;
-                //minigame_palm_leaves_outline[i].visible = true;
-                minigame_rock[i].visible = true;
-                minigame_water[i].visible = true;
-                minigame_palm[i].visible = true;
-                minigame_palm_leaves[i].visible = true;
-            }
-            minigamesVis = true;
-        }
 
-    }
-    else if ( event.key == "1" )
+    if ( event.key == "+" )
     {
-        subsampleFactor = 1;
-	    onWindowResize();
-    }
-    else if ( event.key == "2" )
-    {
-        subsampleFactor = 2;
-	    onWindowResize();
-    }
-    else if ( event.key == "3" )
-    {
-        subsampleFactor = 4;
-	    onWindowResize();
-    }
-    else if ( event.key == "4" )
-    {
-        subsampleFactor = 8;
-	    onWindowResize();
-    }
-    else if ( event.key == "5" )
-    {
-        subsampleFactor = 16;
-	    onWindowResize();
-    }
-    else if ( event.key == "+" )
-    {
-        decorationSpritesMesh.rotation.z+=0.1;
+        projectileMesh.translateY( 1 );
     }
     else if ( event.key == "-" )
     {
-        decorationSpritesMesh.rotation.z-=0.1;
+        projectileMesh.translateY( -1 );
     }
     else if ( event.key == "8" )
     {
-        directionalLight.shadow.camera.bottom--;
-        directionalLight.shadow.camera.updateProjectionMatrix();
+        projectileMesh.translateZ( 1 );
+    }
+    else if ( event.key == "2" )
+    {
+        projectileMesh.translateZ( -1 );
     }
     else if ( event.key == "4" )
     {
-        directionalLight.shadow.camera.left++;
-        directionalLight.shadow.camera.updateProjectionMatrix();
+        projectileMesh.translateX( -1 );
     }
     else if ( event.key == "5" )
     {
-        directionalLight.shadow.camera.bottom++;
-        directionalLight.shadow.camera.updateProjectionMatrix();
+        console.log( lastX + ", " + lastZ );
+        projectileMesh.lookAt( new THREE.Vector3( lastX, 4, lastZ ) );
     }
     else if ( event.key == "6" )
     {
-        directionalLight.shadow.camera.left--;
-        directionalLight.shadow.camera.updateProjectionMatrix();
+        projectileMesh.translateX( 1 );
     }
-    else if ( event.key == "ü" )
+    else if ( event.key == "7" )
     {
-        directionalLight.shadow.camera.near--;
-        directionalLight.shadow.camera.updateProjectionMatrix();
+        console.log( "rotating x... Before: " + projectileMesh.rotation.x );
+        projectileMesh.rotateX(Math.PI / 2);
+        console.log("after: " + projectileMesh.rotation.x );
     }
-    else if ( event.key == "ä" )
+    else if ( event.key == "9" )
     {
-        directionalLight.shadow.camera.near++;
-        directionalLight.shadow.camera.updateProjectionMatrix();
+        console.log( "rotating z... Before: " + projectileMesh.rotation.z );
+        projectileMesh.rotateY( Math.PI / 2 );
+        console.log( "after: " + projectileMesh.rotation.z);
+    }
+    else if ( event.key == "3" )
+    {
+        console.log( "rotating y... Before: " + projectileMesh.rotation.y );
+        projectileMesh.rotateZ( Math.PI / 2 );
+        console.log( "after: " + projectileMesh.rotation.y );
     }
 
     //  directionalLight.shadow.camera.right    = 10;
@@ -1562,7 +1460,6 @@ function OnMinigameAvailabilityChanged( minigameID, isAvailable )
 {
     if ( isAvailable )
     {
-        console.log( "minigame " + minigameID + " is now available." );
         switch ( minigameID )
         {
             case 1:
@@ -1599,19 +1496,16 @@ function OnMinigameAvailabilityChanged( minigameID, isAvailable )
 
             case 1:
                 var index = indexInArray(clickable_objects, minigame_rock[i] );
-                console.log( index );
                 clickable_objects.splice( index, 1 );
                 minigame_rock_outline[i].visible = false;
                 break;
             case 2:
                 var index = indexInArray( clickable_objects, minigame_water[i] );
-                console.log( index );
                 clickable_objects.splice( index, 1 );
                 minigame_water_outline[i].visible = false;
                 break;
             case 3:
                 var index = indexInArray( clickable_objects, minigame_palm[i] );
-                console.log( index );
                 clickable_objects.splice( index, 1 );
                 index = indexInArray( clickable_objects, minigame_palm_leaves[i] );
                 clickable_objects.splice( index, 1 );
