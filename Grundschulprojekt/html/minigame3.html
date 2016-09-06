@@ -1,4 +1,6 @@
 ﻿    <button id="CountedButton" >COUNTED</button>
+    <button id="winMinigameButton" style="margin: auto">Win</button>
+    <button id="loseMinigameButton" style="margin: auto">Lose</button>
     
     <h1 id="chopTreeInfo"></h1>
     
@@ -151,6 +153,7 @@
 		    	            $(this).removeClass("transf2");
 		    	            minigameWon(3);
 		    	            tutorial = false;
+		    	            treesChopped = 0;
 		    	        });		    	        
 		    	    }
 		    	    else if (treesChopped >= treesToBeChoppped) {
@@ -207,6 +210,17 @@
     {
         //TODO!!
     }
+
+    $("#winMinigameButton").on("click touchstart", function () {
+        resetMinigame();
+        mg1_end();
+        minigameWon(1);
+    });
+    $("#loseMinigameButton").on("click touchstart", function () {
+        resetMinigame();
+        mg1_end();
+        minigameLost(1);
+    });
 
     //function randBetween(low, high) {
     //    var result = ((Math.random() * (high - low)) + low).parseInt();

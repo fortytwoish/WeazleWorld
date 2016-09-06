@@ -115,6 +115,7 @@ function continueMainGame()
                 alert(  "BUG:\n"
                       + "Minigame " + minigameID + " kann nicht (mehr?) gestartet werden!\n\n"
                       + "(Es sollte also garnicht verfügbar sein...)");
+                fillScoreScreen();
                 return;
             }
 
