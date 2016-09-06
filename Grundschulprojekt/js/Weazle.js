@@ -31,10 +31,8 @@ const idleToWalkChance = 0.005;
 
 const startSpd = 2.5;
 
-class Weazle
+var Weazle = function()
 {
-    constructor()
-    {
 
         var targetCoords = new THREE.Vector3;
         targetCoords.y   = VILLAGE_DIMENSIONS.z;
@@ -175,7 +173,6 @@ class Weazle
         var mixer = new THREE.AnimationMixer(this.mesh);
         
         this.state = states.IDLE;
-    }
 
 }
 

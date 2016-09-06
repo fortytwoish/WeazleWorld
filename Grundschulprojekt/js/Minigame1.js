@@ -1062,10 +1062,8 @@ function initSkipParticles()
 }
 
 var WordArray = [];
-class Word
+var Word = function(word)
 {
-    constructor( word )
-    {
         this.isVisible = false;
 
         if ( word.length <= 3 )
@@ -1153,7 +1151,6 @@ class Word
                 mg1_scene.remove( this.letters[i].mesh );
             }
         }
-    }
 
 }
 
@@ -1208,15 +1205,12 @@ function sendDelayed( letters, word )
     }, (word.word.length * charDist) / speed );
 }
 
-class Letter
+var Letter = function(char, offset)
 {
-    constructor(char, offset)
-    {
         this.char = char;
         this.offset = offset;
 
         this.mesh = new THREE.Mesh( textGeoms[charToNumber( char )],
                                     new THREE.MeshPhongMaterial( { color: 0xFF0000 } ) );
 
-    }
 }
