@@ -56,17 +56,16 @@ waterCreated = false;
 function main()
 {
     initStaticElements();
-    initSounds();
 }
 
 function initSounds()
 {
-    volumeLevel = 0.2;
+    volumeLevel = 1.0;
     soundBuilding = new Howl( { src: ['audio/buildingSound.mp3'], volume: volumeLevel } );
     soundIntro = new Howl( { src: ['audio/finalpartwithjingles.mp3'], volume: volumeLevel, loop: true } );
     soundMaingame = new Howl( { src: ['audio/maingameBackgroundSound.mp3'], volume: volumeLevel, loop: true } );
     soundMaingame2 = new Howl( { src: ['audio/firstpartwithout drums.mp3'], volume: volumeLevel, loop: true } );
-    soundMenu = new Howl( { src: ['audio/secondpartwithdrumsandfunk.mp3'], volume: volumeLevel, loop: true } );
+    soundMenu = new Howl({ src: ['audio/secondpartwithdrumsandfunk.mp3'], volume: volumeLevel, loop: true });
 }
 
 function initStaticElements()
@@ -150,6 +149,8 @@ function initStaticElements()
 
     //  Load non-static elements that change with quality setting
     loadQualityLevel();
+
+
 }
 
 //  Example by Andy E: http://stackoverflow.com/a/1060034
@@ -271,9 +272,7 @@ function initIsland()
     islandMat.shading           = THREE.FlatShading;
     islandMesh                  = new THREE.Mesh( islandGeom, islandMat );
     islandMesh.receiveShadow    = true;
-
-    //soundIntro.play();
-
+    
     scene.add( islandMesh );
 }
 

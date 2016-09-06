@@ -72,6 +72,7 @@
     <Content Include="css\menu.css" />
     <Content Include="css\reset.css" />
     <Content Include="css\splashScreen.css" />
+    <Content Include="favicon.png" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="html\minigame3.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

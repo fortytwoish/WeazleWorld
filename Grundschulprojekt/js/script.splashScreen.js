@@ -4,6 +4,12 @@ var mainGame = "#mainGame";
 
 $( function ()
 {
+    initSounds();
+
+    if (!isMenuSoundPlaying) {
+        isMenuSoundPlaying = true;
+        soundMenu.play();
+    }
 
     window.addEventListener( 'resize', resizeSplashScreen, false );
 

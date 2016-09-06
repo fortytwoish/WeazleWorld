@@ -86,6 +86,11 @@ showTutorials = true;
 
 function continueMainGame()
 {
+    if (isMenuSoundPlaying) {
+        isMenuSoundPlaying = false;
+        soundMenu.pause();
+    }
+
     isInMenu = false;
     resumeRendering();
     hideMenu();
@@ -97,9 +102,15 @@ function continueMainGame()
     //------------------------------------------------------//
     //                  IN MAIN GAME                        //
     //------------------------------------------------------//
-
+isMenuSoundPlaying = false;
         function openMenu()
         {
+            if (!isMenuSoundPlaying)
+            {
+                isMenuSoundPlaying = true;
+                soundMenu.play();
+            }
+
             isInMenu = true;
             pauseRendering();
 	        showMenu();
@@ -109,6 +120,7 @@ function continueMainGame()
 
         function startMinigame( minigameID )
         {
+            soundMenu.play();
 
             if ( !mgPossible( minigameID ) )
             {
@@ -173,6 +185,8 @@ function continueMainGame()
 
         function minigamePlayed( minigameNumber )
         {
+            soundMenu.pause();
+
             var played = getMinigameState( minigameNumber, 1 ) + 1;
 
             setMinigameState( minigameNumber, 1, played ); //  Played++
@@ -405,6 +419,15 @@ function continueMainGame()
             if (volume > 100) volume_level = 100;
             else if (volume < 0) volume_level = 0;
             else volume_level = volume;
+
+            console.log("setting volume: " + volume);
+
+            //soundBuilding.volume(volume);
+            //soundIntro.volume(volume);
+            //soundMaingame.volume(volume);
+            //soundMaingame2.volume(volume);
+            //soundMenu.volume(volume);
+            Howler.volume(volume);
         }
 
         //sets difficulty DIFFICULTY.EASY//.MEDIUM//.HARD
