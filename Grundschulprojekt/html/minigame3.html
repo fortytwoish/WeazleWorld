@@ -28,7 +28,7 @@
     </style>
 
     <script>
-
+    $("CountedButton").hide();
     var imageUrl = "../img/treeGame/woods.jpg";
     $("#minigame").css('background-image', 'url(' + imageUrl + ')');
     var rand = 0;
@@ -56,9 +56,14 @@
         case 0:
             tutorial = true;
             randTreeCount = 6;
+            if(tutorial)
             showMessageBox(getMinigame3Text("tutorial"), "Weiter geht's", function () {
                 $("CountedButton").show();
             });
+            else
+                showMessageBox(getMinigame3Text("intro"), "Weiter geht's", function () {
+                    $("CountedButton").show();
+                });
             break;
         case 1:
             tutorial = false;
@@ -158,21 +163,18 @@
 
       $("#CountedButton").click(function () {
 
-          console.log("countedButtonClicked");
-
-          if(tutorial)
-              minigameWon(3);
+          console.log("countedButtonClicked");     
    
             var t1 = $("img[src='../img/treeGame/tree1.png']").length -1;
             var t2 = $("img[src='../img/treeGame/tree2.png']").length -1;
             var t3 = $("img[src='../img/treeGame/tree3.png']").length -1;
             
             console.log("tree1 : " + $("#1treeCountBox").val() + "seen as " + t1 + " tree2 : " + $("#2treeCountBox").val() + "seen as " + t2 + " tree3 " + $("#3treeCountBox").val() + "seen as " + t3);
-            if ($("#3treeCountBox").val() == t3 && $("#2treeCountBox").val() == t2 && $("#1treeCountBox").val() == t1)
+            if ($("#3treeCountBox").val() == t3 && $("#2treeCountBox").val() == t2 && $("#1treeCountBox").val() == t1  || tutorial)
             {
                 $(".imgContent").show();
 
-                showMessageBox(getMinigame3Text("tutorial"), "Weiter geht's", function () {
+                showMessageBox(getMinigame3Text("firstPartWon"), "Weiter geht's", function () {
                     canStartChopping = true;
                     if(!tutorial)
                         $("#chopTreeInfo").html("<b>Bitte " + treesToBeChoppped + " (Tonnen) Bäume fällen! </b>");

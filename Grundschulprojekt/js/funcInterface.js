@@ -34,7 +34,7 @@ showTutorials = true;
         //INT 0<->1
         var volume_level      = 1;
         var GRAPHIC_QUALITIES = { 1: "VERY_LOW", 2: "LOW", 3: "MEDIUM", 4: "HIGH", 5: "MAXIMUM" };
-        var graphicQuality    = GRAPHIC_QUALITIES.MEDIUM;
+        var graphicQuality = GRAPHIC_QUALITIES.MEDIUM;
 
         var MINIGAME_STATE;
         //Construction of MiniGame Database
@@ -533,6 +533,11 @@ function continueMainGame()
 
             switch (state) {
                 case "tutorial":
+                    text = ["Willkommen im Baum-MiniSpiel", "Deine Aufgabe ist es die Bäume zu zählen!",
+                            "Gib die Anzahl der Bäume auf der linken Seite an und drücke auf Gezählt!",
+                            "Viel Erfolg"];
+                    break;
+                case "intro":
                     text = ["Willkommen im Baum-MiniSpiel", "Deine Aufgabe ist es die Bäume zu zählen!",
                             "Gib die Anzahl der Bäume auf der linken Seite an und drücke auf Gezählt!",
                             "Viel Erfolg"];
