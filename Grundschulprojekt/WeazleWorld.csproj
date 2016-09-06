@@ -92,6 +92,10 @@
     <Content Include="img\palm leafs_opacity_low.png" />
     <Content Include="img\rahmen.gif" />
     <Content Include="img\rahmen_klein.gif" />
+    <Content Include="img\RockGame\0life.png" />
+    <Content Include="img\RockGame\1life.png" />
+    <Content Include="img\RockGame\2life.png" />
+    <Content Include="img\RockGame\3life.png" />
     <Content Include="img\rockTexture.png" />
     <Content Include="img\smoke_puff.png" />
     <Content Include="img\treeGame\transparent.png" />

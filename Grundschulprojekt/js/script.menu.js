@@ -58,6 +58,7 @@ mainMenuEntries.push(new MenuEntry("menuOptions", '<input type="button" value="O
 	$("#" + this.id).on("click touchstart", function () {
 	    drawMenu( optionMenu );
 	    document.getElementById( "mainGame" ).appendChild( stats.dom );
+	    pauseRender = true;
 	    resumeRendering();
 	    controls.autoRotate = true;
 	    controls.update();
@@ -178,7 +179,8 @@ optionEntries.push(new MenuEntry("menuCredits", '<input type="button" value="Cre
 optionEntries.push(new MenuEntry("menuBack", '<input type="button" value="Zurück">', function () {
 	$("#" + this.id).on("click touchstart", function () {
 	    drawMenu( mainMenu );
-	    document.getElementById("mainGame").removeChild( stats.dom );
+	    document.getElementById( "mainGame" ).removeChild( stats.dom );
+	    pauseRender = false;
 	    pauseRendering();
 	    controls.autoRotate = false;
 	    controls.update();

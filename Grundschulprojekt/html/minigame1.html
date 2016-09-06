@@ -1,9 +1,30 @@
-﻿<h1>minigame1</h1>
-<button id="winMinigameButton" style="margin: auto">Win</button>
+﻿<button id="winMinigameButton" style="margin: auto">Win</button>
 <button id="loseMinigameButton" style="margin: auto">Lose</button>
+<div id="AvailableButtons"></div>
+<img id="life" src="../img/RockGame/3life.png" />
 <style>
-    *{
+    #minigame
+    {
         border:none;
+        top: 0;
+        left: 0;
+        box-shadow:none;
+    }
+    #AvailableButtons
+    {
+        font-family:Calibri;
+        font-size: 12pt;
+
+        position: absolute;
+        top:60%;
+        left:65%;
+    }
+    #life
+    {
+        position: absolute;
+        width:    15vh;
+        top:      62%;
+        left:     36%;
     }
 </style>
 <script>
@@ -11,15 +32,11 @@
 	{
 		$("#winMinigameButton").on("click touchstart", function()
 		{
-		    resetMinigame();
-		    mg1_end();
-			minigameWon(1);
+		    winMinigame1();
 		});
 		$("#loseMinigameButton").on("click touchstart", function()
 		{
-		    resetMinigame();
-		    mg1_end();
-			minigameLost(1);
+		    loseMinigame1();
 		} );
 
 		function resetMinigame()

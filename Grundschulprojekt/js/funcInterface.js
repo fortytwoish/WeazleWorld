@@ -32,7 +32,7 @@ showTutorials = true;
         statueModel = [0,          0,              0,          0,              0,          0];
 
         //INT 0<->1
-        var volume_level      = 1;
+        var volume_level      = 100;
         var GRAPHIC_QUALITIES = { 1: "VERY_LOW", 2: "LOW", 3: "MEDIUM", 4: "HIGH", 5: "MAXIMUM" };
         var graphicQuality = GRAPHIC_QUALITIES.MEDIUM;
 
@@ -328,6 +328,9 @@ function continueMainGame()
 
         function setMinigameState( id, propertyID, value )
         {
+
+            console.log( "setting state " + propertyID + "of minigame " + id + " to value: " + value );
+
             var ind = ( id - 1 ) * 5;
             
             MINIGAME_STATE[ind + propertyID] = value;
@@ -485,7 +488,7 @@ function continueMainGame()
             text[ind++] = "Allerdings brauchen sie noch ein wenig mehr. Je mehr du ihnen bringst, desto dankbarer werden deine Weazles sein.";
             if ( minigameID < 3 )
             {
-                text[ind++] = "Du kannst ihnen aber auch " + getResourceFromMinigameID( minigameID ) + " bringen, welches sie ebenfalls sehr dringend brauchen!";
+                text[ind++] = "Du kannst ihnen aber jetzt auch " + getResourceFromMinigameID( minigameID + 1 ) + " bringen, welches sie ebenfalls sehr dringend brauchen!";
             }
             if ( minigameID == 1 )
             {

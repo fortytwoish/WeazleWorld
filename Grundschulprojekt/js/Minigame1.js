@@ -11,7 +11,7 @@
     initLine();
     initPath();
     initLetters();
-    initSkipParticles();
+    //initSkipParticles();
 
     //------------------------------------------------------//
     //                  LIGHT                               //
@@ -227,39 +227,234 @@
                 mg1_weazleMesh.position.x = 0.5;
                 mg1_weazleMesh.scale.set( 0.4, 0.4, 0.4 );
 
+                unfiredProjectileLetter = new Letter( "X", null );
+                mg1_weazleMesh.add( unfiredProjectileLetter.mesh );
+
                 mg1_scene.add( mg1_weazleMesh );
             }
         } );
     } );
 }
 
+const NAMES_EASY = ["APFEL", "ABER", "ALS", "ALSO", "AUF", "AUS", "AUFGABE", "AUGE", "AUTO", "AMEISE", "ARBEITEN", "ANTWORTEN", "BLAU", "BRAUN", "BROT", "BUCH", "BUNT", "BADEN", "BRINGEN", "BANK", "BRAUCHEN", "BIRNE", "BAUM", "BILD", "BILDER", "BLEIBEN", "BLEIBT", "BUB", "BUBEN", "BADEN", "BEI", "BABY", "BACKEN", "CENT", "CLOWN", "COMPUTER", "DOSE", "DUNKEL", "DENKEN", "DANKEN", "DARF", "DIE", "DOCH", "DURCH", "DICK", "DAS", "DER", "DES", "DIR", "DICH", "ENTE", "ENDE", "ESEL", "EIS", "EURO", "ENG", "FRAU", "FEDER", "FENSTER", "FINDEN", "FEIN", "FRISCH", "FRAGEN", ",FRAGT", "FREUND", "FREUNDE", "GUT", "GABEL", "GARTEN", "GRAS", "GEBEN", "GIBT", "GELB", "GELBE", "GESUND", "GESUNDE", "GEHEN", "GEHT", "HASE", "HOSE", "HABEN", "HOLEN", "HOCH", "HAUS", "HINTER", "HUND", "HUNDE", "ICH", "IST", "JUNGE", "JAHR", "KISTE", "KRANK", "KOPF", "KIND", "KINDER", "KLEID", "KLEIDER", "KATZE", "KAISER", "LAUT", "LEISE", "LEUTE", "LEICHT", "LERNEN", "LAUFEN", "LEBEN", "LEBT", "LEGEN", "LEGT", "MALEN", "MACHEN", "MAUS", "MAI", "MIT", "NAME", "NEBEL", "NADEL", "NEU", "NACH", "NEIN", "NICHT", "NUN", "OMA", "OPA", "ONKEL", "ODER", "PINSEL", "PFLANZE", "PARTNER", "PFERD", "PFERDE", "QUELLE", "QUADRAT", "QUATSCH", "RABE", "RAUPE", "ROT", "RUFEN", "REDEN", "RECHNEN", "REGEN", "RING", "REISEN", "SALZ", "SCHAF", "SCHERE", "SCHULE", "SCHWESTER", "SUCHEN", "SEIFE", "SINGEN", "SPRECHEN", "SPRICHT", "SPORT", "SPAREN", "SPIELEN", "SPIELT", "STEIN", "STERN", "STUNDE", "SUCHEN", "SCHNEIDEN", "SCHEINEN", "SCHWARZ", "SCHREIBEN", "SCHREIBT", "SAGEN", "SAGT", "SCHLAFEN", "SCHON", "SUCHEN", "SIE", "SIND", "SATZ", "SITZEN", "SITZT", "TANTE", "TELEFON", "TOMATE", "TUN", "TRINKEN", "TISCH", "TASCHE", "TURNEN", "TAG", "TAGE", "UHR", "VOR", "VOGEL", "VATER", "VASE", "VIEL", "WEIT", "WOLF", "WOLKE", "WINTER", "WURZEL", "WOCHE", "WARTEN", "WORT", "WIND", "WINDE", "WEG", "WEGE", "WAS", "WURZEL", "WIR", "WEIL", "WEITER", "WER", "ZEIT", "ZWEI", "ZEIGEN", "ZEIGT", "ZAHL", "ZAHLEN", "ZAHN"];
+
+//==============================//
+//    vv      CONFIG    vv      //
+//==============================//
+
+var speed       = 0.5;
+var wordsToSend = 25;
+var life        = 3;
+var charDist    = 500;
+var wordDist    = 2000;
+var tutorialMode = false;
+
+function mg1_configurate()
+{
+    var diff = getMinigameState( 1, 2 );
+
+    //  Tutorial mode
+    if ( diff == 0 )
+    {
+        wordsToSend = 5;
+        speed = 1;
+        tutorialMode = true;
+
+        showMessageBox( ["Hallo!", "Wie es aussieht, hat dieses Weazle ein paar schöne Steine gefunden.", "Hmm, die sehen ja aus wie Buchstaben...",
+                         "Da kommt ein Wort, in dem ein Buchstabe fehlt, was ein Zufall...",
+                         "Eine kleine Erklärung vorweg:", "Tippst oder klickst du auf die Insel, wechselst du den aktiven Buchstaben.", "Die verfügbaren Buchstaben erscheinen rechts der Insel.",
+                         "Der aktive Buchstabe ist eingekreist.", "Tippe oder klicke ins Wasser, um den aktiven Buchstaben übers Wasser hüpfen zu lassen.",
+                         "Versuch doch mal, ein paar Wörter an der richtigen Stelle mit den fehlenden Buchstaben zu treffen.",
+                         "Lass dir so viel Zeit wie du willst, dieses Mal bist du nur zum Üben hier.", "Viel Spaß!"],
+                         "OK!", function() {generateWords()} );
+    }
+    else
+    {
+        wordsToSend = 10 * diff;
+        speed = 1 + diff / 2;
+        tutorialMode = false;
+
+        if(diff == 1)
+        {
+            showMessageBox( ["Vorsicht, dieses Mal sind es ein paar mehr Wörter, außerdem bewegen sie sich schneller!",
+                             "Ab sofort verlierst du jedes mal eines deiner drei Leben, sollte es ein Wort bis ans Ende schaffen.", "Viel Glück!"],
+                             "Los geht's!", function () { generateWords() } );
+        }
+        else
+        {
+            generateWords();
+        }
+    }
+
+}
+
+//==============================//
+//     ^^     CONFIG     ^^     //
+//==============================//
+
+
+
+//==============================//
+//    vv    GAME LOGIC    vv    //
+//==============================//
+mg1_paused = true;
 function mg1_start()
 {
+    endRemainingWordAdds = 0;
+    words = [];
+
+    mg1_paused = true;
+
     SCENE_TO_RENDER = mg1_scene;
+
+    mg1_configurate();
+
+    //  Faster to delete any leftovers and re-initialize them in the next run than to test for them when ending the game
+    initLine();
+    initDots();
+    initSkipParticles();
+
     document.addEventListener( 'mousemove'  , mg1_onMg1MouseMove , false );
     document.addEventListener( 'touchstart' , mg1_onMg1TouchStart, false );
     document.addEventListener( 'mousedown'  , mg1_onMg1MouseDown , false );
-
-    sendWord( "YOU" );
-    setTimeout( function () { sendWord( "FUCK" ) }, 5000 );
-    setTimeout( function () { sendWord( "YOU" ) },  10000 );
-    setTimeout( function () { sendWord( "FUCK" ) }, 15000 );
-    setTimeout( function () { sendWord( "YOU" ) },  20000 );
-    setTimeout( function () { sendWord( "FUCK" ) }, 25000 );
 }
+
+function generateWords()
+{
+    if ( WordArray.length == 0 )
+    {
+        for ( var i = 0; i < wordsToSend; i++ )
+        {
+            WordArray.push( NAMES_EASY[Math.floor( randBetween( 0, NAMES_EASY.length ) )] );
+        }
+    }
+
+    console.log( "Starting minigame 1 with these words: " + WordArray.join( ", " ) );
+
+    var firstWord = WordArray[wordsSentIndex++];
+
+    new Word( firstWord ).sendUndelayed();
+
+    lineHidden = false;
+    mg1_paused = false;
+}
+
+var wordsScored = 0;
+var wordsLost = 0;
+
+function scoreWord()
+{
+    //console.log( "Scored a word! Life: " + life );
+
+    wordsScored++;
+
+    checkAllWordsGone();
+}
+
+function loseWord()
+{
+    //console.log( "Lost a word! Life: " + life );
+    wordsLost++;
+
+    life--;
+
+    var newUrl = "../img/RockGame/" + life + "life.png";
+
+    $( "#life" ).attr( "src", newUrl );
+
+    if(life == 0)
+    {
+        loseMinigame1();
+    }
+
+    checkAllWordsGone();
+}
+
+function checkAllWordsGone()
+{
+    if ( wordsScored + wordsLost >= wordsToSend )
+    {
+        if ( life > 0 )
+        {
+            winMinigame1();
+        }
+        else
+        {
+            loseMinigame1();
+        }
+    }
+}
+
+function loseMinigame1()
+{
+    //Keep WordArray for next time
+    //WordArray = [];
+
+    mg1_end();
+    minigameLost( 1 );
+}
+
+function winMinigame1()
+{
+    WordArray = [];
+
+    mg1_end();
+    minigameWon( 1 );
+}
+
+function mg1_reset()
+{
+    if ( projectileLetter && projectileLetter.mesh )
+    {
+        mg1_scene.remove( projectileLetter.mesh );
+    }
+
+    for ( var i = 0; i < words; i++ )
+    {
+        words[i].cleanUp();
+    }
+
+    //Clear any leftover objects
+    for ( var i = mg1_scene.children.length - 1; i >= 0; i-- )
+    {
+        obj = mg1_scene.children[i];
+
+        if ( obj != mg1_waterMesh && obj != mg1_islandMesh && obj != unfiredProjectileLetter.mesh && obj != mg1_light && obj != mg1_camera && obj != mg1_weazleMesh )
+        {
+            mg1_scene.remove( obj );
+        }
+
+    }
+    
+    projectileLetter        = null;
+    loadedProjectileChar    = null;
+    currLoadedProjectileInd = 0;
+    missingLetters          = [];
+    words                   = [];
+    wordsSentIndex          = 0;
+    pointerOnIsland         = false;
+    wordsScored = 0;
+    wordsLost = 0
+}
+
+var endRemainingWordAdds = 0;
 
 function mg1_end()
 {
     SCENE_TO_RENDER = scene;
 
     endMinigame++;
+    endRemainingWordAdds++;
+    mg1_reset();
     animate();
-    minigameLost( 1 );
 
     document.removeEventListener( 'mousemove',  mg1_onMg1MouseMove,  false );
     document.removeEventListener( 'touchstart', mg1_onMg1TouchStart, false );
     document.removeEventListener( 'mousedown',  mg1_onMg1MouseDown,  false );
 }
+//==============================//
+//    ^^    GAME LOGIC    ^^    //
+//==============================//
 
 var endMinigame = 0;
 
@@ -292,7 +487,7 @@ function initLine()
 
 var mouse = new THREE.Vector2;
 var raycaster;
-
+var wordsSentIndex = 0;
 var lineHidden = false;
 
 //------------------------------------------------------//
@@ -301,26 +496,12 @@ var lineHidden = false;
 function initPath()
 {
     var numPoints = 100;
-    var numDots = 20;
 
-    var height = 5;
-
-    //spline = new THREE.SplineCurve3(
-    //[
-    //    new THREE.Vector3(   -80, height,     0 ),
-    //    new THREE.Vector3(   -50, height,   -22 ),
-    //    new THREE.Vector3(     0, height,   -35 ),
-    //    new THREE.Vector3(  39.5, height, -25.5 ),
-    //    new THREE.Vector3(    58, height,     0 ),
-    //    new THREE.Vector3(  41.2, height,  27.5 ),
-    //    new THREE.Vector3(     0, height,    36 ),
-    //    new THREE.Vector3(   -28, height,    27 ),
-    //    new THREE.Vector3(   -35, height,     0 )
-    //] );
+    var height    = 5;
 
     spline = new THREE.SplineCurve3(
     [
-        new THREE.Vector3( -80,    height, 15 ),
+        new THREE.Vector3( -100  , height, -0.54 ),
         new THREE.Vector3( -78.5,  height, -0.54 ),
         new THREE.Vector3( -69.32, height, -13.5 ),
         new THREE.Vector3( -55.2,  height, -25 ),
@@ -337,7 +518,7 @@ function initPath()
         new THREE.Vector3( 43.43,  height, 38.6 ),
         new THREE.Vector3( 21.51,  height, 42.18 ),
         new THREE.Vector3( -3.13,  height, 38.36 ),
-        new THREE.Vector3( -24.1,  height, 17.4 )
+        new THREE.Vector3( -24.1,  0     , 17.4 )
     ] );
 
     var material = new THREE.LineBasicMaterial( {
@@ -354,10 +535,14 @@ function initPath()
 
     var line = new THREE.Line( geometry, material );
     //mg1_scene.add( line );
+    
+}
 
-    //------------------------------------------------------//
-    //                  DOTS                                //
-    //------------------------------------------------------//
+var numDots = 15;
+function initDots()
+{
+
+
     var dotGeom = new THREE.SphereGeometry( 0.25, 0.25, 0.25 );
     var dotMat = new THREE.MeshBasicMaterial( { color: 0xBFFFFF } );
     dotMeshes = [];
@@ -377,13 +562,12 @@ var textLoaded = false;
 var loadedLetters = 0;
 function initLetters()
 {
-    var size = 5;
+    var size   = 5;
     var height = 1;
 
-    textGeoms = [];
-    textMeshes = [];
+    textGeoms  = [];
+    words      = [];
 
-    
     new THREE.FontLoader().load( 'Resources/Calibri_Bold.json', function ( response )
     {
         for ( var i = 0; i < 26; i++ )
@@ -401,32 +585,6 @@ function initLetters()
 
         textLoaded = true;
     } );
-    
-}
-
-function sendWord( word )
-{
-    //  Reverse word
-    word = word.split( "" ).reverse().join( "" );
-
-    for(var i = 0; i < word.length; i++)
-    {
-        var letter = word.charAt( i );
-        delaySendLetter( letter, 1000 * i );
-    }
-}
-
-function delaySendLetter( letter, delay )
-{
-    setTimeout( function () { sendLetter( letter ) }, delay );
-}
-
-function sendLetter( character )
-{        
-    var mesh = new THREE.Mesh( textGeoms[charToNumber( character )], new THREE.MeshPhongMaterial( { color: 0xFF0000 } ) );
-    textMeshes.push( [mesh, 0] );
-    mg1_scene.add( mesh );
-
 }
 
 function numberToChar( num )
@@ -442,41 +600,71 @@ function charToNumber( character )
 var tangent = new THREE.Vector3();
 var axis    = new THREE.Vector3();
 var up      = new THREE.Vector3( 0, 1, 0 );
-var speed   = 1;
+
+//var debug_firstLetterOffset;
 
 function moveLettersAlongPath( deltaTime )
 {
-    if ( !textLoaded )
+    if ( !textLoaded || mg1_paused )
     {
         return;
     }
 
-    for ( var i = 0; i < textMeshes.length; i++ )
+    for ( var i = 0; i < words.length; i++ )
     {
-        if ( textMeshes[i][1] <= 1 )
+        var word = words[i];
+
+        for ( var j = 0; j < word.letters.length; j++ )
         {
-            textMeshes[i][0].position.copy( spline.getPointAt( textMeshes[i][1] ) );
+            var letter = word.letters[j];
 
-            tangent = spline.getTangentAt( textMeshes[i][1] ).normalize();
+            if ( letter.offset <= 1 )
+            {
+                if ( !word.isVisible && j == 0 && letter.offset > 0.05 )
+                {
+                    word.isVisible = true;
+                    missingLetters.push( word.missingLetter );
+                    if ( missingLetters.length == 1 )
+                    {
+                        loadProjectile( word.missingLetter );
+                    }
+                    missingLettersChanged();
+                }
 
-            axis.crossVectors( up, tangent ).normalize();
+                letter.mesh.position.copy( spline.getPointAt( letter.offset ) );
 
-            var radians = Math.acos( up.dot( tangent ) );
+                tangent = spline.getTangentAt( letter.offset ).normalize();
 
-            textMeshes[i][0].quaternion.setFromAxisAngle( axis, radians );
+                axis.crossVectors( up, tangent ).normalize();
 
-            textMeshes[i][0].lookAt( mg1_camera.position );
+                var radians = Math.acos( up.dot( tangent ) );
 
-            textMeshes[i][1] += ( deltaTime / 50 ) * speed;
+                letter.mesh.quaternion.setFromAxisAngle( axis, radians );
+
+                letter.mesh.lookAt( mg1_camera.position );
+
+                letter.offset += ( deltaTime / 50 ) * speed;
+            }
+            else
+            {
+                if ( tutorialMode )
+                {
+                    letter.offset = 0;
+                }
+                else
+                {
+                    loseWord();
+                    word.remove();
+                    break;
+                }
+            }
         }
-        else
-        {
-            textMeshes[i][1] = 0;
-        }
+        
     }
 
 }
 
+var dotSpeed = 5;
 function moveDotsAlongPath(deltaTime)
 {
     for ( var i = 0; i < dotMeshes.length; i++ )
@@ -485,15 +673,7 @@ function moveDotsAlongPath(deltaTime)
         {
             dotMeshes[i][0].position.copy( spline.getPointAt( dotMeshes[i][1] ) );
 
-            //tangent = spline.getTangentAt( dotMeshes[i][1] ).normalize();
-
-            //axis.crossVectors( up, tangent ).normalize();
-
-            //var radians = Math.acos( up.dot( tangent ) );
-
-            //dotMeshes[i][0].quaternion.setFromAxisAngle( axis, radians );
-
-            dotMeshes[i][1] += ( deltaTime / 50 ) * speed * 5;
+            dotMeshes[i][1] += ( deltaTime / 50 ) * (dotSpeed + speed/5) ;
         }
         else
         {
@@ -507,6 +687,7 @@ function moveDotsAlongPath(deltaTime)
 //------------------------------------------------------//
 var lastX = null;
 var lastZ = null;
+var pointerOnIsland = false;
 function mg1_onMg1MouseMove( event )
 {
     if ( !lineHidden )
@@ -516,18 +697,25 @@ function mg1_onMg1MouseMove( event )
 
         raycaster.setFromCamera( mouse, mg1_camera );
 
-        var intersects = raycaster.intersectObjects( [mg1_waterMesh] );
+        var intersects = raycaster.intersectObjects( [mg1_waterMesh, mg1_islandMesh] );
 
         if ( intersects.length > 0 )
         {
-            positions[6] = lastX = intersects[0].point.x;
-            positions[7] = 1.5;
-            positions[8] = lastZ = intersects[0].point.z;
+            if ( intersects[0].object === mg1_waterMesh )
+            {
+                pointerOnIsland = false;
+                positions[6] = lastX = intersects[0].point.x;
+                positions[7] = 1.5;
+                positions[8] = lastZ = intersects[0].point.z;
 
-            mg1_weazleMesh.lookAt( new THREE.Vector3( intersects[0].point.x, mg1_weazleMesh.position.y, intersects[0].point.z ) );
+                mg1_weazleMesh.lookAt( new THREE.Vector3( intersects[0].point.x, mg1_weazleMesh.position.y, intersects[0].point.z ) );
+                mg1_line.geometry.attributes.position.needsUpdate = true;
+            }
+            else
+            {
+                pointerOnIsland = true;
+            }
         }
-
-        mg1_line.geometry.attributes.position.needsUpdate = true;
     }
     
 }
@@ -544,21 +732,29 @@ function mg1_onMg1TouchStart( event )
 
 function mg1_onMg1MouseDown( event )
 {
-    if ( lineHidden )
+    if ( pointerOnIsland )
     {
-        return;
+        loadNextProjectile();
     }
+    else if ( missingLetters.length > 0 )
+    {
+        if ( lineHidden )
+        {
+            return;
+        }
 
-    lineHidden = true;
-    mg1_line.visible = false;
+        lineHidden = true;
+        mg1_line.visible = false;
 
-    shootLetter( numberToChar(Math.floor(Math.random()*26)) );
+        shootLetter();
+    }
 }
 
 //------------------------------------------------------//
 //                UPDATE                                //
 //------------------------------------------------------//
 var projectileYSpd;
+var hitThreshold = 15;
 function animateMinigame1()
 {
     if ( endMinigame > 0 )
@@ -571,45 +767,101 @@ function animateMinigame1()
     moveLettersAlongPath( deltaTime );
     moveDotsAlongPath( deltaTime );
 
-    if ( projectileMesh )
+    if ( projectileLetter )
     {
-        //------------------------------------------------------//
-        //     CHECK WHETHER PROJECTILE EXITED BOUNDS           //
-        //------------------------------------------------------//
-        if ( projectileMesh.position.x < -90 || projectileMesh.position.x > 90 || projectileMesh.position.z < -50 || projectileMesh.position.z > 50 )
-        {
-            mg1_scene.remove( projectileMesh );
-            projectileMesh = null;
-            lineHidden = false;
-            mg1_line.visible = true;
-        }
+        var distances = [];
+        
         //------------------------------------------------------//
         //     CHECK WHETHER PROJECTILE HIT A LETTER            //
         //------------------------------------------------------//
-        else if ( false )
+        for ( var i = 0; i < words.length; i++ )
         {
-            
+            var word = words[i];
+
+            for ( var j = 0; j < word.letters.length; j++ )
+            {
+                var letter = word.letters[j];
+
+                var distance = distanceSquared( new Point( letter.mesh.position.x,         letter.mesh.position.z ),
+                                                new Point( projectileLetter.mesh.position.x, projectileLetter.mesh.position.z ));
+
+                if( distance < hitThreshold)
+                {
+                    //  We hit a letter!
+                    //console.log( "Hit word: " + word.word + "missing letter: " + word.missingLetter + " index " + word.missingLetterInd + " at letter \"" + letter + "\" (Index " + j + ")" );
+
+                    //  Hit a letter at either end, needs special handling
+                    if ( j == 0 )
+                    {
+                        wordHit( projectileLetter, word, 1 );
+                    }
+                    else if( j == word.letters.length - 1)
+                    {
+                        wordHit( projectileLetter, word, word.letters.length - 1 );
+                    }
+                    //  Hit a letter in the middle
+                    else
+                    {
+                        var distanceL = distanceSquared
+                        (
+                            new Point( word.letters[j - 1].mesh.position.x, word.letters[j - 1].mesh.position.z ),
+                            new Point( projectileLetter.mesh.position.x, projectileLetter.mesh.position.z )
+                        );
+                        var distanceR = distanceSquared
+                        (
+                            new Point( word.letters[j + 1].mesh.position.x, word.letters[j + 1].mesh.position.z ),
+                            new Point( projectileLetter.mesh.position.x, projectileLetter.mesh.position.z )
+                        );
+
+                        if(distanceL <= distanceR)
+                        {
+                            //console.log( "inserting between index " + ( j - 1 ) + " and index " + j );
+                            wordHit( projectileLetter, word, j );
+                        }
+                        else
+                        {
+                            //console.log( "inserting between index " + ( j ) + " and index " + ( j + 1 ) );
+                            wordHit( projectileLetter, word, ( j + 1 ) );
+                        }
+                    }
+
+                    resetProjectile();
+                    mg1_animateAnotherFrame();
+                    return;
+                }
+            }
+        }
+
+        //------------------------------------------------------//
+        //     CHECK WHETHER PROJECTILE EXITED BOUNDS           //
+        //------------------------------------------------------//
+        if (   projectileLetter.mesh.position.x < -90
+            || projectileLetter.mesh.position.x >  90
+            || projectileLetter.mesh.position.z < -50
+            || projectileLetter.mesh.position.z >  50 )
+        {
+            resetProjectile();
         }
         else
         {
             //------------------------------------------------------//
             //        UPDATE PROJECTILE                             //
             //------------------------------------------------------//
-            projectileMesh.translateY( deltaTime * 30 );
+            projectileLetter.mesh.translateY( deltaTime * 42 );
 
             projectileYSpd -= deltaTime * 5;
 
-            projectileMesh.position.y += projectileYSpd;
+            projectileLetter.mesh.position.y += projectileYSpd;
 
             //------------------------------------------------------//
             //        EVALUATE SKIPPING                             //
             //------------------------------------------------------//
 
             //  SKIPPED
-            if ( projectileMesh.position.y < mg1_waterMesh.position.y && projectileYSpd < 0 )
+            if ( projectileLetter.mesh.position.y < mg1_waterMesh.position.y && projectileYSpd < 0 )
             {
                 projectileYSpd *= -0.9;
-                doSkipEffect( projectileMesh.position.x, projectileMesh.position.z );
+                doSkipEffect( projectileLetter.mesh.position.x, projectileLetter.mesh.position.z );
             }
         }
 
@@ -619,6 +871,77 @@ function animateMinigame1()
     mg1_water.material.uniforms.time.value += deltaTime * 0.1;
     mg1_water.render();
 
+    mg1_animateAnotherFrame();
+}
+
+var projectileLetter = null;
+var loadedProjectileChar = null;
+var unfiredProjectileLetter;
+function loadProjectile( char )
+{
+    //console.log( "Loading projectile: " + char );
+    if ( char != loadedProjectileChar )
+    {
+        mg1_weazleMesh.remove( unfiredProjectileLetter.mesh );
+        unfiredProjectileLetter.mesh = ( new Letter( char, null ) ).mesh;
+        unfiredProjectileLetter.mesh.material = new THREE.MeshPhongMaterial( { color: 0x666666 } );
+        unfiredProjectileLetter.mesh.scale.set( 2, 2, 2 );
+        unfiredProjectileLetter.mesh.position.x = 3.25;
+        unfiredProjectileLetter.mesh.position.y = 40;
+        unfiredProjectileLetter.mesh.position.z = 12.5;
+        unfiredProjectileLetter.mesh.rotation.x = Math.PI / 2;
+        unfiredProjectileLetter.mesh.rotation.y = Math.PI;
+        unfiredProjectileLetter.mesh.rotation.z = 0;
+        mg1_weazleMesh.add( unfiredProjectileLetter.mesh );
+
+        loadedProjectileChar = char;
+    }
+
+    unfiredProjectileLetter.mesh.visible = true;
+}
+
+function wordHit( projectile, word, hitIndex )
+{
+    if(projectile.char == word.missingLetter && word.missingLetterInd == hitIndex)
+    {
+        scoreWord();
+        word.remove();
+    }
+
+}
+
+function resetProjectile()
+{
+    if ( projectileLetter && projectileLetter.mesh )
+    {
+        mg1_scene.remove( projectileLetter.mesh );
+    }
+    
+    projectileLetter = null;
+    lineHidden       = false;
+    mg1_line.visible = true;
+
+    if ( missingLetters && missingLetters.length > 0 )
+    {
+        loadProjectile( loadedProjectileChar );
+    }
+}
+
+var currLoadedProjectileInd = 0;
+function loadNextProjectile()
+{
+    if ( missingLetters && missingLetters.length != 0 )
+    {
+        var nextLoadedProjectileInd = ( currLoadedProjectileInd + 1 ) % missingLetters.length;
+        currLoadedProjectileInd = nextLoadedProjectileInd;
+        loadProjectile( missingLetters[nextLoadedProjectileInd] );
+        missingLettersChanged();
+    }
+
+}
+
+function mg1_animateAnotherFrame()
+{
     requestAnimationFrame( animateMinigame1 );
     renderer.render( mg1_scene, mg1_camera );
 }
@@ -626,41 +949,51 @@ function animateMinigame1()
 //------------------------------------------------------//
 //           LETTER SHOOTING                            //
 //------------------------------------------------------//
-var projectileMesh = null;
-function shootLetter( letter )
+function shootLetter()
 {
-    console.log( "trying to shoot letter: " + letter );
-
     lineHidden = true;
+    unfiredProjectileLetter.mesh.visible = false;
 
     //  For safety
-    if ( projectileMesh )
+    if ( projectileLetter )
     {
-        mg1_scene.remove( projectileMesh );
+        mg1_scene.remove( projectileLetter.mesh );
+    }
+    else
+    {
+        //  Placeholder (not really necessary)
+        projectileLetter = new Letter( "A", 0 );
     }
 
     //  1. create Mesh from letter and add it to scene
-    projectileMesh = new THREE.Mesh( textGeoms[charToNumber( letter )], new THREE.MeshPhongMaterial( { color: 0x00FF00 } ) );
+    projectileLetter.mesh = new THREE.Mesh( unfiredProjectileLetter.mesh.geometry,
+                                            unfiredProjectileLetter.mesh.material );
 
-    projectileMesh.position.y = 8;
-    projectileMesh.lookAt( new THREE.Vector3( lastX, 8, lastZ ) );
-    projectileMesh.rotateX( Math.PI / 2 );
-    projectileMesh.rotateY( Math.PI );
+    projectileLetter.char = loadedProjectileChar;
 
-    projectileYSpd = 1.5;
+    projectileLetter.mesh.position.y = 8;
+    projectileLetter.mesh.position.x = projectileLetter.mesh.position.z = 0;
+    projectileLetter.mesh.lookAt( new THREE.Vector3( lastX, 8, lastZ ) );
+    projectileLetter.mesh.rotateX( Math.PI / 2 );
+    projectileLetter.mesh.rotateY( Math.PI     );
 
-    mg1_scene.add( projectileMesh );
+    //  Center projectile on line
+    projectileLetter.mesh.translateX( -2 );
+    projectileLetter.mesh.translateY(  2 );
+
+    projectileYSpd = 1;
+
+    mg1_scene.add( projectileLetter.mesh );
 }
 
-var skipEffects = [];
+var skipEffects    = [];
 var numSkipEffects = 10;
-var currSkipEffect = 0;
+var currSkipEffect =  0;
 function doSkipEffect( x, z )
 {
     //  This will overwrite the oldest water ripple effect
     currSkipEffect = ( currSkipEffect + 1 ) % numSkipEffects;
 
-    console.log( "Skip effect at: " + x + ", " + z );
     //  Create water ripple particles
     //      (Re)set Particles
     for ( var i = 0; i < skipEffects[currSkipEffect].length; i++ )
@@ -691,6 +1024,7 @@ function fadeOutRipple( currSkipEffect )
     } );
 }
 
+var missingLetters = [];
 function initSkipParticles()
 {
     var particles = new THREE.Geometry();
@@ -720,6 +1054,166 @@ function initSkipParticles()
 
             mg1_scene.add( skipEffects[i][j] );
         }
+
+    }
+}
+
+var WordArray = [];
+class Word
+{
+    constructor( word )
+    {
+        this.isVisible = false;
+
+        if ( word.length <= 3 )
+        {
+            this.missingLetterInd = 1;
+        }
+        else
+        {
+            this.missingLetterInd = Math.floor( randBetween( 1, NAMES_EASY[0].length - 2 ) );
+        }
+
+        this.missingLetter = word.charAt( this.missingLetterInd );
+
+        this.word = word.slice( 0, this.missingLetterInd ) + word.slice( this.missingLetterInd + 1, word.length );
+
+        this.letters = [];
+
+        for ( var i = 0; i < this.word.length; i++ )
+        {
+            var  letter     = this.word.charAt( i );
+            this.letters[i] = new Letter( letter, i * 0.02 );
+        }
+
+        this.send = function()
+        {
+            console.log( "Sending #" + wordsSentIndex + ": " + Date.now() );
+            sendDelayed( this.letters, this );
+        }
+
+        this.sendUndelayed = function()
+        {
+            console.log( "Sending first: " + Date.now() );
+            for ( var i = 0; i < this.letters.length; i++ )
+            {
+                mg1_scene.add( this.letters[i].mesh );
+            }
+            words.push( this );
+
+            if ( wordsSentIndex < WordArray.length )
+            {
+                var nextWord = WordArray[wordsSentIndex++];
+
+                setTimeout( function ()
+                {
+                    new Word( nextWord ).send();
+
+                }, ( ( nextWord.length - 1 ) * charDist + wordDist + this.word.length * charDist ) / speed );
+            }
+        }
+
+        this.remove = function()
+        {
+
+            var index = indexInArray( words, this );
+            words.splice( index, 1 );
+
+            index = indexInArray( missingLetters, this.missingLetter );
+            missingLetters.splice( index, 1 );
+
+            missingLettersChanged();
+
+            if ( loadedProjectileChar == this.missingLetter )
+            {
+                loadNextProjectile();
+            }
+
+            for(var i = 0; i < this.letters.length; i++)
+            {
+                mg1_scene.remove( this.letters[i].mesh );
+            }
+        }
+
+        this.cleanUp = function()
+        {
+            var index = indexInArray( words, this );
+            words.splice( index, 1 );
+
+            index = indexInArray( missingLetters, this.missingLetter );
+            missingLetters.splice( index, 1 );
+
+            missingLettersChanged();
+
+            for ( var i = 0; i < this.letters.length; i++ )
+            {
+                mg1_scene.remove( this.letters[i].mesh );
+            }
+        }
+    }
+
+}
+
+function missingLettersChanged()
+{
+    missingLetters.sort();
+    
+    var missingLettersCopy = missingLetters.slice();
+
+    if ( missingLettersCopy.length > 0 )
+    {
+        missingLettersCopy[currLoadedProjectileInd] = "(" + missingLettersCopy[currLoadedProjectileInd] + ")";
+
+        $( "#AvailableButtons" ).text( missingLettersCopy.join( " " ) );
+    }
+    else
+    {
+        $( "#AvailableButtons" ).text( "" );
+    }
+
+
+}
+
+function sendDelayed( letters, word )
+{
+
+    //  If the minigame was ended before the last word was sent, end the chain here
+    if ( endRemainingWordAdds > 0 )
+    {
+        return;
+    }
+
+    setTimeout( function ()
+    {
+        for ( var i = 0; i < letters.length; i++ )
+        {
+            mg1_scene.add( letters[i].mesh );
+        }
+        words.push( word );
+
+        if ( wordsSentIndex < WordArray.length )
+        {
+            var nextWord = WordArray[wordsSentIndex++];
+
+            setTimeout( function ()
+            {
+                new Word( nextWord ).send();
+                
+            }, ( ( nextWord.length - 1 ) * charDist + wordDist ) / speed );
+        }
+        
+    }, (word.word.length * charDist) / speed );
+}
+
+class Letter
+{
+    constructor(char, offset)
+    {
+        this.char = char;
+        this.offset = offset;
+
+        this.mesh = new THREE.Mesh( textGeoms[charToNumber( char )],
+                                    new THREE.MeshPhongMaterial( { color: 0xFF0000 } ) );
 
     }
 }

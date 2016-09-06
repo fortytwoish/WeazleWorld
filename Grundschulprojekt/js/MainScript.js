@@ -724,13 +724,21 @@ var saveAutoRotate;
 
 function pauseRendering()
 {
+    console.log( "pauseRender state: " + pauseRender );
+    if ( pauseRender )
+    {
+        return;
+    }
     console.log( "Pausing rendering" );
     pauseRender = true;
     
     renderThreadsToBeKilled++;
+    animateThreads--;
     saveAutoRotate = controls.autoRotate;
     controls.autoRotate = false;
 }
+
+animateThreads = 0;
 
 function resumeRendering()
 {
@@ -746,6 +754,7 @@ function resumeRendering()
     controls.autoRotate = saveAutoRotate;
     deltaTime = clock.getDelta();
     animate();
+    animateThreads++;
 }
 
 //  More thread-safe than a simple boolean that kills the next render thread
@@ -760,7 +769,7 @@ function renderOnce()
     renderer.render( scene, camera );
 }
 
-var pauseRender = true;
+pauseRender = true;
 //  Caution: Mostly debug stuff still
 function animate()
 {
@@ -771,9 +780,15 @@ function animate()
 
         if ( renderThreadsToBeKilled > 0 )
         {
+            console.log( "killing render thread" );
             renderThreadsToBeKilled--
             return;
         }
+
+        if ( animateThreads > 1 )
+        {
+            alert( "WARNING: MORE THAN ONE RENDER THREAD (" + animateThreads + ")" );
+}
 
         stats.begin();
 
