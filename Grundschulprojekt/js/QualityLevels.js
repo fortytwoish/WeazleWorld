@@ -46,6 +46,7 @@ function setQualityLevel(level)
 			subsampleFactor = 5;
 			directionalLight.castShadow = false;
 			GRASS_DENSITY = -1;
+			particleCount = 25;
 			break;
 		case 2:
 			setQuality_TerrainResDependant(7);
@@ -54,6 +55,7 @@ function setQualityLevel(level)
 			subsampleFactor = 4;
 			directionalLight.castShadow = false;
 			GRASS_DENSITY = -1;
+			particleCount = 25;
 			break;
 		case 3:
 			setQuality_TerrainResDependant(7);
@@ -61,112 +63,130 @@ function setQualityLevel(level)
 			subsampleFactor = 4;
 			directionalLight.castShadow = false;
 			GRASS_DENSITY = -1;
+			particleCount = 50;
 			break;
 		case 4:
 			setQuality_TerrainResDependant(8);
 			renderer.antialias = false;
 			subsampleFactor = 3;
 			directionalLight.castShadow = false;
-			GRASS_DENSITY = 8;
+			GRASS_DENSITY = -1;
+			particleCount = 50;
 			break;
 		case 5:
 			setQuality_TerrainResDependant(8);
 			renderer.antialias = false;
 			subsampleFactor = 3;
 			directionalLight.castShadow = false;
-			GRASS_DENSITY = 8;
+			GRASS_DENSITY = 4;
+			particleCount = 50;
 			break;
 		case 6:
 			setQuality_TerrainResDependant(8);
 			renderer.antialias = false;
 			subsampleFactor = 2;
 			directionalLight.castShadow = false;
-			GRASS_DENSITY = 8;
+			GRASS_DENSITY = 4;
+			particleCount = 50;
 			break;
 		case 7:
 			setQuality_TerrainResDependant(9);
 			renderer.antialias = false;
 			subsampleFactor = 2;
 			directionalLight.castShadow = false;
-			GRASS_DENSITY = 8;
+			GRASS_DENSITY = 4;
+			particleCount = 50;
 			break;
 		case 8:
 			setQuality_TerrainResDependant(9);
 			renderer.antialias = false;
 			subsampleFactor = 1;
-			GRASS_DENSITY = 8;
+			GRASS_DENSITY = 4;
+			particleCount = 100;
 			break;
 		case 9:
 			setQuality_TerrainResDependant(9);
 			renderer.antialias = false;
 			subsampleFactor = 1;
-			GRASS_DENSITY = 4;
+			GRASS_DENSITY = 2;
+			particleCount = 100;
 			break;
 		case 10:
 			setQuality_TerrainResDependant(10);
 			renderer.antialias = false;
 			subsampleFactor = 1;
-			GRASS_DENSITY = 4;
+			GRASS_DENSITY = 2;
+			particleCount = 100;
 			break;
 		case 11:
 			setQuality_TerrainResDependant(10);
 			renderer.antialias = false;
 			subsampleFactor = 1;
-			GRASS_DENSITY = 4;
+			GRASS_DENSITY = 2;
+			particleCount = 200;
 			break;
 		case 12:
 			setQuality_TerrainResDependant(10);
 			renderer.antialias = true;
 			subsampleFactor = 1;
-			GRASS_DENSITY = 4;
+			GRASS_DENSITY = 1;
+			particleCount = 200;
 			break;
 		case 13:
 			setQuality_TerrainResDependant(11);
 			renderer.antialias = true;
 			subsampleFactor = 1;
-			GRASS_DENSITY = 4;
+			GRASS_DENSITY = 1;
+			particleCount = 200;
 			break;
 		case 14:
 			setQuality_TerrainResDependant(11);
 			renderer.antialias = true;
 			subsampleFactor = 1;
-			GRASS_DENSITY = 4;
+			GRASS_DENSITY = 1;
+			particleCount = 200;
 			break;
 		case 15:
 			setQuality_TerrainResDependant(11);
 			renderer.antialias = true;
 			subsampleFactor = 1;
-			GRASS_DENSITY = 2;
+			GRASS_DENSITY = 1;
+			particleCount = 400;
 			break;
 		case 16:
 			setQuality_TerrainResDependant(11);
 			renderer.antialias = true;
 			subsampleFactor = 1;
-			GRASS_DENSITY = 2;
+			GRASS_DENSITY = 1;
+			particleCount = 400;
 			break;
 		case 17:
 			setQuality_TerrainResDependant(12);
 			renderer.antialias = true;
 			subsampleFactor = 1;
-			GRASS_DENSITY = 2;
+			GRASS_DENSITY = 1;
+			particleCount = 400;
 			break;
 		case 18:
 			setQuality_TerrainResDependant(12);
 			renderer.antialias = true;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 1;
+			particleCount = 400;
 			break;
 		case 19:
 			setQuality_TerrainResDependant(12);
 			renderer.antialias = true;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 1;
+			particleCount = 400;
 			break;
 		case 20:
 			setQuality_TerrainResDependant(12);
 			renderer.antialias = true;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 1;
+			particleCount = 400;
 			break;
 		case "htcone":
 			setQuality_TerrainResDependant(12);
@@ -175,6 +195,7 @@ function setQualityLevel(level)
 			controls.zoomSpeed = 0.5;
 			subsampleFactor = 2;
 			GRASS_DENSITY = 5;
+            particleCount = 25;
 			break;
 	}
 
@@ -232,6 +253,17 @@ function setQuality_TerrainResDependant(terrainRes)
 		scene.remove(waterMesh);
 		scene.remove(waterMesh2);
 	}
+
+	if( typeof(statueParticleSystem !== 'undefined') && statueParticleSystem)
+    {
+	    scene.remove(statueParticleSystem);
+    }
+
+    //------------------------------------------------------//
+    //                  -> SCENE                            //
+    //------------------------------------------------------//
+	initStatueParticleSystem();
+	scene.add( statueParticleSystem );
 
 	if (typeof (islandMesh) !== 'undefined')
 		scene.remove(islandMesh);

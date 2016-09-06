@@ -430,10 +430,10 @@ function loadStatueSegment( loader, path, index )
     } );
 }
 
+particleCount = 500;
+
 function initStatueParticleSystem()
 {
-    // The number of particles in a particle system is not easily changed.
-    particleCount = 500;
 
     // Particles are just individual vertices in a geometry
     // Create the geometry that will hold all of the vertices
