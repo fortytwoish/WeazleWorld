@@ -93,3 +93,8 @@
    margin: auto;
    vertical-align: bottom;
 }
+
+#scoreScreen{
+    height:100%;
+    color:white;
+}

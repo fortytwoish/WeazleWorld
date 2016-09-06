@@ -548,7 +548,7 @@ function continueMainGame()
                     text = ["Leider hast du die Bäume nicht richtig gezählt", "Da nicht weißt wie viele Bäume sich genau im Wald befinden, kannst du auch keine Ernten",
                             "Viel Glück beim nächsten Mal"];
                     break;
-                
+                e
                 case "secondPartWon": 
                     text = ["Sehr gut, du hast die richtige Menge an Holz.", "Nun haben deine Weazle fürs Erste genug Holz.", "Sie feiern dich nun durch den Ausbau der Statue!!!"];
                     break;
@@ -563,3 +563,34 @@ function continueMainGame()
             return text;
         }
 
+        function fillScoreScreen() {
+            //DEBUG TESTS:
+            setMinigameState(1, 2, 3);
+            setMinigameState(2, 2, 3);
+            setMinigameState(3, 2, 3);
+
+            setMinigameState(1, 1, 4);
+            setMinigameState(2, 1, 4);
+            setMinigameState(3, 1, 4);
+            //END DEBUG
+
+            $("#scoreScreen").show();
+
+            var scoreMg1Won = getMinigameState(1, 2);
+            var scoreMg2Won = getMinigameState(2, 2);
+            var scoreMg3Won = getMinigameState(3, 2);
+
+            var scoreMg1Played = getMinigameState(1, 1);
+            var scoreMg2Played = getMinigameState(2, 1);
+            var scoreMg3Played = getMinigameState(3, 1);
+
+            console.log(scoreMg1Played + " ljaösdf " + scoreMg1Won);
+
+            var gesamt = (scoreMg1Won + scoreMg2Won + scoreMg3Won) /(scoreMg1Played + scoreMg2Played + scoreMg2Played) * 100;
+
+            console.log(gesamt + "%");
+
+            $("ScoreScreenContentParagraph").html("<h1>ERGEBNIS</h1><hr><br><br><br" +
+               "<ol> <li>minigame1: " + scoreMg1Won + " von " + scoreMg1Played + "</li><br><li>Minigame2 " + scoreMg2Won +
+               " von " + scoreMg2Played + " </li><br><li>Minigame2: " + scoreMg3Won + " von " + scoreMg3Played + "</li> <br><br> <li><h2>Gesamt: " + gesamt + "%</h2></li><br><br><br><br><br><br><br><h2><b>Gute Arbeit!!</b></h2></ol>");
+        }

@@ -36,7 +36,8 @@ mainMenuEntries.push(new MenuEntry("menuNewGame", '<input type="button" value="N
 	$("#" + this.id).on("click touchstart", function () {
 	    drawMenu( startMenu );
 	    $("#menuContinue").attr("disabled", false);
-
+	    console.log("filling score screen");
+	    fillScoreScreen();
 	    isGameStarted = true;
 	} );
     $( "#" + this.id ).attr( "disabled", isGameStarted );
