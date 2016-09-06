@@ -704,12 +704,9 @@ function mg1_onMg1MouseMove( event )
             if ( intersects[0].object === mg1_waterMesh )
             {
                 pointerOnIsland = false;
-                positions[6] = lastX = intersects[0].point.x;
-                positions[7] = 1.5;
-                positions[8] = lastZ = intersects[0].point.z;
-
-                mg1_weazleMesh.lookAt( new THREE.Vector3( intersects[0].point.x, mg1_weazleMesh.position.y, intersects[0].point.z ) );
-                mg1_line.geometry.attributes.position.needsUpdate = true;
+                /*positions[6] = */lastX = intersects[0].point.x;
+                /*positions[7] = 1.5;*/
+                /*positions[8] = */lastZ = intersects[0].point.z;
             }
             else
             {
@@ -866,6 +863,12 @@ function animateMinigame1()
         }
 
     }
+
+    positions[6] = lastX;
+    positions[7] = 1.5;
+    positions[8] = lastZ;
+    mg1_weazleMesh.lookAt( new THREE.Vector3( lastX, mg1_weazleMesh.position.y, lastZ ) );
+    mg1_line.geometry.attributes.position.needsUpdate = true;
 
     mg1_waterMesh.position.y = Math.sin( Date.now() / 1500 ) / 4 + 1;
     mg1_water.material.uniforms.time.value += deltaTime * 0.1;
