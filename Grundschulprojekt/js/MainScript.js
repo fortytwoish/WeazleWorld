@@ -1515,3 +1515,16 @@ function OnMinigameAvailabilityChanged( minigameID, isAvailable )
     }
 
 }
+
+function showGameOver()
+{
+    controls.enabled = false;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 2;
+    controls.update();
+    setTimeout( function ()
+    {
+        ShowStatue( function () { fillScoreScreen(); }, 5000 );
+    }, 5000 );
+
+}

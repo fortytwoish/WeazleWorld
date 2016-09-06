@@ -115,7 +115,6 @@ function continueMainGame()
                 alert(  "BUG:\n"
                       + "Minigame " + minigameID + " kann nicht (mehr?) gestartet werden!\n\n"
                       + "(Es sollte also garnicht verfügbar sein...)");
-                fillScoreScreen();
                 return;
             }
 
@@ -165,6 +164,13 @@ function continueMainGame()
     //                  IN MINIGAME                         //
     //------------------------------------------------------//
 
+        function finished()
+        {
+            return getMinigameState( 1, 1 ) +
+                   getMinigameState( 2, 1 ) +
+                   getMinigameState( 3, 1 ) == 12;
+        }
+
         function minigamePlayed( minigameNumber )
         {
             var played = getMinigameState( minigameNumber, 1 ) + 1;
@@ -196,12 +202,33 @@ function continueMainGame()
 
             setMinigameState( minigameNumber, 2, won ); //  Won   ++
 
+            if ( finished() )
+            {
+                $( "#minigame" ).fadeOut( "slow" );
+                resumeRendering();
+
+                showGameOver();
+
+                return;
+            }
+
             updateStatueModel( minigameNumber, 1, won );
         }
 
         function minigameLost( minigameNumber/*, points, lostTries*/ )
         {
             minigamePlayed( minigameNumber );
+
+            if ( finished() )
+            {
+                $( "#minigame" ).fadeOut( "slow" );
+                resumeRendering();
+
+                showGameOver();
+
+                return;
+            }
+
             showButtons();
 
             //  The first game (tutorial) can't be lost
@@ -223,13 +250,13 @@ function continueMainGame()
 
         function hideButtons()
         {
-            $( "#menuButton" ).css( "visibility", "hidden" );
+            $( "#menuButton" )    .css( "visibility", "hidden" );
             $( "#minigameButton" ).css( "visibility", "hidden" );
         }
 
         function showButtons()
         {
-            $( "#menuButton" ).css( "visibility", "visible" );
+            $( "#menuButton" )    .css( "visibility", "visible" );
             $( "#minigameButton" ).css( "visibility", "visible" );
         }
 
@@ -572,16 +599,25 @@ function continueMainGame()
             return text;
         }
 
-        function fillScoreScreen() {
-            //DEBUG TESTS:
-            setMinigameState(1, 2, 3);
-            setMinigameState(2, 2, 3);
-            setMinigameState(3, 2, 3);
+        
+        $( function ()
+        {
+            $( "#winBtn" ).click( function ()
+            {
+                showGameOver();
+            } );
+        } );
 
-            setMinigameState(1, 1, 4);
-            setMinigameState(2, 1, 4);
-            setMinigameState(3, 1, 4);
-            //END DEBUG
+        function fillScoreScreen() {
+            ////DEBUG TESTS:
+            //setMinigameState(1, 2, 3);
+            //setMinigameState(2, 2, 3);
+            //setMinigameState(3, 2, 3);
+
+            //setMinigameState(1, 1, 4);
+            //setMinigameState(2, 1, 4);
+            //setMinigameState(3, 1, 4);
+            ////END DEBUG
 
             $("#scoreScreen").show();
 
@@ -589,17 +625,18 @@ function continueMainGame()
             var scoreMg2Won = getMinigameState(2, 2);
             var scoreMg3Won = getMinigameState(3, 2);
 
-            var scoreMg1Played = getMinigameState(1, 1);
-            var scoreMg2Played = getMinigameState(2, 1);
-            var scoreMg3Played = getMinigameState(3, 1);
-
-            console.log(scoreMg1Played + " ljaösdf " + scoreMg1Won);
+            var scoreMg1Played = 4;
+            var scoreMg2Played = 4;
+            var scoreMg3Played = 4;
 
             var gesamt = (scoreMg1Won + scoreMg2Won + scoreMg3Won) /(scoreMg1Played + scoreMg2Played + scoreMg2Played) * 100;
 
-            console.log(gesamt + "%");
+            $("#scoreScreenContentParagraph").html("<h1>ERGEBNIS</h1><hr><br><br><br" +
+               "<ol> <li>Stein:  " + scoreMg1Won + " von " + scoreMg1Played + "</li><br><li>Wasser: " + scoreMg2Won +
+               " von " + scoreMg2Played + " </li><br><li>Holz:   " + scoreMg3Won + " von " + scoreMg3Played + "</li> <br><br> <li><h2>Gesamt: " + gesamt + "%</h2></li><br><br><br><br><h2><b>Gute Arbeit!!</b></h2></ol><br><br><br>" );
 
-            $("ScoreScreenContentParagraph").html("<h1>ERGEBNIS</h1><hr><br><br><br" +
-               "<ol> <li>minigame1: " + scoreMg1Won + " von " + scoreMg1Played + "</li><br><li>Minigame2 " + scoreMg2Won +
-               " von " + scoreMg2Played + " </li><br><li>Minigame2: " + scoreMg3Won + " von " + scoreMg3Played + "</li> <br><br> <li><h2>Gesamt: " + gesamt + "%</h2></li><br><br><br><br><br><br><br><h2><b>Gute Arbeit!!</b></h2></ol>");
+            $( "#scoreScreenButton" ).click( function ()
+            {
+                location.reload();
+            } );
         }

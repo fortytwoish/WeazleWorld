@@ -52,36 +52,42 @@ function setQualityLevel(level)
 			renderer.antialias = false;
 			renderWater = false;
 			subsampleFactor = 4;
+			directionalLight.castShadow = false;
 			GRASS_DENSITY = -1;
 			break;
 		case 3:
 			setQuality_TerrainResDependant(7);
 			renderer.antialias = false;
 			subsampleFactor = 4;
+			directionalLight.castShadow = false;
 			GRASS_DENSITY = -1;
 			break;
 		case 4:
 			setQuality_TerrainResDependant(8);
 			renderer.antialias = false;
 			subsampleFactor = 3;
+			directionalLight.castShadow = false;
 			GRASS_DENSITY = 8;
 			break;
 		case 5:
 			setQuality_TerrainResDependant(8);
 			renderer.antialias = false;
 			subsampleFactor = 3;
+			directionalLight.castShadow = false;
 			GRASS_DENSITY = 8;
 			break;
 		case 6:
 			setQuality_TerrainResDependant(8);
 			renderer.antialias = false;
 			subsampleFactor = 2;
+			directionalLight.castShadow = false;
 			GRASS_DENSITY = 8;
 			break;
 		case 7:
 			setQuality_TerrainResDependant(9);
 			renderer.antialias = false;
 			subsampleFactor = 2;
+			directionalLight.castShadow = false;
 			GRASS_DENSITY = 8;
 			break;
 		case 8:

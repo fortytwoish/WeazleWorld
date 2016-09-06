@@ -1,5 +1,5 @@
 var appendToo = "#splashScreen";
-var logo = "img/logo.png";
+var logo = "img/Splashscreen.png";
 var mainGame = "#mainGame";
 
 $( function ()

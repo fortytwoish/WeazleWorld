@@ -274,7 +274,7 @@ function mg1_configurate()
         speed = 1 + diff / 2;
         tutorialMode = false;
 
-        if(diff == 1)
+        if(getMinigameState( 1, 1 ) == 1)
         {
             showMessageBox( ["Vorsicht, dieses Mal sind es ein paar mehr Wörter, außerdem bewegen sie sich schneller!",
                              "Ab sofort verlierst du jedes mal eines deiner drei Leben, sollte es ein Wort bis ans Ende schaffen.", "Viel Glück!"],

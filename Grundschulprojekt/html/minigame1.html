@@ -36,7 +36,10 @@
 		});
 		$("#loseMinigameButton").on("click touchstart", function()
 		{
-		    loseMinigame1();
+		    if ( getMinigameState( 1, 1 ) !== 0 )
+		    {
+		        loseMinigame1();
+		    }
 		} );
 
 		function resetMinigame()
