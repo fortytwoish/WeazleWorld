@@ -100,8 +100,15 @@ startEntries.push(new MenuEntry("menuStart", '<input type="button" value="Los ge
 	        $( "#menuContinue" ).attr( "disabled", false );
 	        $( "#" + this.id ).attr( "disabled", true );
 	        continueMainGame();
-	        soundMenu.pause();
-	        soundMaingame.play();
+
+            //Show MessageBox Intro
+	        showMessageBox(getIntroText(),"OK!",
+                function () {
+                    soundMenu.pause();
+                    soundMaingame.play();
+                });
+
+	        $("#menuNewGame").attr("disabled", false);       
 
 	    }
 		if (DEBUG)

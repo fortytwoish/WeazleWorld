@@ -1,7 +1,5 @@
-﻿    <button id="CountedButton" >GEZÄHLT</button>
-    <button id="winMinigameButton" style="margin: auto">Win</button>
-    <button id="loseMinigameButton" style="margin: auto">Lose</button>
-    
+﻿    <button id="CountedButton" class=".menu input[type=button]" >GEZÄHLT</button>
+
     <h1 id="chopTreeInfo"></h1>
     
 
@@ -133,33 +131,40 @@
             }
 
 
-            $("body").on('click', '.treeDiv .imgWrap img', function () {
+            $("body").off().on('click', '.treeDiv .imgWrap .imgContent', function () {
                
                 if (canStartChopping) {
+
                     var tmp = $(this).attr("id");
 
                     tmp = parseInt(tmp.substring(tmp.length -1));
+                     
+
 
                     treesChopped += parseInt(tmp);
+                    var sameLevelImage = $(this).prev();
+                    console.log("treesChopped. ? ! " + treesChopped + " and treesTobeChoppped. OF " + treesToBeChoppped);
                    
 		    	    var result = Math.floor((Math.random() * 2) + 1);
 		    	    console.log("transf"+result);
-		    	    $(this).addClass("transf" + result);
+		    	    sameLevelImage.addClass("transf" + result);
+
+		    	    console.log("Tutorial ? " + tutorial);
 
 		    	    if ( tutorial || treesChopped == treesToBeChoppped ) {
 		    	        //show MessageBox(textArr)=>completefct
 		    	        showMessageBox(getMinigame3Text("secondPartWon"), "Weiter geht's", function () {
-		    	            $(this).removeClass("transf1");
-		    	            $(this).removeClass("transf2");
 		    	            minigameWon(3);
 		    	            tutorial = false;
 		    	            treesChopped = 0;
+		    	            $("#minigame").css('background-image', "");
 		    	        });		    	        
 		    	    }
 		    	    else if (treesChopped >= treesToBeChoppped) {
-		    	        showMessageBox(getMinigame3Text("secondPartLost"), "Weiter geht's", function () {
-		    	            minigameLost(3);
-		    	        });		    	        
+		    	        //showMessageBox(getMinigame3Text("secondPartLost"), "Weiter geht's", function () {
+		    	        //    minigameLost(3);
+		    	        //});		    	        
+		    	        console.log("ELSE FALL ERRO MESSAGE ?! ");
 		    	    }
                 }
 		    }); 
@@ -185,6 +190,7 @@
 
             }
             else {
+                console.log("messagebox error? ???");
                 showMessageBox(getMinigame3Text("firstPartLost"), "Weiter geht's", function () { });
                 console.log("lost");
             }

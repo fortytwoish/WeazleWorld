@@ -161,6 +161,12 @@ isMenuSoundPlaying = false;
 
         function click_MessageBoxWeiter()
         {
+            if (typeof (currentMessageBoxValue) == undefined || typeof (currentMessageBoxTexte) == undefined)
+            {
+                exitMessageBox();
+                return;
+            }
+
             if ( currentMessageBoxValue == currentMessageBoxTexte.length - 1 )
             {
                 $( "#messageBoxButton" ).val( currentMessageBoxEndText );
@@ -622,6 +628,22 @@ isMenuSoundPlaying = false;
             return text;
         }
 
+        
+        function getIntroText() {
+
+            var text;
+
+            text[0] = ["Willkommen auf Weazle Island!"];
+            text[1] = ["Die Weazle brauchen Wasser, Holz und Steine um auf der Insel überleben zu können."];
+            text[2] = ["Deine Aufgabe ist es diese Rohstoffe zu sammeln!"];
+            text[3] = ["Klicke auf die richtigen Objekte, wie Brunnen, Palme oder Stein."];
+            text[4] = ["Es öffnet sich ein Minispiel, welches du erfolgreich abschließen musst."];
+            text[5] = ["Aber nun sieh dir erst einmal auf der Insel um!"];
+            text[6] = ["Wenn du bereit bist, klicke auf eines der Objekte!"];
+            text[7] = ["Viel Spaß!"];
+
+            return text;
+        }
         
         $( function ()
         {
