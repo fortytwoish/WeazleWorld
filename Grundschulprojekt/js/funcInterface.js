@@ -605,8 +605,8 @@ isMenuSoundPlaying = false;
                     
                 case "firstPartWon": 
                     text = ["Sehr gut, du hast die Bäume korrekt gezählt.", "Nun steht fest, wie viele Bäume in diesem Waldstück verfügbar sind",
-                            "Als nächstes musst du insgesamt " + treeValue + "Tonnen Bäume fällen", "Hierbei helfen dir die Zahlenwerte unter den Bäumen.",
-                            "Klicke auf die Bäume um sie zu fällen", "Wenn du die richtige Menge geerntet hast geht es wieder auf die Insel"];
+                            "Als nächstes musst du insgesamt 10, 20 oder 30 Tonnen Bäume fällen", "Hierbei helfen dir die Zahlenwerte unter den Bäumen.",
+                            "Klicke auf die die Zahlen um die Bäume zu fällen", "Wenn du die richtige Menge geerntet hast geht es wieder auf die Insel"];
                     break;
                 
                 case "firstPartFailed": 
