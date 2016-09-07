@@ -143,7 +143,7 @@ function initStaticElements()
     document.addEventListener( 'mouseup'   , onDocumentMouseUp   , false );
     document.addEventListener( 'keydown'   , onkeydown           , false );
 
-    handleWindowVisibility();
+    //handleWindowVisibility();
 
     stats = new Stats();
 
@@ -154,59 +154,59 @@ function initStaticElements()
 }
 
 //  Example by Andy E: http://stackoverflow.com/a/1060034
-function handleWindowVisibility()
-{
-    var hidden = "hidden";
+//function handleWindowVisibility()
+//{
+//    var hidden = "hidden";
 
-    // Standards:
-    if ( hidden in document )
-        document.addEventListener( "visibilitychange", onchange );
-    else if ( ( hidden = "mozHidden" ) in document )
-        document.addEventListener( "mozvisibilitychange", onchange );
-    else if ( ( hidden = "webkitHidden" ) in document )
-        document.addEventListener( "webkitvisibilitychange", onchange );
-    else if ( ( hidden = "msHidden" ) in document )
-        document.addEventListener( "msvisibilitychange", onchange );
-        // IE 9 and lower:
-    else if ( "onfocusin" in document )
-        document.onfocusin = document.onfocusout = onchange;
-        // All others:
-    else
-        window.onpageshow = window.onpagehide
-        = window.onfocus = window.onblur = onchange;
+//    // Standards:
+//    if ( hidden in document )
+//        document.addEventListener( "visibilitychange", onchange );
+//    else if ( ( hidden = "mozHidden" ) in document )
+//        document.addEventListener( "mozvisibilitychange", onchange );
+//    else if ( ( hidden = "webkitHidden" ) in document )
+//        document.addEventListener( "webkitvisibilitychange", onchange );
+//    else if ( ( hidden = "msHidden" ) in document )
+//        document.addEventListener( "msvisibilitychange", onchange );
+//        // IE 9 and lower:
+//    else if ( "onfocusin" in document )
+//        document.onfocusin = document.onfocusout = onchange;
+//        // All others:
+//    else
+//        window.onpageshow = window.onpagehide
+//        = window.onfocus = window.onblur = onchange;
 
-    function onchange( evt )
-    {
+//    function onchange( evt )
+//    {
 
-        var v = "visible", h = "hidden",
-            evtMap = {
-                focus: v, focusin: v, pageshow: v, blur: h, focusout: h, pagehide: h
-            };
+//        var v = "visible", h = "hidden",
+//            evtMap = {
+//                focus: v, focusin: v, pageshow: v, blur: h, focusout: h, pagehide: h
+//            };
 
-        evt = evt || window.event;
-        if ( evt.type in evtMap )
-        {
-            document.body.className = evtMap[evt.type];
-        }
-        else
-        {
-            document.body.className = this[hidden] ? "hidden" : "visible";
-            if ( this[hidden] )
-            {
-                pauseRendering();
-            }
-            else
-            {
-                resumeRendering();
-            }
-        }
+//        evt = evt || window.event;
+//        if ( evt.type in evtMap )
+//        {
+//            document.body.className = evtMap[evt.type];
+//        }
+//        else
+//        {
+//            document.body.className = this[hidden] ? "hidden" : "visible";
+//            if ( this[hidden] )
+//            {
+//                pauseRendering();
+//            }
+//            else
+//            {
+//                resumeRendering();
+//            }
+//        }
 
-    }
+//    }
 
-    // set the initial state (but only if browser supports the Page Visibility API)
-    if ( document[hidden] !== undefined )
-        onchange( { type: document[hidden] ? "blur" : "focus" } );
-}
+//    // set the initial state (but only if browser supports the Page Visibility API)
+//    if ( document[hidden] !== undefined )
+//        onchange( { type: document[hidden] ? "blur" : "focus" } );
+//}
 
 function initRenderer()
 {
@@ -1019,6 +1019,8 @@ var raycaster    = new THREE.Raycaster();
 var mouse        = new THREE.Vector2();
 var mouseDownObj;
 
+var statueHasBeenShownOnce = false;
+
 function onDocumentMouseUp( event )
 {
 
@@ -1074,11 +1076,29 @@ function onDocumentMouseUp( event )
         index = indexInArray( test_statues, intersects[0].object );
         if ( index > -1 )
         {
-            $( "#exitStatueButton" ).show();
-            setTimeout( function ()
+            if ( !statueHasBeenShownOnce )
             {
-                ShowStatue();
-            }, 250 );
+                statueHasBeenShownOnce = true;
+                showMessageBox( ["Klicke auf das neue Symbol oben rechts, um diese Ansicht zu verlassen."], "Verstanden!", function ()
+                {
+                    $( "#exitStatueButton" ).show();
+                    controls.autoRotateSpeed = 0.1;
+                    controls.autoRotate = true;
+                    setTimeout( function ()
+                    {
+                        ShowStatue();
+                    }, 500 );
+                } );
+            }
+            else
+            {
+                $( "#exitStatueButton" ).show();
+                setTimeout( function ()
+                {
+                    ShowStatue();
+                }, 250 );
+            }
+
 
         }
 
@@ -1209,6 +1229,7 @@ function changeStatueModel( mesh, segmentMat )
     ShowStatue( function()
     {
         var verts = statueParticleSystem.geometry.vertices;
+        var particleCount = verts.length;
 
         // (Re-)set the particles for the segment to be built
         particleMaterial.opacity = 1;

@@ -21,6 +21,21 @@ function loadQualityLevel()
 
 function setQualityLevel(level)
 {
+    //Test
+    if ( typeof ( decorationSpriteMeshes ) !== 'undefined' )
+    {
+        for ( var i = 0; i < decorationSpriteMeshes.length; i++ )
+        {
+            if ( decorationSpriteMeshes[i] )
+            {
+                scene.remove( decorationSpriteMeshes[i] );
+            }
+        }
+
+        
+    }
+    grass_positions = [];
+
 	numOfAsyncChanges = 0;
 	totalAsyncChanges = 0;
 
@@ -31,171 +46,175 @@ function setQualityLevel(level)
 
 	currentQuality = level;
 
-	//if not mobile
-	controls.rotateSpeed = 1;
-	controls.zoomSpeed = 2;
+    //if not mobile
+	if ( typeof ( controls ) !== "undefined" )
+	{
+	    controls.rotateSpeed = 1;
+	    controls.zoomSpeed = 2;
+	}
+
 
 	renderWater = true;
 
 	switch (level)
 	{
 		case 1:
-			setQuality_TerrainResDependant(7);
 			renderer.antialias = false;
 			renderWater = false;
 			subsampleFactor = 5;
 			directionalLight.castShadow = false;
 			GRASS_DENSITY = -1;
 			particleCount = 50;
+			setQuality_TerrainResDependant(7);
 			break;
 		case 2:
-			setQuality_TerrainResDependant(7);
 			renderer.antialias = false;
 			renderWater = false;
 			subsampleFactor = 4;
 			directionalLight.castShadow = false;
 			GRASS_DENSITY = -1;
 			particleCount = 50;
+			setQuality_TerrainResDependant(7);
 			break;
 		case 3:
-			setQuality_TerrainResDependant(7);
 			renderer.antialias = false;
 			subsampleFactor = 4;
 			directionalLight.castShadow = false;
 			GRASS_DENSITY = -1;
 			particleCount = 50;
+			setQuality_TerrainResDependant(7);
 			break;
 		case 4:
-			setQuality_TerrainResDependant(8);
 			renderer.antialias = false;
 			subsampleFactor = 3;
 			directionalLight.castShadow = false;
 			GRASS_DENSITY = -1;
 			particleCount = 100;
+			setQuality_TerrainResDependant(8);
 			break;
 		case 5:
-			setQuality_TerrainResDependant(8);
 			renderer.antialias = false;
 			subsampleFactor = 3;
 			directionalLight.castShadow = false;
 			GRASS_DENSITY = 4;
 			particleCount = 100;
+			setQuality_TerrainResDependant(8);
 			break;
 		case 6:
-			setQuality_TerrainResDependant(8);
 			renderer.antialias = false;
 			subsampleFactor = 2;
 			directionalLight.castShadow = false;
 			GRASS_DENSITY = 4;
 			particleCount = 100;
+			setQuality_TerrainResDependant(8);
 			break;
 		case 7:
-			setQuality_TerrainResDependant(9);
 			renderer.antialias = false;
 			subsampleFactor = 2;
 			directionalLight.castShadow = false;
 			GRASS_DENSITY = 4;
 			particleCount = 100;
+			setQuality_TerrainResDependant(9);
 			break;
 		case 8:
-			setQuality_TerrainResDependant(9);
 			renderer.antialias = false;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 4;
 			particleCount = 200;
+			setQuality_TerrainResDependant(9);
 			break;
 		case 9:
-			setQuality_TerrainResDependant(9);
 			renderer.antialias = false;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 2;
 			particleCount = 200;
+			setQuality_TerrainResDependant(9);
 			break;
 		case 10:
-			setQuality_TerrainResDependant(10);
 			renderer.antialias = false;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 2;
 			particleCount = 200;
+			setQuality_TerrainResDependant(10);
 			break;
 		case 11:
-			setQuality_TerrainResDependant(10);
 			renderer.antialias = false;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 2;
 			particleCount = 400;
+			setQuality_TerrainResDependant(10);
 			break;
 		case 12:
-			setQuality_TerrainResDependant(10);
 			renderer.antialias = true;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 1;
 			particleCount = 400;
+			setQuality_TerrainResDependant(10);
 			break;
 		case 13:
-			setQuality_TerrainResDependant(11);
 			renderer.antialias = true;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 1;
 			particleCount = 400;
+			setQuality_TerrainResDependant(11);
 			break;
 		case 14:
-			setQuality_TerrainResDependant(11);
 			renderer.antialias = true;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 1;
 			particleCount = 400;
+			setQuality_TerrainResDependant(11);
 			break;
 		case 15:
-			setQuality_TerrainResDependant(11);
 			renderer.antialias = true;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 1;
 			particleCount = 500;
+			setQuality_TerrainResDependant(11);
 			break;
 		case 16:
-			setQuality_TerrainResDependant(11);
 			renderer.antialias = true;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 1;
 			particleCount = 500;
+			setQuality_TerrainResDependant(11);
 			break;
 		case 17:
-			setQuality_TerrainResDependant(12);
 			renderer.antialias = true;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 1;
 			particleCount = 500;
+			setQuality_TerrainResDependant(12);
 			break;
 		case 18:
-			setQuality_TerrainResDependant(12);
 			renderer.antialias = true;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 1;
 			particleCount = 500;
+			setQuality_TerrainResDependant(12);
 			break;
 		case 19:
-			setQuality_TerrainResDependant(12);
 			renderer.antialias = true;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 1;
 			particleCount = 500;
+			setQuality_TerrainResDependant(12);
 			break;
 		case 20:
-			setQuality_TerrainResDependant(12);
 			renderer.antialias = true;
 			subsampleFactor = 1;
 			GRASS_DENSITY = 1;
 			particleCount = 500;
+			setQuality_TerrainResDependant(12);
 			break;
 		case "htcone":
-			setQuality_TerrainResDependant(12);
 			renderer.antialias = false;
 			controls.rotateSpeed = 0.5;
 			controls.zoomSpeed = 0.5;
 			subsampleFactor = 2;
 			GRASS_DENSITY = 5;
             particleCount = 25;
+			setQuality_TerrainResDependant(12);
 			break;
 	}
 
@@ -265,19 +284,17 @@ function setQuality_TerrainResDependant(terrainRes)
 	initStatueParticleSystem();
 	scene.add( statueParticleSystem );
 
-	if (typeof (islandMesh) !== 'undefined')
-		scene.remove(islandMesh);
+	if ( typeof ( islandMesh ) !== 'undefined' )
+	{
+	    scene.remove( islandMesh );
+	}
 
-	console.log("beginning grass removal");
 	if (typeof (decorationSpriteMeshes) !== 'undefined')
 	{
-		console.log("decorationSpriteMeshes exists");
 		for (var i = 0; i < decorationSpriteMeshes.length; i++)
 		{
-			console.log("trying grass removal " + i);
 			if (decorationSpriteMeshes[i])
 			{
-				console.log("grass removal " + i);
 				scene.remove(decorationSpriteMeshes[i]);
 			}
 		}

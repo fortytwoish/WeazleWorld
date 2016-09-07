@@ -161,7 +161,9 @@ isMenuSoundPlaying = false;
 
         function click_MessageBoxWeiter()
         {
-            if (typeof (currentMessageBoxValue) == undefined || typeof (currentMessageBoxTexte) == undefined)
+            if (   typeof ( currentMessageBoxValue ) == undefined
+                || typeof ( currentMessageBoxTexte ) == undefined
+                || !currentMessageBoxTexte)
             {
                 exitMessageBox();
                 return;
@@ -447,8 +449,8 @@ isMenuSoundPlaying = false;
             //  TODO if next text is last one, change button text to exit
             if ( currentMessageBoxValue > currentMessageBoxTexte.length )
             {
-                //  TODO exit message box here
                 currentMessageBoxValue = 0;
+                return "";
             }
 
             return currentMessageBoxTexte[currentMessageBoxValue++];
@@ -525,7 +527,7 @@ isMenuSoundPlaying = false;
         {
             var text = [];
             text[0]= "Hallo, " + username + "!",
-            text[1]= "Willkommen auf Weazle Island",
+            text[1]= "Willkommen auf Weazle Island.",
             text[2]= "Dein Ziel ist die Unterstützung des Weazle Volks, welches auf dieser Insel gestrandet ist.",
             text[3]= "Die Weazle werden Missstände ankündigen und Euer kluger Kopf wird ihre Probleme lösen.",
             text[4]= "Viel Spaß und Erfolg!",
@@ -631,27 +633,20 @@ isMenuSoundPlaying = false;
         
         function getIntroText() {
 
-            var text;
+            var text = [];
 
-            text[0] = ["Willkommen auf Weazle Island!"];
+            text[0] = ["Willkommen auf Weazle Island, " + username + "!"];
             text[1] = ["Die Weazle brauchen Wasser, Holz und Steine um auf der Insel überleben zu können."];
             text[2] = ["Deine Aufgabe ist es diese Rohstoffe zu sammeln!"];
             text[3] = ["Klicke auf die richtigen Objekte, wie Brunnen, Palme oder Stein."];
-            text[4] = ["Es öffnet sich ein Minispiel, welches du erfolgreich abschließen musst."];
-            text[5] = ["Aber nun sieh dir erst einmal auf der Insel um!"];
-            text[6] = ["Wenn du bereit bist, klicke auf eines der Objekte!"];
-            text[7] = ["Viel Spaß!"];
+            text[4] = ["Nur Objekte mit roter Umrandung sind verfügbar."];
+            text[5] = ["Es öffnet sich ein Minispiel, welches du erfolgreich abschließen musst."];
+            text[6] = ["Aber nun sieh dir erst einmal auf der Insel um!"];
+            text[7] = ["Wenn du bereit bist, klicke auf eines der Objekte!"];
+            text[8] = ["Viel Spaß!"];
 
             return text;
         }
-        
-        $( function ()
-        {
-            $( "#winBtn" ).click( function ()
-            {
-                showGameOver();
-            } );
-        } );
 
         function fillScoreScreen() {
             ////DEBUG TESTS:
@@ -674,11 +669,11 @@ isMenuSoundPlaying = false;
             var scoreMg2Played = 4;
             var scoreMg3Played = 4;
 
-            var gesamt = (scoreMg1Won + scoreMg2Won + scoreMg3Won) /(scoreMg1Played + scoreMg2Played + scoreMg2Played) * 100;
+            var gesamt = Math.round((scoreMg1Won + scoreMg2Won + scoreMg3Won) /(scoreMg1Played + scoreMg2Played + scoreMg2Played) * 100);
 
             $("#scoreScreenContentParagraph").html("<h1>ERGEBNIS</h1><hr><br><br><br" +
                "<ol> <li>Stein:  " + scoreMg1Won + " von " + scoreMg1Played + "</li><br><li>Wasser: " + scoreMg2Won +
-               " von " + scoreMg2Played + " </li><br><li>Holz:   " + scoreMg3Won + " von " + scoreMg3Played + "</li> <br><br> <li><h2>Gesamt: " + gesamt + "%</h2></li><br><br><br><br><h2><b>Gute Arbeit!!</b></h2></ol><br><br><br>" );
+               " von " + scoreMg2Played + " </li><br><li>Holz:   " + scoreMg3Won + " von " + scoreMg3Played + "</li> <br><br> <li><h2>Gesamt: " + gesamt + "%</h2></li><br><br><br><br><h2><b>Gute Arbeit, " + username + "!!</b></h2></ol><br><br><br>" );
 
             $( "#scoreScreenButton" ).click( function ()
             {

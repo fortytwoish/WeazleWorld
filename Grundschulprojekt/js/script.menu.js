@@ -77,6 +77,16 @@ mainMenuEntries.push(new MenuEntry("menuOptions", '<input type="button" value="O
 	    }
 	});
 } ) );
+mainMenuEntries.push( new MenuEntry( "menuEndGame", '<input type="button" value="Aufhören">', function ()
+{
+    $( "#" + this.id ).attr( "disabled", !isGameStarted );
+
+    $( "#" + this.id ).on( "click touchstart", function ()
+    {
+        continueMainGame();
+        showGameOver();
+    } );
+} ) );
 
 function setQualityButtonsDisabled( val )
 {
@@ -99,6 +109,8 @@ startEntries.push(new MenuEntry("menuStart", '<input type="button" value="Los ge
 	        username = $( "#menuName" ).val();
 	        $( "#menuContinue" ).attr( "disabled", false );
 	        $( "#" + this.id ).attr( "disabled", true );
+
+	        canClickObjects = false;
 	        continueMainGame();
 
             //Show MessageBox Intro
@@ -106,6 +118,7 @@ startEntries.push(new MenuEntry("menuStart", '<input type="button" value="Los ge
                 function () {
                     soundMenu.pause();
                     soundMaingame.play();
+                    canClickObjects = true;
                 });
 
 	        $("#menuNewGame").attr("disabled", false);       

@@ -25,7 +25,10 @@ $( function ()
     $("#resetQualityButton").on("click", function (e)
     {
     	$(this).css("display", "none");
-	    setQualityLevel(1);
+    	if ( typeof ( storage ) !== "undefined" )
+    	{
+    	    storage.quality = 1;
+    	}
     });
 
     $(appendToo).on("click touchstart keyup", function (e)
