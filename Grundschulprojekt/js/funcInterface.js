@@ -580,7 +580,6 @@ isMenuSoundPlaying = false;
                             : score == 1
                             ? "das eine Stück"
                             : "[ACHTUNG, UNMÖGLICHER WERT]";
-
             var text = [];
             text[0] = "Glückwunsch, die Weazles werden zum Dank für " + score_text + " " + getResourceFromMinigameID( minigameID ) + " das Segment der Statue zu deinen Ehren fertigstellen!";
             text[1] = "Sie haben jetzt genug " + getResourceFromMinigameID( minigameID ) + ". Aber bestimmt kannst du ihnen noch andere Dinge bringen!";
@@ -591,13 +590,13 @@ isMenuSoundPlaying = false;
 
         function getMinigame3Text(state, treeValue) {
 
-            var text;
+            var text = [];
 
             switch (state) {
                 case "tutorial":
                     text = ["Willkommen im Baum-MiniSpiel", "Deine Aufgabe ist es die Bäume zu zählen!",
                             "Gib die Anzahl der Bäume auf der linken Seite an und drücke auf Gezählt!",
-                            "Viel Erfolg"];
+                            "Da dies erst einmal das Tutorial ist, teste die Knöpfe einfach schon einmal aus, du kannst nicht verlieren.","Viel Erfolg"];
                     break;
                 case "intro":
                     text = ["Willkommen im Baum-MiniSpiel", "Deine Aufgabe ist es die Bäume zu zählen!",
@@ -615,7 +614,6 @@ isMenuSoundPlaying = false;
                     text = ["Leider hast du die Bäume nicht richtig gezählt", "Da nicht weißt wie viele Bäume sich genau im Wald befinden, kannst du auch keine Ernten",
                             "Viel Glück beim nächsten Mal"];
                     break;
-                e
                 case "secondPartWon": 
                     text = ["Sehr gut, du hast die richtige Menge an Holz.", "Nun haben deine Weazle fürs Erste genug Holz.", "Sie feiern dich nun durch den Ausbau der Statue!!!"];
                     break;

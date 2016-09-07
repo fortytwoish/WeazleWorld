@@ -248,6 +248,7 @@ var life        = 3;
 var charDist    = 500;
 var wordDist    = 2000;
 var tutorialMode = false;
+var newUrl = ""
 
 function mg1_configurate()
 {
@@ -305,6 +306,10 @@ function mg1_start()
 
     mg1_paused = true;
 
+    var newUrl = "../img/RockGame/" + life + "life.png";
+
+    $("#life").attr("src", newUrl);
+
     SCENE_TO_RENDER = mg1_scene;
 
     mg1_configurate();
@@ -358,7 +363,7 @@ function loseWord()
 
     life--;
 
-    var newUrl = "../img/RockGame/" + life + "life.png";
+    newUrl = "../img/RockGame/" + life + "life.png";
 
     $( "#life" ).attr( "src", newUrl );
 
