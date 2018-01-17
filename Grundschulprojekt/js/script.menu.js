@@ -38,6 +38,7 @@ mainMenuEntries.push(new MenuEntry("menuNewGame", '<input type="button" value="N
 	    $("#menuContinue").attr("disabled", false);
 	    
 	    soundMenu.pause();
+
 	    isGameStarted = true;
 	} );
     $( "#" + this.id ).attr( "disabled", isGameStarted );
@@ -92,7 +93,7 @@ function setQualityButtonsDisabled( val )
     $( "#menuVolume" ) .attr( "disabled", val );
     $( "#menuQuality" ).attr( "disabled", val );
     $( "#menuApply" )  .attr( "disabled", val );
-    //$( "#menuCredits" ).attr( "disabled", val );
+    $( "#menuCredits" ).attr( "disabled", val );
     $( "#menuBack" )   .attr( "disabled", val );
 
 }
@@ -118,11 +119,10 @@ startEntries.push(new MenuEntry("menuStart", '<input type="button" value="Los ge
                     soundMenu.pause();
                     soundMaingame.play();
                     canClickObjects = true;
-                    continueMainGame();
                 });
 
 	        $("#menuNewGame").attr("disabled", false);       
-
+			showButtons();
 	    }
 		if (DEBUG)
 			console.log(username);
@@ -149,7 +149,7 @@ optionEntries.push(new MenuEntry("menuQuality", '<input type="range" min="1" max
 {
 	$('<h2><span class="left">Qualität:</span><span id="menuQualityHeader" class="right">' + currentQuality + '</span></h2>').insertBefore("#" + this.id);
 	$("#" + this.id).attr("value", currentQuality);
-	$( "#" + this.id ).on( "mouseup", function () //IE 10
+	$( "#" + this.id ).on( "mouseup touchend", function () //IE 10
 	{
 		$("#menuQualityHeader").text(this.value);
 	    quality = parseInt(this.value);
@@ -195,9 +195,9 @@ optionEntries.push(new MenuEntry("menuApply", '<input type="button" value="Über
         	console.log("Apply Quality: " + quality);
 	});
 }));
-//optionEntries.push(new MenuEntry("menuCredits", '<input type="button" value="Credits">', function () {
+optionEntries.push(new MenuEntry("menuCredits", '<input type="button" value="Credits">', function () {
 
-//}));
+}));
 optionEntries.push(new MenuEntry("menuBack", '<input type="button" value="Zurück">', function () {
 	$("#" + this.id).on("click touchstart", function () {
 	    drawMenu( mainMenu );

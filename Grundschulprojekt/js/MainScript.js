@@ -899,7 +899,7 @@ $( function ()
     } );
 
 
-    $( "#fullscreenButton" ).on("click touchstart", function ()
+    $( "#fullscreenButton" ).on("click touchend", function ()
     {
         if ( !isFullscreen )
         {
